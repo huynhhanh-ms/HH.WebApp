@@ -28,22 +28,23 @@ export function SignInView() {
     <Box display="flex" flexDirection="column" alignItems="flex-end">
       <TextField
         fullWidth
-        name="email"
-        label="Email address"
-        defaultValue="hello@gmail.com"
+        name="username"
+        label="Tên đăng nhập"
+        defaultValue="admin"
         InputLabelProps={{ shrink: true }}
         sx={{ mb: 3 }}
       />
 
       <Link variant="body2" color="inherit" sx={{ mb: 1.5 }}>
-        Forgot password?
+        {/* Forgot password? */}
+        Quên mật khẩu?
       </Link>
 
       <TextField
         fullWidth
         name="password"
-        label="Password"
-        defaultValue="@demo1234"
+        label="Mật khẩu"
+        defaultValue="123456"
         InputLabelProps={{ shrink: true }}
         type={showPassword ? 'text' : 'password'}
         InputProps={{
@@ -66,7 +67,7 @@ export function SignInView() {
         variant="contained"
         onClick={handleSignIn}
       >
-        Sign in
+        Đăng nhập
       </LoadingButton>
     </Box>
   );
@@ -74,11 +75,11 @@ export function SignInView() {
   return (
     <>
       <Box gap={1.5} display="flex" flexDirection="column" alignItems="center" sx={{ mb: 5 }}>
-        <Typography variant="h5">Sign in</Typography>
+        <Typography variant="h5">Đăng nhập</Typography>
         <Typography variant="body2" color="text.secondary">
-          Don’t have an account?
+          Không có tài khoản?{' '}
           <Link variant="subtitle2" sx={{ ml: 0.5 }}>
-            Get started
+            Đăng ký
           </Link>
         </Typography>
       </Box>

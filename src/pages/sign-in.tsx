@@ -10,7 +10,7 @@ export default function Page() {
   return (
     <>
       <Helmet>
-        <title> {`Sign in - ${CONFIG.appName}`}</title>
+        <title> {`Login - ${CONFIG.appName}`}</title>
       </Helmet>
 
       <SignInView />

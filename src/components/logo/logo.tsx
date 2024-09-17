@@ -5,6 +5,7 @@ import { useId, forwardRef } from 'react';
 import Box from '@mui/material/Box';
 import { useTheme } from '@mui/material/styles';
 
+import { Typography } from '@mui/material';
 import { RouterLink } from 'src/routes/components';
 
 import { logoClasses } from './classes';
@@ -196,9 +197,31 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
     };
 
     return (
-      <Box
+      <div className='flex'>
+      {/* // <Box
+      //   ref={ref}
+      //   component={RouterLink}
+      //   href={href}
+      //   className={logoClasses.root.concat(className ? ` ${className}` : '')}
+      //   aria-label="Logo"
+      //   sx={{
+      //     ...baseSize,
+      //     flexShrink: 0,
+      //     display: 'inline-flex',
+      //     verticalAlign: 'middle',
+      //     ...(disableLink && { pointerEvents: 'none' }),
+      //     ...sx,
+      //   }}
+      //   {...other}
+      // >
+      //   {isSingle ? singleLogo : fullLogo}
+      // </Box>
+      // <Image alt="Logo" src="logo.png" width="100%" height="100%" /> */}
+        <Box
         ref={ref}
-        component={RouterLink}
+        component='img'
+        src="logo.png"
+        alt="Huynhhanh"
         href={href}
         className={logoClasses.root.concat(className ? ` ${className}` : '')}
         aria-label="Logo"
@@ -211,9 +234,9 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
           ...sx,
         }}
         {...other}
-      >
-        {isSingle ? singleLogo : fullLogo}
-      </Box>
+      />
+      <Typography variant="h4" sx={{ color: 'text.primary', mx: '16px', display: 'inline'}}>Huynhhanh</Typography>
+</div>
     );
   }
 );

@@ -25,12 +25,12 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
           ),
         })}
       >
-        More features?
+        Nhiều tính năng hơn
       </Typography>
       <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-        {`From only `}
+        {`Liên hệ với `}
         <Box component="strong" sx={{ color: 'text.primary' }}>
-          $69
+         Hùng 
         </Box>
       </Typography>
 
@@ -42,12 +42,12 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
       />
 
       <Button
-        href="https://material-ui.com/store/items/minimal-dashboard/"
+        href="https://www.facebook.com/jinergenkai"
         target="_blank"
         variant="contained"
         color="inherit"
       >
-        Upgrade to Pro
+        Nâng cấp ngay
       </Button>
     </Box>
   );
