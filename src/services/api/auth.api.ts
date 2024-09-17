@@ -14,14 +14,11 @@ export const AuthApi = {
         `${apiEndpoint.Auth}/login`,
         payload
       );
-
       const result = response.data;
-      if (result.statusCode === 200 && result?.data?.accessToken) {
-        return result?.data?.accessToken;
-      }
-      throw new Error(result.message ?? 'Đăng nhập thất bại');
+      return result?.data?.accessToken;
+
     } catch (error) {
-      throw new Error(error);
+      throw new Error(error.response.data.Message);
     }
   },
   me: async (token: string): Promise<AccountResponse> => {

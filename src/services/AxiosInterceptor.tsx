@@ -6,36 +6,22 @@
 // import { useAppAuth } from "../store/zustand/auth";
 // import ProtectedRoute from "@/route/ProtectedRoute";
 
-// const LOCAlSTORAGE_TOKEN_KEY = "access_token";
-// export const setToken = (token: string) => {
-// 	localStorage.setItem(LOCAlSTORAGE_TOKEN_KEY, token);
-// };
-// export const getToken = () => {
-// 	const token = localStorage.getItem(LOCAlSTORAGE_TOKEN_KEY)
-// 		? localStorage.getItem(LOCAlSTORAGE_TOKEN_KEY)
-// 		: "";
-// 	return token ??"";
-// };
-// export const removeToken = () => {
-//   localStorage.removeItem(LOCAlSTORAGE_TOKEN_KEY);
-// }
-
 // const AxiosInterceptor: React.FC<PropsWithChildren<{ key?: string }>> = ({
 //   children,
 // }) => {
-// 	const {toast} = useToast();
-// 	const {accessToken} = useAppAuth();
+// 	// const {toast} = useToast();
+// 	// const {accessToken} = useAppAuth();
 //   const navigate = useNavigate();
 //   const excludedEndpoints = ['/login', '/refresh-token'];
 //   useEffect(() => {
-// 		console.log("accessToken at interceptor = ", accessToken);
+// 		// console.log("accessToken at interceptor = ", accessToken);
 
-//     const resInterceptor = (response: AxiosResponse) => {
-//       if (response.data?.data?.accessToken) {
-//         setToken(response.data.data);
-//       }
-//       return response;
-//     };
+//     // const resInterceptor = (response: AxiosResponse) => {
+//     //   if (response.data?.data?.accessToken) {
+//     //     setToken(response.data.data);
+//     //   }
+//     //   return response;
+//     // };
 
 //     const errInterceptor = async (error: AxiosError) => {
 

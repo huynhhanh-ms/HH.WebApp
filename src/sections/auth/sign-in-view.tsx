@@ -16,6 +16,7 @@ import { useApp } from 'src/stores/use-app';
 import { useMutation } from '@tanstack/react-query';
 import { AuthApi } from 'src/services/api/auth.api';
 import { ApiQueryKey } from 'src/services/api-query-key';
+import { useSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
 
@@ -25,6 +26,8 @@ export function SignInView() {
   const [showPassword, setShowPassword] = useState(false);
   const [account, setAccount] = useState({ username: 'admin', password: '123456' });
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const { login } = useApp();
 
   const { mutate } = useMutation({
@@ -32,10 +35,12 @@ export function SignInView() {
     mutationKey: [ApiQueryKey.auth.login],
     onSuccess: (data) => {
       login(data).then(() => {
+        enqueueSnackbar("Đăng nhập thành công", { variant: 'success' });
         router.replace('/admin');
       });
     },
     onError: (error) => {
+      enqueueSnackbar(error.message, { variant: 'warning' });
     }
   });
 
