@@ -25,6 +25,9 @@ module.exports = {
    * 2 ~ 'error'
    */
   rules: {
+    //custom
+    'react-hooks/rules-of-hooks': 0,
+
     // general
     'no-alert': 0,
     camelcase: 0,

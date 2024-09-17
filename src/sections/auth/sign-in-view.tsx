@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -12,6 +12,10 @@ import InputAdornment from '@mui/material/InputAdornment';
 import { useRouter } from 'src/routes/hooks';
 
 import { Iconify } from 'src/components/iconify';
+import { useApp } from 'src/stores/use-app';
+import { useMutation } from '@tanstack/react-query';
+import { AuthApi } from 'src/services/api/auth.api';
+import { ApiQueryKey } from 'src/services/api-query-key';
 
 // ----------------------------------------------------------------------
 
@@ -19,10 +23,25 @@ export function SignInView() {
   const router = useRouter();
 
   const [showPassword, setShowPassword] = useState(false);
+  const [account, setAccount] = useState({ username: 'admin', password: '123456' });
 
-  const handleSignIn = useCallback(() => {
-    router.push('/');
-  }, [router]);
+  const { login } = useApp();
+
+  const { mutate } = useMutation({
+    mutationFn: AuthApi.login,
+    mutationKey: [ApiQueryKey.auth.login],
+    onSuccess: (data) => {
+      login(data).then(() => {
+        router.replace('/admin');
+      });
+    },
+    onError: (error) => {
+    }
+  });
+
+  const handleSignIn = () => {
+    mutate(account);
+  }
 
   const renderForm = (
     <Box display="flex" flexDirection="column" alignItems="flex-end">
@@ -30,8 +49,10 @@ export function SignInView() {
         fullWidth
         name="username"
         label="Tên đăng nhập"
-        defaultValue="admin"
+        defaultValue={account.username}
+        onChange={(e) => setAccount({ ...account, username: e.target.value })}
         InputLabelProps={{ shrink: true }}
+
         sx={{ mb: 3 }}
       />
 
@@ -44,7 +65,8 @@ export function SignInView() {
         fullWidth
         name="password"
         label="Mật khẩu"
-        defaultValue="123456"
+        defaultValue={account.password}
+        onChange={(e) => setAccount({ ...account, password: e.target.value })}
         InputLabelProps={{ shrink: true }}
         type={showPassword ? 'text' : 'password'}
         InputProps={{
