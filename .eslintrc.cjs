@@ -27,6 +27,8 @@ module.exports = {
   rules: {
     //custom
     'react-hooks/rules-of-hooks': 0,
+    'import/no-extraneous-dependencies': 0,
+    'react/no-unused-prop-types': 0,
 
     // general
     'no-alert': 0,

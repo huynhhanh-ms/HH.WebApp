@@ -2,7 +2,7 @@ import 'src/global.css';
 
 import Fab from '@mui/material/Fab';
 
-import { Router } from 'src/routes/sections';
+import { Router } from 'src/routes/router';
 
 import { useScrollToTop } from 'src/hooks/use-scroll-to-top';
 
