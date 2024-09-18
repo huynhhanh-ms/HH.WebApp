@@ -1,3 +1,5 @@
+import './tailwind.css';
+
 import ReactDOM from 'react-dom/client';
 import { Suspense, StrictMode } from 'react';
 import { SnackbarProvider } from 'notistack';

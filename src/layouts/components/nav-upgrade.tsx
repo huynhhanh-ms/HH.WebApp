@@ -34,14 +34,15 @@ export function NavUpgrade({ sx, ...other }: StackProps) {
         </Box>
       </Typography>
 
-      <Box
+      {/* <Box
         component="img"
         alt="Minimal dashboard"
         src="/assets/illustrations/illustration-dashboard.webp"
         sx={{ width: 200, my: 2 }}
-      />
+      /> */}
 
       <Button
+        sx={{ mt: 0.5 }}
         href="https://www.facebook.com/jinergenkai"
         target="_blank"
         variant="contained"

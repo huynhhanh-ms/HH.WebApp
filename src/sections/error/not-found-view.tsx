@@ -14,7 +14,8 @@ export function NotFoundView() {
     <SimpleLayout content={{ compact: true }}>
       <Container>
         <Typography variant="h3" sx={{ mb: 2 }}>
-          Sorry, page not found!
+          {/* Sorry, page not found! */}
+          Xin lỗi, trang không tồn tại!
         </Typography>
 
         <Typography sx={{ color: 'text.secondary' }}>
@@ -32,7 +33,7 @@ export function NotFoundView() {
           }}
         />
 
-        <Button component={RouterLink} href="/" size="large" variant="contained" color="inherit">
+        <Button component={RouterLink} href="/admin" size="large" variant="contained" color="inherit">
           Go to home
         </Button>
       </Container>
