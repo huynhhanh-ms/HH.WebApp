@@ -14,6 +14,7 @@ import ProtectedRoute from './protected-route';
 
 export const HomePage = lazy(() => import('src/pages/home'));
 export const TankPage = lazy(() => import('src/pages/tank'));
+export const SessionPage = lazy(() => import('src/pages/session'));
 export const LandingPage = lazy(() => import('src/pages/marketing/landing-page'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
@@ -58,6 +59,7 @@ export function Router() {
         { element: <HomePage />, index: true },
         { path: 'user', element: <UserPage /> },
         { path: 'tank', element: <TankPage /> },
+        { path: 'session', element: <SessionPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
       ],

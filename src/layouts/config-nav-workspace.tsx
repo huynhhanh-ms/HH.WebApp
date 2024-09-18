@@ -2,21 +2,33 @@
 
 export const _workspaces = [
   {
-    id: 'team-1',
-    name: 'Team 1',
-    logo: `/assets/icons/workspaces/logo-1.webp`,
-    plan: 'Free',
+    id: 'gasoline',
+    name: 'Xăng dầu',
+    logo: `/assets/icons/workspaces/gas-station.svg`,
+    plan: 'Quản lý',
   },
   {
     id: 'team-2',
-    name: 'Team 2',
-    logo: `/assets/icons/workspaces/logo-2.webp`,
+    name: 'Xây dựng',
+    logo: `/assets/icons/workspaces/brick.svg`,
     plan: 'Pro',
   },
   {
     id: 'team-3',
-    name: 'Team 3',
-    logo: `/assets/icons/workspaces/logo-3.webp`,
-    plan: 'Pro',
+    name: 'Nông sản',
+    logo: `/assets/icons/workspaces/rice.svg`,
+    plan: 'Free',
+  },
+  {
+    id: 'team-4',
+    name: 'Nhân sự',
+    logo: `/assets/icons/workspaces/labor.svg`,
+    plan: 'Free',
+  },
+  {
+    id: 'team-5',
+    name: 'Đất đai',
+    logo: `/assets/icons/workspaces/land.svg`,
+    plan: 'Free',
   },
 ];

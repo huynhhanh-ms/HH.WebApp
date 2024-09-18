@@ -1,4 +1,3 @@
-import { Label } from 'src/components/label';
 import { SvgColor } from 'src/components/svg-color';
 
 // ----------------------------------------------------------------------
@@ -14,33 +13,38 @@ export const navData = [
     icon: icon('ic-analytics'),
   },
   {
-    title: 'User',
+    title: 'Chốt sổ',
+    path: '/admin/session',
+    icon: icon('ic-session'),
+  },
+  {
+    title: 'Bồn chứa',
+    path: '/admin/tank',
+    icon: icon('ic-tank'),
+  },
+  {
+    title: 'Nhân viên',
     path: '/admin/user',
     icon: icon('ic-user'),
   },
-  {
-    title: 'Product',
-    path: '/admin/products',
-    icon: icon('ic-cart'),
-    info: (
-      <Label color="error" variant="inverted">
-        +3
-      </Label>
-    ),
-  },
-  {
-    title: 'Blog',
-    path: '/admin/blog',
-    icon: icon('ic-blog'),
-  },
-  {
-    title: 'Tài khoản',
-    path: '/admin/account',
-    icon: icon('ic-lock'),
-  },
-  {
-    title: 'Not found',
-    path: '/404',
-    icon: icon('ic-disabled'),
-  },
+  // {
+  //   title: 'User',
+  //   path: '/admin/user',
+  //   icon: icon('ic-user'),
+  // },
+  // {
+  //   title: 'Product',
+  //   path: '/admin/products',
+  //   icon: icon('ic-cart'),
+  //   info: (
+  //     <Label color="error" variant="inverted">
+  //       +3
+  //     </Label>
+  //   ),
+  // },
+  // {
+  //   title: 'Blog',
+  //   path: '/admin/blog',
+  //   icon: icon('ic-blog'),
+  // },
 ];

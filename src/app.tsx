@@ -36,10 +36,31 @@ export default function App() {
     </Fab>
   );
 
+  const chatboxButton = (
+    <Fab
+      size="medium"
+      aria-label="Chatbox"
+      onClick={() => {
+        alert('Xin chào, bạn cần hỗ trợ gì?');
+      }}
+      sx={{
+        zIndex: 9,
+        right: 20,
+        bottom: 20,
+        width: 44,
+        height: 44,
+        position: 'fixed',
+        color: 'common.white',
+      }}
+    >
+      <img alt="" src="/assets/icons/chatbox.jpg" width={45} height={45} className='rounded-full object-cover'/>
+    </Fab>
+  );
+
   return (
     <ThemeProvider>
       <Router />
-      {githubButton}
+      {chatboxButton}
     </ThemeProvider>
   );
 }

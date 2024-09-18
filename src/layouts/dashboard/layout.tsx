@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 
+import { useHeader } from 'src/stores/use-header';
 import { _langs, _notifications } from 'src/_mock';
 
 import { Iconify } from 'src/components/iconify';
@@ -19,6 +20,7 @@ import { _workspaces } from '../config-nav-workspace';
 import { MenuButton } from '../components/menu-button';
 import { LayoutSection } from '../core/layout-section';
 import { HeaderSection } from '../core/header-section';
+import { HeaderTitle } from '../components/header-title';
 import { AccountPopover } from '../components/account-popover';
 import { LanguagePopover } from '../components/language-popover';
 import { NotificationsPopover } from '../components/notifications-popover';
@@ -35,6 +37,7 @@ export type DashboardLayoutProps = {
 
 export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) {
   const theme = useTheme();
+  const { header: headerValue } = useHeader();
 
   const [navOpen, setNavOpen] = useState(false);
 
@@ -70,6 +73,11 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
                     [theme.breakpoints.up(layoutQuery)]: { display: 'none' },
                   }}
                 />
+                <HeaderTitle
+                  sx={{
+                    ml: 5,
+                  }}
+                >{headerValue}</HeaderTitle>
                 <NavMobile
                   data={navData}
                   open={navOpen}

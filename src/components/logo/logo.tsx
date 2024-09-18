@@ -3,10 +3,8 @@ import type { BoxProps } from '@mui/material/Box';
 import { useId, forwardRef } from 'react';
 
 import Box from '@mui/material/Box';
-import { useTheme } from '@mui/material/styles';
-
 import { Typography } from '@mui/material';
-import { RouterLink } from 'src/routes/components';
+import { useTheme } from '@mui/material/styles';
 
 import { logoClasses } from './classes';
 
