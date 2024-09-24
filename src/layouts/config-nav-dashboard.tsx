@@ -23,6 +23,16 @@ export const navData = [
     icon: icon('ic-tank'),
   },
   {
+    title: 'Công nợ',
+    path: '/admin/debt',
+    icon: icon('ic-debt'),
+  },
+  {
+    title: 'Giá bán',
+    path: '/admin/price',
+    icon: icon('ic-price'),
+  },
+  {
     title: 'Nhân viên',
     path: '/admin/user',
     icon: icon('ic-user'),

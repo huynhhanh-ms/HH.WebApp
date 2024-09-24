@@ -43,8 +43,11 @@ export function TankView() {
 
   return (
     <DashboardContent maxWidth='xl'>
-      <Typography variant="h4" sx={{ mb: { sm: 2, md: 3 } }}>
+      <Typography variant="h4" sx={{ mb: { xs: 2, md: 3 } }}>
         Quản lý tồn kho
+        <Button variant='outlined' sx={{ ml : 2}} color='inherit'>
+          Đồng bộ giá bán
+        </Button>
       </Typography>
 
       <Grid container spacing={3} className='sm:mb-10 md:mb-10'>

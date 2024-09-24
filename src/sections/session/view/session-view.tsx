@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
+import { Grid } from '@mui/material';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -20,6 +21,7 @@ import { UserTableRow } from '../user-table-row';
 import { UserTableHead } from '../user-table-head';
 import { TableEmptyRows } from '../table-empty-rows';
 import { UserTableToolbar } from '../user-table-toolbar';
+import { RecordInitialMeter } from '../record-initial-meter';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
 import type { UserProps } from '../user-table-row';
@@ -34,6 +36,7 @@ export function SessionView() {
   const dataFiltered: UserProps[] = applyFilter({
     inputData: _users,
     comparator: getComparator(table.order, table.orderBy),
+    
     filterName,
   });
 
@@ -47,22 +50,39 @@ export function SessionView() {
         </Typography>
 
         {/* previous date */}
-        <Button color="inherit" sx={{maxWidth: '30px', maxHeight: '30px', minWidth: '30px', minHeight: '30px'}} >
-          <Iconify icon="mingcute:left-fill" width="48" height="48"  style={{color: "#1c252e"}} />
-         </Button>
+        <Button color="inherit" sx={{ maxWidth: '30px', maxHeight: '30px', minWidth: '30px', minHeight: '30px' }} >
+          <Iconify icon="mingcute:left-fill" width="48" height="48" style={{ color: "#1c252e" }} />
+        </Button>
+
+
 
         <Button variant="contained" color="inherit"
-          // startIcon={<Iconify icon="mingcute:add-line" />}
+        // startIcon={<Iconify icon="mingcute:add-line" />}
         >
           20/09/2021
         </Button>
 
         {/* next date */}
-        <Button color="inherit" sx={{maxWidth: '30px', maxHeight: '30px', minWidth: '30px', minHeight: '30px'}} >
-          <Iconify icon="mingcute:right-fill" width="48" height="48"  style={{color: "#1c252e"}} />
-         </Button>
+        <Button color="inherit" sx={{ maxWidth: '30px', maxHeight: '30px', minWidth: '30px', minHeight: '30px' }} >
+          <Iconify icon="mingcute:right-fill" width="48" height="48" style={{ color: "#1c252e" }} />
+        </Button>
 
       </Box>
+
+      <Grid container spacing={3} sx={{ mb: 4}}>
+        <Grid xs={12} sm={6} md={4} item>
+          <RecordInitialMeter
+            title='Công tơ'
+            list={[1, 2, 3]}
+          />
+        </Grid>
+        <Grid xs={12} sm={6} md={4} item>
+          <RecordInitialMeter
+            title='Công tơ'
+            list={[1, 2, 3]}
+          />
+        </Grid>
+      </Grid>
 
       <Card>
         <UserTableToolbar
