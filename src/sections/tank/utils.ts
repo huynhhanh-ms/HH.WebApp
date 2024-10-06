@@ -1,6 +1,7 @@
-import type { UserProps } from './user-table-row';
 
 // ----------------------------------------------------------------------
+
+import type { FuelImport } from "src/domains/dto/fuel-import";
 
 export const visuallyHidden = {
   border: 0,
@@ -53,7 +54,7 @@ export function getComparator<Key extends keyof any>(
 // ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
-  inputData: UserProps[];
+  inputData: FuelImport[];
   filterName: string;
   comparator: (a: any, b: any) => number;
 };
@@ -71,7 +72,7 @@ export function applyFilter({ inputData, comparator, filterName }: ApplyFilterPr
 
   if (filterName) {
     inputData = inputData.filter(
-      (user) => user.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+      (user) => user.tankName.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
   }
 

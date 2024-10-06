@@ -17,6 +17,7 @@ export type DatePickerFormat = Dayjs | Date | string | number | null | undefined
  * Docs: https://day.js.org/docs/en/display/format
  */
 export const formatStr = {
+  default: 'DD/MM/YY HH:mm', // 2022-04-17 12:00
   dateTime: 'DD MMM YYYY h:mm a', // 17 Apr 2022 12:00 am
   date: 'DD MMM YYYY', // 17 Apr 2022
   time: 'h:mm a', // 12:00 am
@@ -45,7 +46,7 @@ export function fDateTime(date: DatePickerFormat, format?: string) {
 
   const isValid = dayjs(date).isValid();
 
-  return isValid ? dayjs(date).format(format ?? formatStr.dateTime) : 'Invalid time value';
+  return isValid ? dayjs(date).format(format ?? formatStr.default) : 'Invalid time value';
 }
 
 // ----------------------------------------------------------------------

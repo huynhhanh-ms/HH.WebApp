@@ -1,4 +1,8 @@
-import { useState, useCallback } from 'react';
+import type { Tank } from 'src/domains/dto/tank';
+import type { FuelImport } from 'src/domains/dto/fuel-import';
+
+import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import { Grid } from '@mui/material';
@@ -10,31 +14,64 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { _users } from 'src/_mock';
+import { TankApi } from 'src/services/api/tank.api';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { ApiQueryKey } from 'src/services/api-query-key';
+import { FuelImportApi } from 'src/services/api/fuel-import.api';
 
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 
 import { TableNoData } from '../table-no-data';
-import { UserTableRow } from '../user-table-row';
 import { UserTableHead } from '../user-table-head';
 import { TableEmptyRows } from '../table-empty-rows';
 import { UserTableToolbar } from '../user-table-toolbar';
+import { FuelImportTableRow } from '../fuel-import-table-row';
 import { AnalyticsTankVolume } from '../analytics-tank-volume';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
-import type { UserProps } from '../user-table-row';
 
 // ----------------------------------------------------------------------
 
 export function TankView() {
   const table = useTable();
 
+  //* useTank call data
+  const [tank, setTank] = useState<Tank[]>();
+  const [gasoline, setGasoline] = useState<Tank>();
+  const [diesel, setDiesel] = useState<Tank>();
+
+  const { data: tankResponse, isSuccess } = useQuery({
+    queryKey: [ApiQueryKey.tank],
+    queryFn: TankApi.gets,
+  });
+
+  useEffect(() => {
+    if (isSuccess) {
+      setTank(tankResponse);
+      setGasoline(tankResponse[0]);
+
+      setDiesel(tankResponse[1]);
+    }
+  }, [isSuccess, tankResponse, gasoline?.currentVolume, gasoline?.capacity]);
+
+  //* useFuelImport call data
+  const { data: fuelImportResponse } = useQuery({
+    queryKey: [ApiQueryKey.fuelImport],
+    queryFn: FuelImportApi.gets,
+  });
+
+  useEffect(() => {
+    if (fuelImportResponse) {
+      console.log(fuelImportResponse);
+    }
+  }, [fuelImportResponse]);
+
+
   const [filterName, setFilterName] = useState('');
 
-  const dataFiltered: UserProps[] = applyFilter({
-    inputData: _users,
+  const dataFiltered: FuelImport[] = applyFilter({
+    inputData: fuelImportResponse || [],
     comparator: getComparator(table.order, table.orderBy),
     filterName,
   });
@@ -45,37 +82,41 @@ export function TankView() {
     <DashboardContent maxWidth='xl'>
       <Typography variant="h4" sx={{ mb: { xs: 2, md: 3 } }}>
         Quản lý tồn kho
-        <Button variant='outlined' sx={{ ml : 2}} color='inherit'>
+        <Button variant='outlined' sx={{ ml: 2 }} color='inherit'>
           Đồng bộ giá bán
         </Button>
       </Typography>
 
       <Grid container spacing={3} className='sm:mb-10 md:mb-10'>
         <Grid item xs={12} sm={6} md={3} >
-          <AnalyticsTankVolume
-            title="Xăng"
-            percent={80}
-            total={3000}
-            color='success'
-            icon={<img alt="icon" src="/assets/icons/tank/xang.svg" />}
-            chart={{
-              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-              series: [22, 8, 35, 50, 82, 84, 77, 12],
-            }}
-          />
+          {gasoline &&
+            <AnalyticsTankVolume
+              title="Xăng"
+              percent={Math.ceil(gasoline.currentVolume / gasoline.capacity * 100)}
+              // percent={14.2} 
+              total={gasoline.currentVolume}
+              color='success'
+              icon={<img alt="icon" src="/assets/icons/tank/xang.svg" />}
+              chart={{
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                series: [22, 8, 35, 50, 82, 84, 77, 12],
+              }}
+            />
+          }
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
+          {diesel && 
           <AnalyticsTankVolume
             title="Dầu"
-            percent={-1}
-            total={5000}
+            percent={diesel.currentVolume / diesel.capacity * 100}
+            total={diesel.currentVolume}
             color='warning'
             icon={<img alt="icon" src="/assets/icons/tank/dau.svg" />}
             chart={{
               categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
               series: [22, 8, 35, 50, 82, 84, 77, 12],
             }}
-          />
+          />}
         </Grid>
       </Grid>
 
@@ -108,19 +149,19 @@ export function TankView() {
               <UserTableHead
                 order={table.order}
                 orderBy={table.orderBy}
-                rowCount={_users.length}
+                rowCount={fuelImportResponse?.length ?? 0}
                 numSelected={table.selected.length}
                 onSort={table.onSort}
                 onSelectAllRows={(checked) =>
                   table.onSelectAllRows(
                     checked,
-                    _users.map((user) => user.id)
+                    fuelImportResponse?.map((user) => user.id.toString()) ?? []
                   )
                 }
                 headLabel={[
-                  { id: 'name', label: 'Mã' },
-                  { id: 'company', label: 'Company' },
-                  { id: 'role', label: 'Role' },
+                  { id: 'id', label: 'Mã' },
+                  { id: 'tankName', label: 'Bồn chứa' },
+                  { id: 'importDate', label: 'Ngày nhập' },
                   { id: 'isVerified', label: 'Verified', align: 'center' },
                   { id: 'status', label: 'Status' },
                   { id: '' },
@@ -133,17 +174,17 @@ export function TankView() {
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
-                    <UserTableRow
+                    <FuelImportTableRow
                       key={row.id}
                       row={row}
-                      selected={table.selected.includes(row.id)}
-                      onSelectRow={() => table.onSelectRow(row.id)}
+                      selected={table.selected.includes(row.id.toString())}
+                      onSelectRow={() => table.onSelectRow(row.id.toString())}
                     />
                   ))}
 
                 <TableEmptyRows
                   height={68}
-                  emptyRows={emptyRows(table.page, table.rowsPerPage, _users.length)}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, fuelImportResponse?.length ?? 0)}
                 />
 
                 {notFound && <TableNoData searchQuery={filterName} />}
@@ -155,7 +196,7 @@ export function TankView() {
         <TablePagination
           component="div"
           page={table.page}
-          count={_users.length}
+          count={fuelImportResponse?.length ?? 0}
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           rowsPerPageOptions={[5, 10, 25]}

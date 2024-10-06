@@ -1,7 +1,7 @@
+import type { FuelImport } from 'src/domains/dto/fuel-import';
+
 import { useState, useCallback } from 'react';
 
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
 import Popover from '@mui/material/Popover';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
@@ -10,28 +10,35 @@ import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 
+import { fDateTime } from 'src/utils/format-time';
+
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
-export type UserProps = {
-  id: string;
-  name: string;
-  role: string;
-  status: string;
-  company: string;
-  avatarUrl: string;
-  isVerified: boolean;
-};
+// export type FuelImportProps = {
+//   id: string;
+//   name: string;
+//   role: string;
+//   status: string;
+//   company: string;
+//   avatarUrl: string;
+//   isVerified: boolean;
+// };
 
-type UserTableRowProps = {
-  row: UserProps;
+// type TableRowProps = {
+//   row: FuelImport;
+//   selected: boolean;
+//   onSelectRow: () => void;
+// };
+type TableRowProps<T> = {
+  row: T;
   selected: boolean;
   onSelectRow: () => void;
-};
+}
 
-export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) {
+export function FuelImportTableRow({ row, selected, onSelectRow }: TableRowProps<FuelImport>) {
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -50,19 +57,15 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
         </TableCell>
 
         <TableCell component="th" scope="row">
-          <Box gap={2} display="flex" alignItems="center">
-            {/* <Avatar alt={row.name} src={row.avatarUrl} /> */}
-            <Avatar alt={row.name} src="https://avatar.iran.liara.run/public">{row.name.at(0)}</Avatar>
-            {row.name}
-          </Box>
+          {row?.id}
         </TableCell>
 
-        <TableCell>{row.company}</TableCell>
+        <TableCell>{row?.tankId}</TableCell>
 
-        <TableCell>{row.role}</TableCell>
+        <TableCell>{fDateTime(row?.importDate)}</TableCell>
 
         <TableCell align="center">
-          {row.isVerified ? (
+          {row?.totalCost ? (
             <Iconify width={22} icon="solar:check-circle-bold" sx={{ color: 'success.main' }} />
           ) : (
             '-'
@@ -70,7 +73,7 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
         </TableCell>
 
         <TableCell>
-          <Label color={(row.status === 'banned' && 'error') || 'success'}>{row.status}</Label>
+          <Label color={("banned" === 'banned' && 'error') || 'success'}>{row.totalCost}</Label>
         </TableCell>
 
         <TableCell align="right">
