@@ -29,6 +29,7 @@ module.exports = {
     'react-hooks/rules-of-hooks': 0,
     'import/no-extraneous-dependencies': 0,
     'react/no-unused-prop-types': 0,
+    'react/prop-types': 0,
 
     // general
     'no-alert': 0,
@@ -62,7 +63,7 @@ module.exports = {
     'jsx-a11y/anchor-is-valid': 0,
     'jsx-a11y/control-has-associated-label': 0,
     // unused imports
-    'unused-imports/no-unused-imports': 1,
+    'unused-imports/no-unused-imports': 0,
     'unused-imports/no-unused-vars': [
       0,
       { vars: 'all', varsIgnorePattern: '^_', args: 'after-used', argsIgnorePattern: '^_' },

@@ -1,8 +1,9 @@
 import type { Tank } from 'src/domains/dto/tank';
 import type { FuelImport } from 'src/domains/dto/fuel-import';
 
-import { useQuery } from '@tanstack/react-query';
+import { enqueueSnackbar } from 'notistack';
 import { useState, useEffect, useCallback } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import Box from '@mui/material/Box';
 import { Grid } from '@mui/material';
@@ -23,11 +24,12 @@ import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 
 import { TableNoData } from '../table-no-data';
-import { UserTableHead } from '../user-table-head';
 import { TableEmptyRows } from '../table-empty-rows';
+import { GeneralTableHead } from '../user-table-head';
 import { UserTableToolbar } from '../user-table-toolbar';
 import { FuelImportTableRow } from '../fuel-import-table-row';
 import { AnalyticsTankVolume } from '../analytics-tank-volume';
+import CreateFuelImportModal from '../create-fuel-import-modal';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
 
@@ -35,6 +37,7 @@ import { emptyRows, applyFilter, getComparator } from '../utils';
 
 export function TankView() {
   const table = useTable();
+  const queryClient = useQueryClient();
 
   //* useTank call data
   const [tank, setTank] = useState<Tank[]>();
@@ -61,13 +64,6 @@ export function TankView() {
     queryFn: FuelImportApi.gets,
   });
 
-  useEffect(() => {
-    if (fuelImportResponse) {
-      console.log(fuelImportResponse);
-    }
-  }, [fuelImportResponse]);
-
-
   const [filterName, setFilterName] = useState('');
 
   const dataFiltered: FuelImport[] = applyFilter({
@@ -78,6 +74,9 @@ export function TankView() {
 
   const notFound = !dataFiltered.length && !!filterName;
 
+  //* create fuel import
+  const [isModalOpen, setModalOpen] = useState(false);
+
   return (
     <DashboardContent maxWidth='xl'>
       <Typography variant="h4" sx={{ mb: { xs: 2, md: 3 } }}>
@@ -87,11 +86,11 @@ export function TankView() {
         </Button>
       </Typography>
 
-      <Grid container spacing={3} className='sm:mb-10 md:mb-10'>
+      <Grid container spacing={3} sx={{ mb: { xs: 2, md: 3 } }}>
         <Grid item xs={12} sm={6} md={3} >
           {gasoline &&
             <AnalyticsTankVolume
-              title="Xăng"
+              title={gasoline.name}
               percent={Math.ceil(gasoline.currentVolume / gasoline.capacity * 100)}
               // percent={14.2} 
               total={gasoline.currentVolume}
@@ -105,18 +104,18 @@ export function TankView() {
           }
         </Grid>
         <Grid item xs={12} sm={6} md={3}>
-          {diesel && 
-          <AnalyticsTankVolume
-            title="Dầu"
-            percent={diesel.currentVolume / diesel.capacity * 100}
-            total={diesel.currentVolume}
-            color='warning'
-            icon={<img alt="icon" src="/assets/icons/tank/dau.svg" />}
-            chart={{
-              categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-              series: [22, 8, 35, 50, 82, 84, 77, 12],
-            }}
-          />}
+          {diesel &&
+            <AnalyticsTankVolume
+              title={diesel.name}
+              percent={diesel.currentVolume / diesel.capacity * 100}
+              total={diesel.currentVolume}
+              color='warning'
+              icon={<img alt="icon" src="/assets/icons/tank/dau.svg" />}
+              chart={{
+                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
+                series: [22, 8, 35, 50, 82, 84, 77, 12],
+              }}
+            />}
         </Grid>
       </Grid>
 
@@ -128,10 +127,18 @@ export function TankView() {
           variant="contained"
           color="inherit"
           startIcon={<Iconify icon="mingcute:add-line" />}
+          onClick={() => setModalOpen(true)}
         >
           Thêm đợt nhập
         </Button>
       </Box>
+
+      <CreateFuelImportModal
+        open={isModalOpen}
+        onClose={() => setModalOpen(false)}
+        tanks={tank ?? []}
+        // onSubmit={}
+      />
 
       <Card>
         <UserTableToolbar
@@ -146,7 +153,7 @@ export function TankView() {
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
-              <UserTableHead
+              <GeneralTableHead
                 order={table.order}
                 orderBy={table.orderBy}
                 rowCount={fuelImportResponse?.length ?? 0}
@@ -160,11 +167,14 @@ export function TankView() {
                 }
                 headLabel={[
                   { id: 'id', label: 'Mã' },
-                  { id: 'tankName', label: 'Bồn chứa' },
+                  { id: 'tankName', label: 'Tên bồn' },
                   { id: 'importDate', label: 'Ngày nhập' },
-                  { id: 'isVerified', label: 'Verified', align: 'center' },
-                  { id: 'status', label: 'Status' },
-                  { id: '' },
+                  { id: 'importVolume', label: 'Thể tích', align: 'right' },
+                  { id: 'importPrice', label: 'Giá nhập', align: 'right' },
+                  { id: 'totalCost', label: 'Đơn giá', align: 'right' },
+                  { id: 'weight', label: 'Trọng lượng', align: 'right' },
+                  { id: 'density', label: 'Kl riêng', align: 'right'},
+                  { id: '', label: ''},
                 ]}
               />
               <TableBody>
@@ -194,6 +204,9 @@ export function TankView() {
         </Scrollbar>
 
         <TablePagination
+          labelRowsPerPage="Số hàng mỗi trang"
+          labelDisplayedRows={({ from, to, count }) => `${from}-${to} của ${count}`}
+
           component="div"
           page={table.page}
           count={fuelImportResponse?.length ?? 0}
@@ -212,7 +225,7 @@ export function TankView() {
 export function useTable() {
   const [page, setPage] = useState(0);
   const [orderBy, setOrderBy] = useState('name');
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selected, setSelected] = useState<string[]>([]);
   const [order, setOrder] = useState<'asc' | 'desc'>('asc');
 

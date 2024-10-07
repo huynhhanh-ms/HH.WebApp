@@ -72,7 +72,7 @@ export function applyFilter({ inputData, comparator, filterName }: ApplyFilterPr
 
   if (filterName) {
     inputData = inputData.filter(
-      (user) => user.tankName.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+      (user) => user.tank.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
     );
   }
 

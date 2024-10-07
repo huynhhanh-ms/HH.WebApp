@@ -1,10 +1,13 @@
+import type { Tank } from "./tank";
+
 export interface FuelImport {
   id: number;
-  tankName: string;
+  tank: Tank;
   tankId: string;
   importVolume: number;
   importPrice: number;
   weight: number;
   totalCost: number;
   importDate: Date;
+  density: number;
 }

@@ -19,7 +19,7 @@ type TableHeadProps = {
   onSelectAllRows: (checked: boolean) => void;
 };
 
-export function UserTableHead({
+export function GeneralTableHead({
   order,
   onSort,
   orderBy,

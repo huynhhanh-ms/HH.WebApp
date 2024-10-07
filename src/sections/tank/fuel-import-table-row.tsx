@@ -1,6 +1,8 @@
 import type { FuelImport } from 'src/domains/dto/fuel-import';
 
+import { enqueueSnackbar } from 'notistack';
 import { useState, useCallback } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import Popover from '@mui/material/Popover';
 import TableRow from '@mui/material/TableRow';
@@ -11,27 +13,17 @@ import IconButton from '@mui/material/IconButton';
 import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 
 import { fDateTime } from 'src/utils/format-time';
+import { fNumber } from 'src/utils/format-number';
+
+import { ApiQueryKey } from 'src/services/api-query-key';
+import { FuelImportApi } from 'src/services/api/fuel-import.api';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 
+import DeleteFuelImportDialog from './delete-fuel-import-modal';
+
 // ----------------------------------------------------------------------
-
-// export type FuelImportProps = {
-//   id: string;
-//   name: string;
-//   role: string;
-//   status: string;
-//   company: string;
-//   avatarUrl: string;
-//   isVerified: boolean;
-// };
-
-// type TableRowProps = {
-//   row: FuelImport;
-//   selected: boolean;
-//   onSelectRow: () => void;
-// };
 type TableRowProps<T> = {
   row: T;
   selected: boolean;
@@ -49,6 +41,36 @@ export function FuelImportTableRow({ row, selected, onSelectRow }: TableRowProps
     setOpenPopover(null);
   }, []);
 
+  const queryClient = useQueryClient();
+
+  // edit fuel import row
+  const handleEdit = useCallback(() => {
+    handleClosePopover();
+  }, [handleClosePopover]);
+
+  // delete fuel import row
+  const [isOpenDeleteDialog, setIsOpenDeleteDialog] = useState(false);
+  const { mutateAsync: deleteFuelImport } = useMutation({
+    mutationFn: FuelImportApi.delete,
+    mutationKey: [ApiQueryKey.fuelImport],
+    onSuccess: () => {
+      enqueueSnackbar('Xóa đợt nhập thành công', { variant: 'success' });
+      queryClient.invalidateQueries({ queryKey: [ApiQueryKey.fuelImport] });
+      queryClient.invalidateQueries({ queryKey: [ApiQueryKey.tank] });
+    },
+    onError: (error) => {
+      enqueueSnackbar(error.message, { variant: 'error' });
+    }
+  });
+  const handleDelete = useCallback(() => {
+    handleClosePopover();
+    deleteFuelImport(row.id);
+  }, [deleteFuelImport, handleClosePopover, row.id]);
+  const handleOpenDeleteModal = useCallback(() => {
+    setIsOpenDeleteDialog(true);
+    handleClosePopover();
+  }, [handleClosePopover]);
+
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
@@ -57,24 +79,18 @@ export function FuelImportTableRow({ row, selected, onSelectRow }: TableRowProps
         </TableCell>
 
         <TableCell component="th" scope="row">
-          {row?.id}
+          #{row?.id}
         </TableCell>
 
-        <TableCell>{row?.tankId}</TableCell>
+        <TableCell>{row?.tank.name}</TableCell>
 
         <TableCell>{fDateTime(row?.importDate)}</TableCell>
+        <TableCell align="right">{fNumber(row?.importVolume)}</TableCell>
+        <TableCell align="right">{fNumber(row?.importPrice)}</TableCell>
+        <TableCell align="right">{fNumber(row?.totalCost)}</TableCell>
+        <TableCell align="right">{fNumber(row?.weight)}</TableCell>
+        <TableCell align="right">{row?.weight && row?.importVolume ? fNumber(row.weight / row.importVolume) : '-'}</TableCell>
 
-        <TableCell align="center">
-          {row?.totalCost ? (
-            <Iconify width={22} icon="solar:check-circle-bold" sx={{ color: 'success.main' }} />
-          ) : (
-            '-'
-          )}
-        </TableCell>
-
-        <TableCell>
-          <Label color={("banned" === 'banned' && 'error') || 'success'}>{row.totalCost}</Label>
-        </TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenPopover}>
@@ -108,15 +124,22 @@ export function FuelImportTableRow({ row, selected, onSelectRow }: TableRowProps
         >
           <MenuItem onClick={handleClosePopover}>
             <Iconify icon="solar:pen-bold" />
-            Edit
+            Sửa
           </MenuItem>
 
-          <MenuItem onClick={handleClosePopover} sx={{ color: 'error.main' }}>
+          <MenuItem onClick={handleOpenDeleteModal} sx={{ color: 'error.main' }}>
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
+            Xóa
           </MenuItem>
         </MenuList>
       </Popover>
+
+      <DeleteFuelImportDialog
+        open={isOpenDeleteDialog}
+        onClose={() => setIsOpenDeleteDialog(false)}
+        onConfirm={() => handleDelete()}
+      />
     </>
   );
+
 }

@@ -8,6 +8,7 @@ import { HelmetProvider } from 'react-helmet-async';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import App from './app';
+import AxiosInterceptor from './services/AxiosInterceptor';
 import SnackbarProviderCustom from './customs/notistack-custom';
 
 // ----------------------------------------------------------------------
@@ -21,11 +22,13 @@ root.render(
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
         <SnackbarProviderCustom>
-          <BrowserRouter>
-            <Suspense>
-              <App />
-            </Suspense>
-          </BrowserRouter>
+          <AxiosInterceptor>
+            <BrowserRouter>
+              <Suspense>
+                <App />
+              </Suspense>
+            </BrowserRouter>
+          </AxiosInterceptor>
         </SnackbarProviderCustom>
       </QueryClientProvider>
     </HelmetProvider>

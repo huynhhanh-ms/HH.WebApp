@@ -19,6 +19,28 @@ export const FuelImportApi = {
       throw new Error(error);
     }
   },
-  // refreshToken: async ()=> {},
-  // logout: async ()=> {}
+
+  create: async (data: FuelImport): Promise<FuelImport> => {
+    try {
+      const response = await axiosClient.post<ResponseObject<FuelImport>>(
+        apiEndpoint.FuelImport,
+        data
+      );
+      const result = response.data;
+      return result.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+
+  delete: async (id: number): Promise<void> => {
+    try {
+      await axiosClient.delete<ResponseObject<FuelImport>>(
+        `${apiEndpoint.FuelImport}/${id}`
+      );
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
+
 };
