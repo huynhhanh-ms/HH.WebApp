@@ -30,6 +30,7 @@ module.exports = {
     'import/no-extraneous-dependencies': 0,
     'react/no-unused-prop-types': 0,
     'react/prop-types': 0,
+    'no-restricted-globals': 0,
 
     // general
     'no-alert': 0,

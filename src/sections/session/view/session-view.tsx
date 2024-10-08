@@ -1,11 +1,10 @@
 
 import type { Session } from 'src/domains/dto/session';
 
-import { useState, useEffect, useCallback } from 'react';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 
 import Box from '@mui/material/Box';
-import { Grid } from '@mui/material';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -27,9 +26,7 @@ import { GeneralTableHead } from 'src/sections/tank/user-table-head';
 import { TableNoData } from '../table-no-data';
 import { TableEmptyRows } from '../table-empty-rows';
 import { SessionTableRow } from '../session-table-row';
-import { UserTableToolbar } from '../user-table-toolbar';
 import CreateSessionModal from '../create-session-modal';
-import { RecordInitialMeter } from '../record-initial-meter';
 import { emptyRows, applyFilter, getComparator } from '../../tank/utils';
 
 // ----------------------------------------------------------------------
@@ -38,15 +35,16 @@ export function SessionView() {
   const table = useTable();
 
   // Fetch Session data
-  const { data: sessionData, isSuccess } = useQuery({
+  const { data: sessionData } = useQuery({
     queryKey: [ApiQueryKey.session],
     queryFn: SessionApi.gets,
   });
-  useEffect(() => {
-    console.log('sessionData', sessionData);
-  }, [sessionData]);
+  // useEffect(() => {
+  //   console.log('sessionData', sessionData);
+  // }, [sessionData]);
 
   // Filter data
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [filterName, setFilterName] = useState('');
   const dataFiltered: Session[] = applyFilter({
     inputData: sessionData ?? [],

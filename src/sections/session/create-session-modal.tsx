@@ -1,10 +1,9 @@
-import type { Tank } from 'src/domains/dto/tank';
 
 import React, { useState } from 'react';
 import { enqueueSnackbar } from 'notistack';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 
-import { Dialog, Button, Select, MenuItem, TextField, InputLabel, DialogTitle, FormControl, DialogContent, DialogActions } from '@mui/material';
+import { Dialog, Button, TextField, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 
 import { ApiQueryKey } from 'src/services/api-query-key';
 import { FuelImportApi } from 'src/services/api/fuel-import.api';

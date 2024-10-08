@@ -10,7 +10,7 @@ import Divider from '@mui/material/Divider';
 import MenuList from '@mui/material/MenuList';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
-import { deepOrange } from '@mui/material/colors';
+import { grey, blueGrey, deepOrange } from '@mui/material/colors';
 import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 
 import { useRouter, usePathname } from 'src/routes/hooks';
@@ -78,7 +78,7 @@ export function AccountPopover({ data = [], sx, ...other }: AccountPopoverProps)
         {/* <Avatar src={_myAccount.photoURL} alt={_myAccount.displayName} sx={{ width: 1, height: 1 }}>
           {_myAccount.displayName.charAt(0).toUpperCase()}
         </Avatar> */}
-        <Avatar sx={{ bgcolor: deepOrange[500] }} >{user?.fullname.charAt(0).toUpperCase()}</Avatar>
+        <Avatar sx={{ bgcolor: blueGrey[900] }} >{user?.fullname.charAt(0).toUpperCase()}</Avatar>
       </IconButton>
 
       <Popover

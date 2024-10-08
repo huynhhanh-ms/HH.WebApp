@@ -1,8 +1,10 @@
 import type { Theme, SxProps, Breakpoint } from '@mui/material/styles';
 
-import { useState } from 'react';
+import { Icon } from '@iconify/react';
+import { useRef, useState } from 'react';
 
 import Box from '@mui/material/Box';
+import { Button } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
 
@@ -42,6 +44,8 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
   const [navOpen, setNavOpen] = useState(false);
 
   const layoutQuery: Breakpoint = 'lg';
+
+  const [fullIcon, setFullIcon] = useState("icon-park-outline:full-screen-one");
 
   return (
     <LayoutSection
@@ -89,7 +93,21 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
             rightArea: (
               <Box gap={1} display="flex" alignItems="center">
                 <Searchbar />
-                <LanguagePopover data={_langs} />
+
+                {/* fullscreen and off */}
+                <Button color="inherit"
+                  sx={{ minWidth: 40, height: 40 }}
+                  onClick={() => {
+                    if (document.fullscreenElement) {
+                      document.exitFullscreen().then(() => { screen.orientation.unlock(); });
+                      setFullIcon("icon-park-outline:full-screen-one");
+                    } else {
+                      document.documentElement.requestFullscreen().then(() => { (screen.orientation as any).lock('landscape'); });
+                      setFullIcon("icon-park-outline:off-screen-one");
+                    }
+                  }} > <Icon icon={fullIcon} width="20" height="20" style={{ color: "#454545" }} /> </Button>
+
+                {/* <LanguagePopover data={_langs} /> */}
                 <NotificationsPopover data={_notifications} />
                 <AccountPopover
                   data={[
