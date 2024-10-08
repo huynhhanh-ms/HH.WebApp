@@ -22,4 +22,6 @@ export const ApiQueryKey = {
   },
   tank : "TANK",
   fuelImport : "FUEL_IMPORT",
+  session : "SESSION",
+  sessionDetail : "SESSION_DETAIL",
 };

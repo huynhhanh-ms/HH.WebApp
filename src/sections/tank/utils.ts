@@ -1,8 +1,6 @@
 
 // ----------------------------------------------------------------------
 
-import type { FuelImport } from "src/domains/dto/fuel-import";
-
 export const visuallyHidden = {
   border: 0,
   margin: -1,
@@ -54,7 +52,7 @@ export function getComparator<Key extends keyof any>(
 // ----------------------------------------------------------------------
 
 type ApplyFilterProps = {
-  inputData: FuelImport[];
+  inputData: any[];
   filterName: string;
   comparator: (a: any, b: any) => number;
 };
@@ -77,4 +75,11 @@ export function applyFilter({ inputData, comparator, filterName }: ApplyFilterPr
   }
 
   return inputData;
+}
+
+// table row props
+export type TableRowProps<T> = {
+  row: T;
+  selected: boolean;
+  onSelectRow: () => void;
 }

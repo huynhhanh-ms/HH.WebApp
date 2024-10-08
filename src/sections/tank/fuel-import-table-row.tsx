@@ -23,12 +23,10 @@ import { Iconify } from 'src/components/iconify';
 
 import DeleteFuelImportDialog from './delete-fuel-import-modal';
 
+import type { TableRowProps } from './utils';
+
 // ----------------------------------------------------------------------
-type TableRowProps<T> = {
-  row: T;
-  selected: boolean;
-  onSelectRow: () => void;
-}
+
 
 export function FuelImportTableRow({ row, selected, onSelectRow }: TableRowProps<FuelImport>) {
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);

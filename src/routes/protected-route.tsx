@@ -7,7 +7,8 @@ const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
   const isLoggedIn = useApp((state) => state.isLoggedIn);
 
   if (!isLoggedIn) {
-    return <Navigate to="/sign-in" replace />;
+    // temporary
+    // return <Navigate to="/sign-in" replace />;
   }
 
   return children;

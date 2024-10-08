@@ -1,4 +1,8 @@
-import { useState, useCallback } from 'react';
+
+import type { Session } from 'src/domains/dto/session';
+
+import { useState, useEffect, useCallback } from 'react';
+import { useQuery, useMutation } from '@tanstack/react-query';
 
 import Box from '@mui/material/Box';
 import { Grid } from '@mui/material';
@@ -10,111 +14,107 @@ import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
 
-import { _users } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { ApiQueryKey } from 'src/services/api-query-key';
+import { SessionApi } from 'src/services/api/session.api';
 
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 
-import { TableNoData } from '../table-no-data';
-import { UserTableRow } from '../user-table-row';
-import { UserTableHead } from '../user-table-head';
-import { TableEmptyRows } from '../table-empty-rows';
-import { UserTableToolbar } from '../user-table-toolbar';
-import { RecordInitialMeter } from '../record-initial-meter';
-import { emptyRows, applyFilter, getComparator } from '../utils';
+import { useTable } from 'src/sections/tank/view';
+import { GeneralTableHead } from 'src/sections/tank/user-table-head';
 
-import type { UserProps } from '../user-table-row';
+import { TableNoData } from '../table-no-data';
+import { TableEmptyRows } from '../table-empty-rows';
+import { SessionTableRow } from '../session-table-row';
+import { UserTableToolbar } from '../user-table-toolbar';
+import CreateSessionModal from '../create-session-modal';
+import { RecordInitialMeter } from '../record-initial-meter';
+import { emptyRows, applyFilter, getComparator } from '../../tank/utils';
 
 // ----------------------------------------------------------------------
 
 export function SessionView() {
   const table = useTable();
 
-  const [filterName, setFilterName] = useState('');
+  // Fetch Session data
+  const { data: sessionData, isSuccess } = useQuery({
+    queryKey: [ApiQueryKey.session],
+    queryFn: SessionApi.gets,
+  });
+  useEffect(() => {
+    console.log('sessionData', sessionData);
+  }, [sessionData]);
 
-  const dataFiltered: UserProps[] = applyFilter({
-    inputData: _users,
+  // Filter data
+  const [filterName, setFilterName] = useState('');
+  const dataFiltered: Session[] = applyFilter({
+    inputData: sessionData ?? [],
     comparator: getComparator(table.order, table.orderBy),
-    
+
     filterName,
   });
-
   const notFound = !dataFiltered.length && !!filterName;
+
+  // create session modal
+  const [openCreateSession, setOpenCreateSession] = useState(false);
+  const handleCreateSession = () => {
+    setOpenCreateSession(true);
+  }
 
   return (
     <DashboardContent>
       <Box display="flex" alignItems="center" mb={5}>
         <Typography variant="h4" flexGrow={1}>
-          Chốt sổ
+          Danh sách chốt sổ
         </Typography>
 
-        {/* previous date */}
-        <Button color="inherit" sx={{ maxWidth: '30px', maxHeight: '30px', minWidth: '30px', minHeight: '30px' }} >
-          <Iconify icon="mingcute:left-fill" width="48" height="48" style={{ color: "#1c252e" }} />
-        </Button>
-
-
-
         <Button variant="contained" color="inherit"
-        // startIcon={<Iconify icon="mingcute:add-line" />}
+        startIcon={<Iconify icon="mingcute:add-line" />}
+        onClick={handleCreateSession}
         >
-          20/09/2021
+          Tạo mới
         </Button>
-
-        {/* next date */}
-        <Button color="inherit" sx={{ maxWidth: '30px', maxHeight: '30px', minWidth: '30px', minHeight: '30px' }} >
-          <Iconify icon="mingcute:right-fill" width="48" height="48" style={{ color: "#1c252e" }} />
-        </Button>
-
       </Box>
 
-      <Grid container spacing={3} sx={{ mb: 4}}>
-        <Grid xs={12} sm={6} md={4} item>
-          <RecordInitialMeter
-            title='Công tơ'
-            list={[1, 2, 3]}
-          />
-        </Grid>
-        <Grid xs={12} sm={6} md={4} item>
-          <RecordInitialMeter
-            title='Công tơ'
-            list={[1, 2, 3]}
-          />
-        </Grid>
-      </Grid>
+      <CreateSessionModal
+        open={openCreateSession}
+        onClose={() => setOpenCreateSession(false)}
+      />
 
       <Card>
-        <UserTableToolbar
+        {/* <UserTableToolbar
           numSelected={table.selected.length}
           filterName={filterName}
           onFilterName={(event: React.ChangeEvent<HTMLInputElement>) => {
             setFilterName(event.target.value);
             table.onResetPage();
           }}
-        />
+        /> */}
 
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
-              <UserTableHead
+              <GeneralTableHead
                 order={table.order}
                 orderBy={table.orderBy}
-                rowCount={_users.length}
+                rowCount={sessionData?.length ?? 0}
                 numSelected={table.selected.length}
                 onSort={table.onSort}
                 onSelectAllRows={(checked) =>
                   table.onSelectAllRows(
                     checked,
-                    _users.map((user) => user.id)
+                    (sessionData ?? []).map((item) => item.id.toString())
                   )
                 }
+                isMultiSelect={false}
                 headLabel={[
-                  { id: 'name', label: 'Name' },
-                  { id: 'company', label: 'Company' },
-                  { id: 'role', label: 'Role' },
-                  { id: 'isVerified', label: 'Verified', align: 'center' },
-                  { id: 'status', label: 'Status' },
+                  { id: 'name', label: 'Mã' },
+                  { id: 'startDate', label: 'Ngày tạo' },
+                  { id: 'totalRevenue', label: 'Tổng bán' },
+                  { id: 'volumeSold', label: 'Số lít' },
+                  { id: 'endDate', label: 'Ngày đóng' },
+                  { id: 'status', label: 'Trạng thái' },
                   { id: '' },
                 ]}
               />
@@ -125,17 +125,17 @@ export function SessionView() {
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
-                    <UserTableRow
+                    <SessionTableRow
                       key={row.id}
                       row={row}
-                      selected={table.selected.includes(row.id)}
-                      onSelectRow={() => table.onSelectRow(row.id)}
+                      selected={table.selected.includes(row.id.toString())}
+                      onSelectRow={() => table.onSelectRow(row.id.toString())}
                     />
                   ))}
 
                 <TableEmptyRows
                   height={68}
-                  emptyRows={emptyRows(table.page, table.rowsPerPage, _users.length)}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, sessionData?.length ?? 0)}
                 />
 
                 {notFound && <TableNoData searchQuery={filterName} />}
@@ -145,9 +145,12 @@ export function SessionView() {
         </Scrollbar>
 
         <TablePagination
+          labelRowsPerPage="Số hàng mỗi trang"
+          labelDisplayedRows={({ from, to, count }) => `${from}-${to} của ${count}`}
+
           component="div"
           page={table.page}
-          count={_users.length}
+          count={sessionData?.length ?? 0}
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           rowsPerPageOptions={[5, 10, 25]}
@@ -156,72 +159,4 @@ export function SessionView() {
       </Card>
     </DashboardContent>
   );
-}
-
-// ----------------------------------------------------------------------
-
-export function useTable() {
-  const [page, setPage] = useState(0);
-  const [orderBy, setOrderBy] = useState('name');
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [selected, setSelected] = useState<string[]>([]);
-  const [order, setOrder] = useState<'asc' | 'desc'>('asc');
-
-  const onSort = useCallback(
-    (id: string) => {
-      const isAsc = orderBy === id && order === 'asc';
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(id);
-    },
-    [order, orderBy]
-  );
-
-  const onSelectAllRows = useCallback((checked: boolean, newSelecteds: string[]) => {
-    if (checked) {
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  }, []);
-
-  const onSelectRow = useCallback(
-    (inputValue: string) => {
-      const newSelected = selected.includes(inputValue)
-        ? selected.filter((value) => value !== inputValue)
-        : [...selected, inputValue];
-
-      setSelected(newSelected);
-    },
-    [selected]
-  );
-
-  const onResetPage = useCallback(() => {
-    setPage(0);
-  }, []);
-
-  const onChangePage = useCallback((event: unknown, newPage: number) => {
-    setPage(newPage);
-  }, []);
-
-  const onChangeRowsPerPage = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
-      onResetPage();
-    },
-    [onResetPage]
-  );
-
-  return {
-    page,
-    order,
-    onSort,
-    orderBy,
-    selected,
-    rowsPerPage,
-    onSelectRow,
-    onResetPage,
-    onChangePage,
-    onSelectAllRows,
-    onChangeRowsPerPage,
-  };
 }

@@ -4,4 +4,5 @@ export const apiEndpoint = {
 	Test: "/test",
   Tank: "/tank",
   FuelImport: "/fuel-import",
+  Session: "/session",
 };

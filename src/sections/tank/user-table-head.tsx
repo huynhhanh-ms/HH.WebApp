@@ -17,6 +17,7 @@ type TableHeadProps = {
   onSort: (id: string) => void;
   headLabel: Record<string, any>[];
   onSelectAllRows: (checked: boolean) => void;
+  isMultiSelect?: boolean;
 };
 
 export function GeneralTableHead({
@@ -27,10 +28,12 @@ export function GeneralTableHead({
   headLabel,
   numSelected,
   onSelectAllRows,
+  isMultiSelect = true,
 }: TableHeadProps) {
   return (
     <TableHead>
       <TableRow>
+        { isMultiSelect &&
         <TableCell padding="checkbox">
           <Checkbox
             indeterminate={numSelected > 0 && numSelected < rowCount}
@@ -40,6 +43,7 @@ export function GeneralTableHead({
             }
           />
         </TableCell>
+        }
 
         {headLabel.map((headCell) => (
           <TableCell
