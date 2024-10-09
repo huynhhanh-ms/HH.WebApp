@@ -1,4 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import { Grid } from '@mui/material';
@@ -12,8 +14,12 @@ import TablePagination from '@mui/material/TablePagination';
 
 import { useRouter } from 'src/routes/hooks';
 
+import { fDateTime } from 'src/utils/format-time';
+
 import { _users } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
+import { ApiQueryKey } from 'src/services/api-query-key';
+import { SessionApi } from 'src/services/api/session.api';
 
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
@@ -44,6 +50,13 @@ export function SessionDetailView() {
 
   const notFound = !dataFiltered.length && !!filterName;
 
+  // Get session detail
+  const { sessionId } = useParams();
+  const { data: sessionData } = useQuery({
+    queryKey: [ApiQueryKey.session],
+    queryFn: () => SessionApi.get(parseInt(sessionId ?? '0')),
+  });
+
   // Nav
   const router = useRouter();
 
@@ -52,13 +65,13 @@ export function SessionDetailView() {
       <Box display="flex" alignItems="center" mb={5}>
 
         {/* previous date */}
-        <Button color="inherit" sx={{ maxWidth: '30px', maxHeight: '30px', minWidth: '30px', minHeight: '30px' }}
+        <Button color="inherit" sx={{ maxWidth: '50px', maxHeight: '50px', minWidth: '50px', minHeight: '50px' }}
           onClick={() => router.back()} >
-          <Iconify icon="mingcute:left-fill" width="75" height="75" style={{ color: "#1c252e" }} />
+          <Iconify icon="mingcute:left-fill" width="100" height="100" style={{ color: "#1c252e" }} />
         </Button>
 
         <Typography variant="h4" flexGrow={1}>
-          Chốt sổ
+          Chốt sổ #{sessionId}
         </Typography>
 
         {/* previous date */}
@@ -67,10 +80,10 @@ export function SessionDetailView() {
         </Button> */}
 
         <Button variant="contained" color="inherit"
-        // startIcon={<Iconify icon="mingcute:add-line" />}
-        onClick={() => router.push('/admin/session')}
+          // startIcon={<Iconify icon="mingcute:add-line" />}
+          onClick={() => router.push('/admin/session')}
         >
-          21/10/2021
+          {fDateTime(sessionData?.startDate, 'DD/MM/YYYY')}
         </Button>
 
         {/* next date */}
@@ -84,13 +97,8 @@ export function SessionDetailView() {
         <Grid xs={12} sm={6} md={4} item>
           <RecordInitialMeter
             title='Công tơ'
-            list={[1, 2, 3]}
-          />
-        </Grid>
-        <Grid xs={12} sm={6} md={4} item>
-          <RecordInitialMeter
-            title='Công tơ'
-            list={[1, 2, 3]}
+            pumps={sessionData?.petrolPumps ?? []}
+            sessionData={sessionData}
           />
         </Grid>
       </Grid>

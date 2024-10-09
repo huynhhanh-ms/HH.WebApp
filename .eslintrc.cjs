@@ -31,6 +31,7 @@ module.exports = {
     'react/no-unused-prop-types': 0,
     'react/prop-types': 0,
     'no-restricted-globals': 0,
+    'radix' : 0,
 
     // general
     'no-alert': 0,

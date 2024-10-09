@@ -1,6 +1,6 @@
 import type { BoxProps } from '@mui/material/Box';
 
-import { useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Slide from '@mui/material/Slide';
@@ -29,6 +29,20 @@ export function Searchbar({ sx, ...other }: BoxProps) {
   const handleClose = useCallback(() => {
     setOpen(false);
   }, []);
+
+  // Open search modal when Ctrl + K is pressed
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.ctrlKey && (event.key === 'k' || event.key === 'f')) {
+        event.preventDefault(); // Prevent default browser search
+        setOpen(!open);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [open]);
 
   return (
     <ClickAwayListener onClickAway={handleClose}>
@@ -66,7 +80,7 @@ export function Searchbar({ sx, ...other }: BoxProps) {
               autoFocus
               fullWidth
               disableUnderline
-              placeholder="Search…"
+              placeholder="Tìm kiếm..."
               startAdornment={
                 <InputAdornment position="start">
                   <Iconify width={20} icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
@@ -75,7 +89,7 @@ export function Searchbar({ sx, ...other }: BoxProps) {
               sx={{ fontWeight: 'fontWeightBold' }}
             />
             <Button variant="contained" onClick={handleClose}>
-              Search
+              Hỏi
             </Button>
           </Box>
         </Slide>

@@ -61,7 +61,7 @@ export function Router() {
         { path: 'user', element: <UserPage /> },
         { path: 'tank', element: <TankPage /> },
         { path: 'session', element: <SessionPage /> },
-        { path: 'session/:id', element: <SessionDetailPage /> },
+        { path: 'session/:sessionId', element: <SessionDetailPage /> },
         { path: 'products', element: <ProductsPage /> },
         { path: 'blog', element: <BlogPage /> },
       ],

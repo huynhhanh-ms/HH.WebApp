@@ -19,9 +19,32 @@ export const SessionApi = {
     }
   },
 
-  create: async (data: Session): Promise<Session> => {
+  get: async (data: number): Promise<Session> => {
     try {
-      const response = await axiosClient.post<ResponseObject<Session>>(
+      const response = await axiosClient.get<ResponseObject<Session>>(
+        `${apiEndpoint.Session}/${data}`
+      );
+      const result = response.data;
+      return result.data;
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+
+  update: async (data: Session): Promise<void> => {
+    try {
+      await axiosClient.put<ResponseObject<Session>>(
+        `${apiEndpoint.Session}`,
+        data
+      );
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+
+  create: async (data: Session): Promise<number> => {
+    try {
+      const response = await axiosClient.post<ResponseObject<number>>(
         apiEndpoint.Session,
         data
       );
