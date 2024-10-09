@@ -11,7 +11,6 @@ const AxiosInterceptor: React.FC<PropsWithChildren<{ key?: string }>> = ({
 }) => {
   // const excludedEndpoints = ['/login', '/refresh-token'];
   useEffect(() => {
-    // console.log("accessToken at interceptor = ", accessToken);
 
     const resInterceptor = (response: AxiosResponse) => {
       if (response.data?.data?.accessToken) {
@@ -106,7 +105,6 @@ export default AxiosInterceptor;
 //          response
 //       ,
 //       (error) => {
-//         console.log("interceptor");
 //         // Check if the response has a status code and is 400
 //         if (error.response && error.response.status === 400) {
 //           // Extract the custom message from the response data

@@ -28,6 +28,7 @@ import { TableNoData } from '../table-no-data';
 import { TableEmptyRows } from '../table-empty-rows';
 import { SessionTableRow } from '../session-table-row';
 import CreateSessionModal from '../create-session-modal';
+import { UserTableToolbar } from '../user-table-toolbar';
 import { emptyRows, applyFilter, getComparator } from '../../tank/utils';
 
 // ----------------------------------------------------------------------
@@ -40,9 +41,6 @@ export function SessionView() {
     queryKey: [ApiQueryKey.session],
     queryFn: SessionApi.gets,
   });
-  // useEffect(() => {
-  //   console.log('sessionData', sessionData);
-  // }, [sessionData]);
 
   // Filter data
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

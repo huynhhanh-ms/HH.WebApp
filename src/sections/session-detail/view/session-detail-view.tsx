@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
-import { Grid } from '@mui/material';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
@@ -11,6 +10,7 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
+import { Grid, Divider, Container, CardHeader } from '@mui/material';
 
 import { useRouter } from 'src/routes/hooks';
 
@@ -21,6 +21,7 @@ import { DashboardContent } from 'src/layouts/dashboard';
 import { ApiQueryKey } from 'src/services/api-query-key';
 import { SessionApi } from 'src/services/api/session.api';
 
+import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 
@@ -28,6 +29,7 @@ import { TableNoData } from '../table-no-data';
 import { UserTableRow } from '../user-table-row';
 import { UserTableHead } from '../user-table-head';
 import { TableEmptyRows } from '../table-empty-rows';
+import { TotalCalcBoard } from '../total-calc-board';
 import { UserTableToolbar } from '../user-table-toolbar';
 import { RecordInitialMeter } from '../record-initial-meter';
 import { emptyRows, applyFilter, getComparator } from '../utils';
@@ -66,18 +68,23 @@ export function SessionDetailView() {
 
         {/* previous date */}
         <Button color="inherit" sx={{ maxWidth: '50px', maxHeight: '50px', minWidth: '50px', minHeight: '50px' }}
-          onClick={() => router.back()} >
+          onClick={() => router.push("/admin/session")} >
           <Iconify icon="mingcute:left-fill" width="100" height="100" style={{ color: "#1c252e" }} />
         </Button>
 
         <Typography variant="h4" flexGrow={1}>
           Chốt sổ #{sessionId}
+          {'  '}
+          <Label color={(sessionData?.status === 'Processing' && 'warning') || 'success'}>{
+            sessionData?.status === 'Processing' ? 'Đang thực hiện' : 'Đóng'
+          }</Label>
         </Typography>
 
         {/* previous date */}
         {/* <Button color="inherit" sx={{ maxWidth: '30px', maxHeight: '30px', minWidth: '30px', minHeight: '30px' }} >
           <Iconify icon="mingcute:left-fill" width="48" height="48" style={{ color: "#1c252e" }} />
         </Button> */}
+
 
         <Button variant="contained" color="inherit"
           // startIcon={<Iconify icon="mingcute:add-line" />}
@@ -101,6 +108,13 @@ export function SessionDetailView() {
             sessionData={sessionData}
           />
         </Grid>
+
+        <Grid xs={12} sm={6} md={8} padding="20px">
+          <Card className=''>
+            <TotalCalcBoard/>
+          </Card>
+        </Grid>
+
       </Grid>
 
       <Card>

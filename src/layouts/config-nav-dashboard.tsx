@@ -22,11 +22,11 @@ export const navData = [
     path: '/admin/tank',
     icon: icon('ic-tank'),
   },
-  {
-    title: 'Công nợ',
-    path: '/admin/debt',
-    icon: icon('ic-debt'),
-  },
+  // {
+  //   title: 'Công nợ',
+  //   path: '/admin/debt',
+  //   icon: icon('ic-debt'),
+  // },
   {
     title: 'Giá bán',
     path: '/admin/price',
