@@ -109,7 +109,7 @@ export function SessionDetailView() {
           />
         </Grid>
 
-        <Grid xs={12} sm={6} md={8} padding="20px">
+        <Grid xs={12} sm={6} md={6} padding="20px">
           <Card className=''>
             <TotalCalcBoard/>
           </Card>

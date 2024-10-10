@@ -37,6 +37,11 @@ export const navData = [
     path: '/admin/user',
     icon: icon('ic-user'),
   },
+  {
+    title: 'Đất đai',
+    path: '/admin/land',
+    icon: icon('ic-land'),
+  },
   // {
   //   title: 'User',
   //   path: '/admin/user',

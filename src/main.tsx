@@ -5,6 +5,7 @@ import { Suspense, StrictMode } from 'react';
 import { SnackbarProvider } from 'notistack';
 import { BrowserRouter } from 'react-router-dom';
 import { HelmetProvider } from 'react-helmet-async';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import App from './app';
@@ -30,6 +31,7 @@ root.render(
             </BrowserRouter>
           </AxiosInterceptor>
         </SnackbarProviderCustom>
+        <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </HelmetProvider>
   </StrictMode>
