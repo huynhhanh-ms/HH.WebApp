@@ -6,6 +6,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { Iconify } from 'src/components/iconify';
+import { Box, Button, CardActions } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -15,13 +16,13 @@ type UserTableToolbarProps = {
   onFilterName: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
-export function UserTableToolbar({ numSelected, filterName, onFilterName }: UserTableToolbarProps) {
+export function ExpenseTableToolbar({ numSelected, filterName, onFilterName }: UserTableToolbarProps) {
   return (
     <Toolbar
       sx={{
         height: 96,
         display: 'flex',
-        justifyContent: 'space-between',
+        // justifyContent: 'space-between',
         p: (theme) => theme.spacing(0, 1, 0, 3),
         ...(numSelected > 0 && {
           color: 'primary.main',
@@ -29,13 +30,18 @@ export function UserTableToolbar({ numSelected, filterName, onFilterName }: User
         }),
       }}
     >
+      <Typography variant='subtitle1' fontWeight='bold' marginRight='auto'>
+        Chi Phí
+      </Typography>
+
       {numSelected > 0 ? (
         <Typography component="div" variant="subtitle1">
           {numSelected} selected
         </Typography>
       ) : (
         <OutlinedInput
-          fullWidth
+          // fullWidth
+          size='small'
           value={filterName}
           onChange={onFilterName}
           placeholder="Tìm kiếm..."
@@ -57,10 +63,16 @@ export function UserTableToolbar({ numSelected, filterName, onFilterName }: User
       ) : (
         <Tooltip title="Filter list">
           <IconButton>
-            <Iconify icon="ic:round-filter-list" />
+            {/* <Iconify icon="ic:round-filter-list" /> */}
           </IconButton>
         </Tooltip>
       )}
+
+      <Box width={10}/>
+
+      <Button variant='contained' color='inherit' startIcon={<Iconify icon="mingcute:add-line" />}>
+        Tạo
+      </Button>
     </Toolbar>
   );
 }
