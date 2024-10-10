@@ -21,7 +21,7 @@ import { FuelImportApi } from 'src/services/api/fuel-import.api';
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 
-import DeleteFuelImportDialog from './delete-fuel-import-modal';
+import DeleteDialog from './delete-dialog';
 
 import type { TableRowProps } from './utils';
 
@@ -132,7 +132,7 @@ export function FuelImportTableRow({ row, selected, onSelectRow }: TableRowProps
         </MenuList>
       </Popover>
 
-      <DeleteFuelImportDialog
+      <DeleteDialog
         open={isOpenDeleteDialog}
         onClose={() => setIsOpenDeleteDialog(false)}
         onConfirm={() => handleDelete()}

@@ -1,4 +1,8 @@
+import type { Expense } from 'src/domains/dto/expense';
+
+import { enqueueSnackbar } from 'notistack';
 import { useState, useCallback } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -10,28 +14,21 @@ import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 
+import { fNumber } from 'src/utils/format-number';
+import { fDateTime } from 'src/utils/format-time';
+
+import { ApiQueryKey } from 'src/services/api-query-key';
+import { ExpenseApi } from 'src/services/api/expense.api';
+
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 
+import DeleteDialog from '../tank/delete-dialog';
+
+import type { TableRowProps } from '../tank/utils';
+
 // ----------------------------------------------------------------------
-
-export type UserProps = {
-  id: string;
-  name: string;
-  role: string;
-  status: string;
-  company: string;
-  avatarUrl: string;
-  isVerified: boolean;
-};
-
-type UserTableRowProps = {
-  row: UserProps;
-  selected: boolean;
-  onSelectRow: () => void;
-};
-
-export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) {
+export function ExpenseTableRow({ row, selected, onSelectRow }: TableRowProps<Expense>) {
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
@@ -42,6 +39,29 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
     setOpenPopover(null);
   }, []);
 
+  // delete expense
+  const queryClient = useQueryClient();
+  const { mutateAsync: deleteExpense } = useMutation({
+    mutationFn: ExpenseApi.delete,
+    onSuccess: () => {
+      enqueueSnackbar('Xóa thành công', { variant: 'success' });
+      queryClient.invalidateQueries({ queryKey: [ApiQueryKey.session] });
+    },
+    onError: (error) => {
+      enqueueSnackbar('Xóa thất bại', { variant: 'error' });
+    }
+  });
+  const handleDelete = useCallback(() => {
+    deleteExpense(row.id);
+    handleClosePopover();
+  }, [deleteExpense, handleClosePopover, row.id]);
+
+  // delete dialog
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const handleDeleteDialog = () => {
+    setOpenDeleteDialog(true);
+  }
+
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
@@ -49,28 +69,16 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
           <Checkbox disableRipple checked={selected} onChange={onSelectRow} />
         </TableCell>
 
-        <TableCell component="th" scope="row">
-          <Box gap={2} display="flex" alignItems="center">
-            <Avatar alt={row.name} src={row.avatarUrl} />
-            {row.name}
-          </Box>
-        </TableCell>
 
-        <TableCell>{row.company}</TableCell>
 
-        <TableCell>{row.role}</TableCell>
+        <TableCell>#{row.id}</TableCell>
+        <TableCell>{row.expenseTypeName}</TableCell>
+        <TableCell>{row.debtor}</TableCell>
+        <TableCell>{row.note}</TableCell>
+        <TableCell>{fNumber(row.amount)}</TableCell>
+        <TableCell>{fDateTime(row.createdAt, "hh:mm")}</TableCell>
+        <TableCell>{row.image}</TableCell>
 
-        <TableCell align="center">
-          {row.isVerified ? (
-            <Iconify width={22} icon="solar:check-circle-bold" sx={{ color: 'success.main' }} />
-          ) : (
-            '-'
-          )}
-        </TableCell>
-
-        <TableCell>
-          <Label color={(row.status === 'banned' && 'error') || 'success'}>{row.status}</Label>
-        </TableCell>
 
         <TableCell align="right">
           <IconButton onClick={handleOpenPopover}>
@@ -104,15 +112,17 @@ export function UserTableRow({ row, selected, onSelectRow }: UserTableRowProps) 
         >
           <MenuItem onClick={handleClosePopover}>
             <Iconify icon="solar:pen-bold" />
-            Edit
+            Sửa
           </MenuItem>
 
-          <MenuItem onClick={handleClosePopover} sx={{ color: 'error.main' }}>
+          <MenuItem onClick={handleDeleteDialog} sx={{ color: 'error.main' }}>
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
+            Xóa
           </MenuItem>
         </MenuList>
       </Popover>
+      <DeleteDialog open={openDeleteDialog} onClose={() => setOpenDeleteDialog(false)} onConfirm={handleDelete} />
     </>
   );
 }
+

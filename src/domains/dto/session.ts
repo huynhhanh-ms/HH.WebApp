@@ -1,3 +1,4 @@
+import type { Expense } from "./expense";
 import type { PetrolPump } from "./petrol-pump";
 
 export interface Session {
@@ -10,4 +11,5 @@ export interface Session {
   volumeSold: number;
 
   petrolPumps: PetrolPump[];
+  expenses?: Expense[];
 }

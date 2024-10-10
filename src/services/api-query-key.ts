@@ -25,4 +25,6 @@ export const ApiQueryKey = {
   session : "SESSION",
   sessionDetail : "SESSION_DETAIL",
   petrolPump : "PETROL_PUMP",
+  expense : "EXPENSE",
+  expenseType : "EXPENSE_TYPE",
 };

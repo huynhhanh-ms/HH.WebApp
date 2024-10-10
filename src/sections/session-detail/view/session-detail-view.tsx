@@ -1,3 +1,5 @@
+import type { Expense } from 'src/domains/dto/expense';
+
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { useState, useEffect, useCallback } from 'react';
@@ -16,7 +18,6 @@ import { useRouter } from 'src/routes/hooks';
 
 import { fDateTime } from 'src/utils/format-time';
 
-import { _users } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { ApiQueryKey } from 'src/services/api-query-key';
 import { SessionApi } from 'src/services/api/session.api';
@@ -25,32 +26,21 @@ import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 import { Scrollbar } from 'src/components/scrollbar';
 
+import { useTable } from 'src/sections/tank/view';
+import { GeneralTableHead } from 'src/sections/tank/user-table-head';
+import { emptyRows, applyFilter, getComparator } from 'src/sections/tank/utils';
+
 import { TableNoData } from '../table-no-data';
-import { UserTableRow } from '../user-table-row';
-import { UserTableHead } from '../user-table-head';
 import { TableEmptyRows } from '../table-empty-rows';
 import { TotalCalcBoard } from '../total-calc-board';
-import { ExpenseTableToolbar } from '../expense-table-toolbar';
+import { ExpenseTableRow } from '../expense-table-row';
 import { RecordInitialMeter } from '../record-initial-meter';
-import { emptyRows, applyFilter, getComparator } from '../utils';
-
-import type { UserProps } from '../user-table-row';
+import { ExpenseTableToolbar } from '../expense-table-toolbar';
 
 // ----------------------------------------------------------------------
 
 export function SessionDetailView() {
   const table = useTable();
-
-  const [filterName, setFilterName] = useState('');
-
-  const dataFiltered: UserProps[] = applyFilter({
-    inputData: _users,
-    comparator: getComparator(table.order, table.orderBy),
-
-    filterName,
-  });
-
-  const notFound = !dataFiltered.length && !!filterName;
 
   // Get session detail
   const { sessionId } = useParams();
@@ -58,6 +48,16 @@ export function SessionDetailView() {
     queryKey: [ApiQueryKey.session],
     queryFn: () => SessionApi.get(parseInt(sessionId ?? '0')),
   });
+
+  // Get expenses from session - table
+  const [filterName, setFilterName] = useState('');
+  const dataFiltered: Expense[] = applyFilter({
+    inputData: sessionData?.expenses ?? [],
+    comparator: getComparator(table.order, table.orderBy),
+
+    filterName,
+  });
+  const notFound = !dataFiltered.length && !!filterName;
 
   // Nav
   const router = useRouter();
@@ -109,7 +109,7 @@ export function SessionDetailView() {
           />
         </Grid>
 
-        <Grid xs={12} sm={6} md={6} padding="20px">
+        <Grid xs={12} sm={6} md={6} padding="20px" item>
           <Card className=''>
             <TotalCalcBoard />
           </Card>
@@ -130,24 +130,26 @@ export function SessionDetailView() {
         <Scrollbar>
           <TableContainer sx={{ overflow: 'unset' }}>
             <Table sx={{ minWidth: 800 }}>
-              <UserTableHead
+              <GeneralTableHead
                 order={table.order}
                 orderBy={table.orderBy}
-                rowCount={_users.length}
+                rowCount={sessionData?.expenses?.length ?? 0}
                 numSelected={table.selected.length}
                 onSort={table.onSort}
                 onSelectAllRows={(checked) =>
                   table.onSelectAllRows(
                     checked,
-                    _users.map((user) => user.id)
+                    (sessionData?.expenses ?? []).map((expense) => expense.id.toString())
                   )
                 }
                 headLabel={[
-                  { id: 'name', label: 'Name' },
-                  { id: 'company', label: 'Company' },
-                  { id: 'role', label: 'Role' },
-                  { id: 'isVerified', label: 'Verified', align: 'center' },
-                  { id: 'status', label: 'Status' },
+                  { id: 'id', label: 'Mã' },
+                  { id: 'expenseTypeName', label: 'Loại' },
+                  { id: 'debtor', label: 'Người đưa/nhận' },
+                  { id: 'note', label: 'Chi tiết' },
+                  { id: 'amount', label: 'Số tiền' },
+                  { id: 'createdAt', label: 'Giờ' },
+                  { id: 'image', label: 'Ảnh' },
                   { id: '' },
                 ]}
               />
@@ -158,17 +160,17 @@ export function SessionDetailView() {
                     table.page * table.rowsPerPage + table.rowsPerPage
                   )
                   .map((row) => (
-                    <UserTableRow
+                    <ExpenseTableRow
                       key={row.id}
                       row={row}
-                      selected={table.selected.includes(row.id)}
-                      onSelectRow={() => table.onSelectRow(row.id)}
+                      selected={table.selected.includes(row.id.toString())}
+                      onSelectRow={() => table.onSelectRow(row.id.toString())}
                     />
                   ))}
 
                 <TableEmptyRows
                   height={68}
-                  emptyRows={emptyRows(table.page, table.rowsPerPage, _users.length)}
+                  emptyRows={emptyRows(table.page, table.rowsPerPage, sessionData?.expenses?.length ?? 0)}
                 />
 
                 {notFound && <TableNoData searchQuery={filterName} />}
@@ -178,9 +180,12 @@ export function SessionDetailView() {
         </Scrollbar>
 
         <TablePagination
+          labelRowsPerPage="Số hàng mỗi trang"
+          labelDisplayedRows={({ from, to, count }) => `${from}-${to} của ${count}`}
+
           component="div"
           page={table.page}
-          count={_users.length}
+          count={sessionData?.expenses?.length ?? 0}
           rowsPerPage={table.rowsPerPage}
           onPageChange={table.onChangePage}
           rowsPerPageOptions={[5, 10, 25]}
@@ -192,69 +197,3 @@ export function SessionDetailView() {
 }
 
 // ----------------------------------------------------------------------
-
-export function useTable() {
-  const [page, setPage] = useState(0);
-  const [orderBy, setOrderBy] = useState('name');
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [selected, setSelected] = useState<string[]>([]);
-  const [order, setOrder] = useState<'asc' | 'desc'>('asc');
-
-  const onSort = useCallback(
-    (id: string) => {
-      const isAsc = orderBy === id && order === 'asc';
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(id);
-    },
-    [order, orderBy]
-  );
-
-  const onSelectAllRows = useCallback((checked: boolean, newSelecteds: string[]) => {
-    if (checked) {
-      setSelected(newSelecteds);
-      return;
-    }
-    setSelected([]);
-  }, []);
-
-  const onSelectRow = useCallback(
-    (inputValue: string) => {
-      const newSelected = selected.includes(inputValue)
-        ? selected.filter((value) => value !== inputValue)
-        : [...selected, inputValue];
-
-      setSelected(newSelected);
-    },
-    [selected]
-  );
-
-  const onResetPage = useCallback(() => {
-    setPage(0);
-  }, []);
-
-  const onChangePage = useCallback((event: unknown, newPage: number) => {
-    setPage(newPage);
-  }, []);
-
-  const onChangeRowsPerPage = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
-      onResetPage();
-    },
-    [onResetPage]
-  );
-
-  return {
-    page,
-    order,
-    onSort,
-    orderBy,
-    selected,
-    rowsPerPage,
-    onSelectRow,
-    onResetPage,
-    onChangePage,
-    onSelectAllRows,
-    onChangeRowsPerPage,
-  };
-}

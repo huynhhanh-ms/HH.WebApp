@@ -8,7 +8,7 @@ import {
   DialogActions,
 } from '@mui/material';
 
-const DeleteFuelImportDialog = ({ open, onClose, onConfirm } : any) => (
+const DeleteDialog = ({ open, onClose, onConfirm } : any) => (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>Xác Nhận Xóa</DialogTitle>
       <DialogContent>
@@ -30,4 +30,4 @@ const DeleteFuelImportDialog = ({ open, onClose, onConfirm } : any) => (
     </Dialog>
   );
 
-export default DeleteFuelImportDialog;
+export default DeleteDialog;

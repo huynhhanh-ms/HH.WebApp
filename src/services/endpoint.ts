@@ -5,4 +5,6 @@ export const apiEndpoint = {
   Tank: "/tank",
   FuelImport: "/fuel-import",
   Session: "/session",
+  Expense: "/expense",
+  ExpenseType: "/expense-type",
 };
