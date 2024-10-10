@@ -10,7 +10,7 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-import { Grid, Divider, Container, CardHeader } from '@mui/material';
+import { Grid, Divider, Container, CardHeader, CardActions } from '@mui/material';
 
 import { useRouter } from 'src/routes/hooks';
 
@@ -30,7 +30,7 @@ import { UserTableRow } from '../user-table-row';
 import { UserTableHead } from '../user-table-head';
 import { TableEmptyRows } from '../table-empty-rows';
 import { TotalCalcBoard } from '../total-calc-board';
-import { UserTableToolbar } from '../user-table-toolbar';
+import { ExpenseTableToolbar } from '../expense-table-toolbar';
 import { RecordInitialMeter } from '../record-initial-meter';
 import { emptyRows, applyFilter, getComparator } from '../utils';
 
@@ -111,14 +111,14 @@ export function SessionDetailView() {
 
         <Grid xs={12} sm={6} md={8} padding="20px">
           <Card className=''>
-            <TotalCalcBoard/>
+            <TotalCalcBoard />
           </Card>
         </Grid>
 
       </Grid>
 
       <Card>
-        <UserTableToolbar
+        <ExpenseTableToolbar
           numSelected={table.selected.length}
           filterName={filterName}
           onFilterName={(event: React.ChangeEvent<HTMLInputElement>) => {
