@@ -92,6 +92,7 @@ const CreateFuelImportModal: React.FC<CreateFuelImportModalProps> = ({ open, onC
           label="Thể tích (lít)"
           name="importVolume"
           value={formValues.importVolume}
+          onFocus={event => { event.target.select(); }}
           onChange={handleChange}
           required
           type="number"
@@ -105,6 +106,7 @@ const CreateFuelImportModal: React.FC<CreateFuelImportModalProps> = ({ open, onC
           name="importPrice"
           value={formValues.importPrice}
           onChange={handleChange}
+          onFocus={event => { event.target.select(); }}
           required
           type="number"
         />
@@ -115,6 +117,7 @@ const CreateFuelImportModal: React.FC<CreateFuelImportModalProps> = ({ open, onC
           margin="normal"
           label="Trọng lượng cân (kg) (Không bắt buộc)"
           name="weight"
+          onFocus={event => { event.target.select(); }}
           value={formValues.weight}
           onChange={handleChange}
           type="number"

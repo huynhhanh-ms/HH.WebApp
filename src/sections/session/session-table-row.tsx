@@ -36,11 +36,12 @@ export function SessionTableRow({ row, selected, onSelectRow }: TableRowProps<Se
   // Open session detail
   const router = useRouter();
   const handleOpenSessionDetail = () => {
-    router.push(`/admin/session/${row.id}`); 
+    router.push(`/admin/session/${row.id}`);
   };
 
-  
-
+  // console.table(
+  //   row?.petrolPumps?.map(pumps => pumps.totalVolume)
+  // );
   return (
     <>
       <TableRow hover tabIndex={-1} role="checkbox" selected={selected} onClick={handleOpenSessionDetail}>
@@ -50,8 +51,8 @@ export function SessionTableRow({ row, selected, onSelectRow }: TableRowProps<Se
         <TableCell>{fDateTime(row.startDate)}</TableCell>
 
 
-        <TableCell>{row.totalRevenue}</TableCell>
-        <TableCell>{row.volumeSold}</TableCell>
+        <TableCell>{row?.petrolPumps?.reduce((pre, cur, idx) => pre + cur.revenue, 0)}</TableCell>
+        <TableCell>{row?.petrolPumps?.every(pump => pump.totalVolume === 0 || pump.totalVolume == null) ? "" : row?.petrolPumps?.map(pumps => pumps.totalVolume).join('/')}</TableCell>
         <TableCell>{fDateTime(row.endDate)}</TableCell>
         <TableCell>
           <Label color={(row.status === 'Processing' && 'warning') || 'success'}>{

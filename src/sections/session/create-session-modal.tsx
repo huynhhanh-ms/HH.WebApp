@@ -86,10 +86,10 @@ const CreateSessionModal: React.FC<CreateSessionModalProps> = ({ open, onClose }
   const { mutateAsync } = useMutation({
     mutationFn: SessionApi.create,
     mutationKey: [ApiQueryKey.session],
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       enqueueSnackbar('Tạo đợt chốt thành công', { variant: 'success' });
-      queryClient.invalidateQueries({ queryKey: [ApiQueryKey.session] })
-      onClose();
+      await queryClient.invalidateQueries({ queryKey: [ApiQueryKey.session] })
+      // onClose();
       router.push(`/admin/session/${data}`);
     },
     onError: (error) => {
@@ -122,6 +122,7 @@ const CreateSessionModal: React.FC<CreateSessionModalProps> = ({ open, onClose }
               fullWidth
               margin="normal"
               label={`Số lít đầu buổi: ${  tanks![index].name ?? `Bồn ${index + 1}`}`}
+              onFocus={event => { event.target.select(); }}
               name={`petrolPump.${index}.startVolume`}
               value={formValues.petrolPumps[index]?.startVolume}
               onChange={handleChangePetrolPump}
@@ -135,6 +136,7 @@ const CreateSessionModal: React.FC<CreateSessionModalProps> = ({ open, onClose }
         <TextField
           fullWidth
           margin="normal"
+          onFocus={event => { event.target.select(); }}
           label="Tiền lẻ ban đầu (Không bắt buộc)"
           name="cashForChange"
           value={formValues.cashForChange}

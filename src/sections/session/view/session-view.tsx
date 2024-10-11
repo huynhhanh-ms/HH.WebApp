@@ -108,7 +108,8 @@ export function SessionView() {
                 headLabel={[
                   { id: 'name', label: 'Mã' },
                   { id: 'startDate', label: 'Ngày tạo' },
-                  { id: 'totalRevenue', label: 'Tổng bán' },
+                  // { id: 'totalRevenue', label: 'Tổng bán' },
+                  { id: 'totalRevenue', label: 'Doanh số' },
                   { id: 'volumeSold', label: 'Số lít' },
                   { id: 'endDate', label: 'Ngày đóng' },
                   { id: 'status', label: 'Trạng thái' },

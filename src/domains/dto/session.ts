@@ -10,6 +10,8 @@ export interface Session {
   status: string;
   volumeSold: number;
 
+  totalExpense?: number;
+
   petrolPumps: PetrolPump[];
   expenses?: Expense[];
 }

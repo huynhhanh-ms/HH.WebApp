@@ -4,8 +4,8 @@ import type { PetrolPump } from 'src/domains/dto/petrol-pump';
 import type { GridColDef, GridRowsProp, GridAlignment } from '@mui/x-data-grid';
 
 import { enqueueSnackbar } from 'notistack';
-import { useMutation } from '@tanstack/react-query';
 import { useMemo, useState, useEffect } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -17,6 +17,7 @@ import { ApiQueryKey } from 'src/services/api-query-key';
 import { SessionApi } from 'src/services/api/session.api';
 
 import { Iconify } from 'src/components/iconify';
+import { Condition } from 'src/components/condition';
 
 // ----------------------------------------------------------------------
 
@@ -36,7 +37,7 @@ export function RecordInitialMeter({ title, subheader, pumps: parentPumps, sessi
 
   type PetrolPumpKeys = keyof PetrolPump;
   const keys: PetrolPumpKeys[] = useMemo(() => ['startVolume', 'endVolume', 'totalVolume', 'price', 'revenue'], []);
-  const transKeys: string[] = useMemo(() => ['Bắt đầu', 'Kết thúc', 'Hiệu', 'Giá bán', 'Doanh thu'], []);
+  const transKeys: string[] = useMemo(() => ['Bắt đầu', 'Kết thúc', 'Hiệu', 'Giá bán', 'Doanh số'], []);
 
   const [columns, setColumns] = useState<GridColDef[]>();
 
@@ -96,12 +97,14 @@ export function RecordInitialMeter({ title, subheader, pumps: parentPumps, sessi
     mutationKey: [ApiQueryKey.session],
     mutationFn: SessionApi.update,
     onSuccess: (data) => {
-      console.log('onSuccess', data);
+      queryClient.invalidateQueries({ queryKey: [ApiQueryKey.session] });
+      enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
     },
     onError: (error) => {
       console.log('onError', error);
     }
   });
+  const queryClient = useQueryClient();
   const handleSave = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
     event.preventDefault();
 
@@ -110,8 +113,6 @@ export function RecordInitialMeter({ title, subheader, pumps: parentPumps, sessi
       ...sessionData,
       petrolPumps: pumps,
     });
-
-    enqueueSnackbar('Cập nhật thành công', { variant: 'success' });
   }
 
   return (
@@ -120,7 +121,7 @@ export function RecordInitialMeter({ title, subheader, pumps: parentPumps, sessi
       <DataGrid rows={rows} columns={columns ?? []} sx={sxDataGrid}
         processRowUpdate={handleRowUpdate}
         onProcessRowUpdateError={handleProcessRowUpdateError}
-        isCellEditable={(params) => [0,1,3].includes(parseInt(params.id.toString()))}
+        isCellEditable={(params) => [0, 1, 3].includes(parseInt(params.id.toString()))}
         getRowClassName={(params) =>
           params.indexRelativeToCurrentPage >= 2 ? 'Mui-selected' : ''
         }
@@ -128,17 +129,18 @@ export function RecordInitialMeter({ title, subheader, pumps: parentPumps, sessi
         hideFooter
       />
       <Box sx={{ p: 2, textAlign: 'right', display: 'flex', justifyContent: 'space-between' }}>
+        <Condition condition={sessionData?.status !== "Closed"}>
         <Button size="small" color="inherit" variant='contained' onClick={handleSave} >
           Lưu
-        </Button>
-        <Button
+        </Button></Condition>
+        {/* <Button
           size="small"
           color="inherit"
           endIcon={<Iconify icon="mingcute:down-fill" width={18} sx={{ ml: -0.5 }} />}
-          // onClick={handleSave}
+        // onClick={handleSave}
         >
           Chi tiết hơn
-        </Button>
+        </Button> */}
       </Box>
     </Card>
   );

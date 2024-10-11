@@ -42,6 +42,17 @@ export const SessionApi = {
     }
   },
 
+  close: async (id: number): Promise<void> => {
+    try {
+      await axiosClient.put<ResponseObject<Session>>(
+        `${apiEndpoint.Session}/close`,
+        id
+      );
+    } catch (error) {
+      throw new Error(error);
+    }
+  },
+
   create: async (data: Session): Promise<number> => {
     try {
       const response = await axiosClient.post<ResponseObject<number>>(

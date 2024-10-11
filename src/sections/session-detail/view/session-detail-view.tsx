@@ -109,9 +109,9 @@ export function SessionDetailView() {
           />
         </Grid>
 
-        <Grid xs={12} sm={6} md={6} padding="20px" item>
+        <Grid xs={12} sm={6} md={4} padding="20px" item>
           <Card className=''>
-            <TotalCalcBoard />
+            <TotalCalcBoard session={sessionData}/>
           </Card>
         </Grid>
 

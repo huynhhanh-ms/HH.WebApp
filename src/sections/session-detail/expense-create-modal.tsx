@@ -138,6 +138,7 @@ const CreateExpenseModal: React.FC<CreateExpenseModalProps> = ({ open, onClose, 
           margin="normal"
           label="Số tiền"
           name="amount"
+          onFocus={event => { event.target.select(); }}
           value={formValues.amount}
           onChange={handleChange}
           type="number"
