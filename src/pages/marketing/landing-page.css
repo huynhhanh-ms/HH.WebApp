@@ -6,3 +6,7 @@
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+
+.custom-cursor {
+  cursor: url('public/assets/cursor.png'), auto;
+}

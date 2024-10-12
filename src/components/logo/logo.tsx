@@ -233,7 +233,7 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
         }}
         {...other}
       />
-      <Typography variant="h4" sx={{ color: 'text.primary', mx: '16px', display: 'inline'}}>Huynhhanh</Typography>
+      <Typography variant="h4" sx={{ color: 'text.primary', mx: '16px', display: 'inline'}}>Huynh Hạnh</Typography>
 </div>
     );
   }

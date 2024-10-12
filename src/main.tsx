@@ -1,4 +1,5 @@
 import './tailwind.css';
+import './pages/marketing/landing-page.css';
 
 import ReactDOM from 'react-dom/client';
 import { Suspense, StrictMode } from 'react';
@@ -26,12 +27,13 @@ root.render(
           <AxiosInterceptor>
             <BrowserRouter>
               <Suspense>
-                <App />
+                <div className='custom-cursor'>
+                <App/></div>
               </Suspense>
             </BrowserRouter>
           </AxiosInterceptor>
         </SnackbarProviderCustom>
-        <ReactQueryDevtools initialIsOpen={false} />
+        {/* <ReactQueryDevtools initialIsOpen={false} /> */}
       </QueryClientProvider>
     </HelmetProvider>
   </StrictMode>
