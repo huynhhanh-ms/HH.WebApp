@@ -1,32 +1,32 @@
+import { motion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
 
-import React, { useState } from 'react';
-import { animated, useSpring } from 'react-spring';
-
-
-interface pops {
+interface Props {
   percent?: number;
   color?: string;
 }
 
-const WaterBottle = ({ percent = 50, color }: pops) => {
+const WaterBottle = ({ percent = 50, color }: Props) => {
   const [waterLevel, setWaterLevel] = useState(percent); // Set initial water level
 
-  const props = useSpring({
-    height: `${waterLevel}%`, 
-    from: { height: '0%' },
-  });
+  useEffect (() => {
+    setWaterLevel(percent);
+  }, [percent]);
+
 
   return (
     <div style={{ border: `1px solid ${color}`, height: '100px', width: '60px', position: 'relative' }} className='rounded-md'>
-      <animated.div
+      <motion.div
         className="rounded-b-md"
         style={{
-          ...props,
           background: color,
           position: 'absolute',
           bottom: 0,
           width: '100%',
         }}
+        animate={{ height: `${waterLevel}%` }}
+        initial={{ height: '0%' }}
+        transition={{ duration: 0.5 }}
       />
       {/* <Button onClick={() => setWaterLevel(waterLevel + 10)}>Increase Water</Button> */}
     </div>

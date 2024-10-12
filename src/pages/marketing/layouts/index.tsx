@@ -4,6 +4,8 @@ import { lazy } from 'react';
 // next
 // import lazy from 'next/lazy';
 import { styled } from '@mui/material';
+
+import { ProgressBar } from './header/progress-bar';
 // import { HEADER_MOBILE_HEIGHT, HEADER_DESKTOP_HEIGHT } from '../config';
 //
 const Header = lazy(() => import('./header/Header'));
@@ -39,13 +41,13 @@ export default function Layout({
   return (
     <>
       {disabledHeader ? null : (
-        <>
+        <ProgressBar>
           {simpleHeader ? (
             <HeaderSimple transparent={transparentHeader} />
           ) : (
             <Header transparent={transparentHeader} />
           )}
-        </>
+        </ProgressBar>
       )}
 
       {children}

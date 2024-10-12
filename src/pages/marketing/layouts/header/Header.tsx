@@ -7,6 +7,8 @@ import { Box, Link, Stack, Button, AppBar, Divider, Container } from '@mui/mater
 // import { useOffSetTop, useResponsive } from '../../hooks';
 // routes
 // config
+import { Icon } from '@iconify/react';
+
 // components
 import { makeStyles } from '@mui/styles';
 
@@ -23,19 +25,6 @@ import { ToolbarStyle, ToolbarShadowStyle } from './HeaderToolbarStyle';
 
 // ----------------------------------------------------------------------
 
-export const useStyles = makeStyles({
-  acrylicHeader: {
-    backgroundColor: "rgba(255, 255, 255, 0.3)", // Màu nền với độ trong suốt
-    backdropFilter: "blur(10px)", // Hiệu ứng mờ
-    boxShadow: "0 4px 30px rgba(0, 0, 0, 0.1)", // Đổ bóng nhẹ
-    border: "1px solid rgba(255, 255, 255, 0.2)", // Đường viền tinh tế
-  },
-  title: {
-    flexGrow: 1,
-    color: "#fff", // Màu chữ
-  },
-});
-
 type Props = {
   transparent?: boolean;
 };
@@ -48,10 +37,7 @@ export default function Header({ transparent }: Props) {
 
   const isLight = theme.palette.mode === 'light';
 
-  // const isScrolling = useOffSetTop(HEADER_DESKTOP_HEIGHT);
-  const isScrolling = true;
-
-  const classes = useStyles();
+  const isScrolling = useOffSetTop(HEADER_DESKTOP_HEIGHT);
 
   return (
     <AppBar sx={{ boxShadow: 0, bgcolor: 'transparent' }} >
@@ -80,14 +66,15 @@ export default function Header({ transparent }: Props) {
                   position: 'absolute',
                 }}
               >
-              Công ty TNHH TM DV
+                Công ty TNHH TM DV
               </Label>
             </Link>
           </Box>
 
           {isDesktop && (
             <NavDesktop
-              isScrolling={isScrolling}
+              // isScrolling={isScrolling}
+              isScrolling
               isTransparent={transparent}
               navConfig={navConfig}
             />
@@ -108,28 +95,28 @@ export default function Header({ transparent }: Props) {
               }}
             /> */}
 
-            <Divider orientation="vertical" sx={{ height: 24 }} />
+            <Button variant="text" href="https://www.github.com/jinergenkai" target="_blank" rel="noopener" sx={{ color: 'common.black' }} size='small'>
+              Github
+            </Button>
 
             {isDesktop && (
               <Stack direction="row" spacing={1}>
                 {/* <NextLink href="https://github.com/zennomi" target="_blank" rel="noopener"> */}
-                  <Button
-                    color="inherit"
-                    variant="outlined"
-                    sx={{
-                      ...(transparent && {
-                        color: 'common.white',
-                      }),
-                      ...(isScrolling && isLight && { color: 'text.primary' }),
-                    }}
-                  >
-                    Source Code
-                  </Button>
+                <Button
+                  color="inherit"
+                  variant="contained"
+                  sx={{
+                    ...(transparent && {
+                      color: 'common.white',
+                    }),
+                    ...(isScrolling && isLight && { visibility: 'hidden' }),
+                  }}
+                  size='small'
+                >
+                  Đăng nhập
+                </Button>
                 {/* </NextLink> */}
 
-                <Button variant="contained" href="https://www.facebook.com/Zennomi" target="_blank" rel="noopener">
-                    Github
-                </Button>
               </Stack>
             )}
           </Stack>

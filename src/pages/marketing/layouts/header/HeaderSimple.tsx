@@ -11,6 +11,7 @@ import { Link, Stack, AppBar, Divider, Container } from '@mui/material';
 // import { Logo } from '../../components';
 import { Logo } from 'src/components/logo';
 
+import { ProgressBar } from './progress-bar';
 //
 import useOffSetTop from '../../hook/useOffSetTop';
 import { HEADER_DESKTOP_HEIGHT } from '../../config';
@@ -27,7 +28,7 @@ export default function HeaderSimple({ transparent }: Props) {
   const isScrolling = useOffSetTop(HEADER_DESKTOP_HEIGHT);
 
   return (
-    <AppBar sx={{ boxShadow: 0, bgcolor: 'transparent' }}>
+    <AppBar sx={{ boxShadow: 0, bgcolor: 'transparent'}}>
       <ToolbarStyle disableGutters transparent={transparent} scrolling={isScrolling} sx={{ px: 2 }}>
         <Container
           maxWidth={false}
