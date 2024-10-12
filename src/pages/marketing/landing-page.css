@@ -10,3 +10,6 @@
 .custom-cursor {
   cursor: url('public/assets/cursor.png'), auto;
 }
+.custom-cursor:hover {
+  cursor: url('public/assets/cursor.png'), auto;
+}
