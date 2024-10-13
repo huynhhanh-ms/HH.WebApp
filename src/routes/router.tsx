@@ -74,7 +74,9 @@ export function Router() {
       path: 'sign-in',
       element: (
         <AuthLayout>
-          <SignInPage />
+          <ProtectedRoute>
+            <SignInPage />
+          </ProtectedRoute>
         </AuthLayout>
       ),
     },

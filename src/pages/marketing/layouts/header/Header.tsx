@@ -12,6 +12,8 @@ import { Icon } from '@iconify/react';
 // components
 import { makeStyles } from '@mui/styles';
 
+import { useRouter } from 'src/routes/hooks';
+
 // import { Logo, Label } from '../../components';
 import { Logo } from 'src/components/logo';
 import { Label } from 'src/components/label';
@@ -38,6 +40,12 @@ export default function Header({ transparent }: Props) {
   const isLight = theme.palette.mode === 'light';
 
   const isScrolling = useOffSetTop(HEADER_DESKTOP_HEIGHT);
+
+  const router = useRouter();
+  const handleGotoSignIn = (event: any): void => {
+    event.preventDefault();
+    router.push('/sign-in');
+  }
 
   return (
     <AppBar sx={{ boxShadow: 0, bgcolor: 'transparent' }} >
@@ -101,7 +109,6 @@ export default function Header({ transparent }: Props) {
 
             {isDesktop && (
               <Stack direction="row" spacing={1}>
-                {/* <NextLink href="https://github.com/zennomi" target="_blank" rel="noopener"> */}
                 <Button
                   color="inherit"
                   variant="contained"
@@ -112,10 +119,10 @@ export default function Header({ transparent }: Props) {
                     ...(isScrolling && isLight && { visibility: 'hidden' }),
                   }}
                   size='small'
+                  onClick={handleGotoSignIn}
                 >
                   Đăng nhập
                 </Button>
-                {/* </NextLink> */}
 
               </Stack>
             )}

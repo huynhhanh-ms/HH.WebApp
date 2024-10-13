@@ -176,7 +176,7 @@ export default function LandingPage() {
               LÃNH ĐẠO CỦA CHÚNG TÔI
             </div>
             <div className="flex items-center justify-center gap-10 align-middle" >
-              {[1, 2, 3].map(() => (
+              {/* {[1, 2, 3].map(() => (
                 <div className="text-xl">
                   <img alt="chudoanhnghiep" src="./images/chu-doanh-nghiep.png" className="w-[50%] m-auto p-4" data-aos="flip-right" />
                   <div data-aos="fade-up">
@@ -185,7 +185,7 @@ export default function LandingPage() {
                   </div>
                 </div>
               ))
-              }
+              } */}
             </div>
 
             <div className="p-10" />
