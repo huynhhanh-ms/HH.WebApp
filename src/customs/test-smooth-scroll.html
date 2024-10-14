@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smooth Scroll with Easing</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow-y: scroll;
+    }
+
+    section {
+      height: 100vh; /* Full height for testing scrolling */
+      padding: 20px;
+      font-size: 24px;
+    }
+
+    .section1 { background-color: #f0f0f0; }
+    .section2 { background-color: #d0d0d0; }
+    .section3 { background-color: #b0b0b0; }
+    .section4 { background-color: #909090; }
+  </style>
+</head>
+<body>
+
+  <section class="section1">
+    <h2>Section 1</h2>
+  </section>
+
+  <section class="section2">
+    <h2>Section 2</h2>
+  </section>
+
+  <section class="section3">
+    <h2>Section 3</h2>
+  </section>
+
+  <section class="section4">
+    <h2>Section 4</h2>
+  </section>
+
+  <script>
+    function smoothScrollTo(target, duration) {
+      const start = window.scrollY;
+      const end = target;
+      const change = end - start;
+      const increment = 20; // Time between each frame
+      let currentTime = 0;
+
+      // Easing function: ease-in-out
+      const easeInOutQuad = (t) => {
+        return t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+      };
+
+      const animateScroll = () => {
+        currentTime += increment;
+        const t = currentTime / duration; // Normalize time to [0, 1]
+        const easing = easeInOutQuad(t);
+        window.scrollTo(0, start + change * easing);
+
+        if (currentTime < duration) {
+          requestAnimationFrame(animateScroll);
+        }
+      };
+
+      animateScroll();
+    }
+
+    // Listen for mouse wheel events
+    let scrollTimeout;
+
+    window.addEventListener('wheel', (event) => {
+      event.preventDefault(); // Prevent default scroll behavior
+
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const targetScroll = window.scrollY + (event.deltaY * 2); // Adjust scroll speed
+        const scrollDuration = 2000; // Duration of the scroll animation
+        smoothScrollTo(Math.max(0, Math.min(targetScroll, document.body.scrollHeight - window.innerHeight)), scrollDuration);
+      }, 50); // Delay for better performance
+    }, { passive: false }); // passive: false to prevent default behavior
+  </script>
+
+</body>
+</html>

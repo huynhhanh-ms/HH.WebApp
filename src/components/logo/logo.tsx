@@ -14,11 +14,12 @@ export type LogoProps = BoxProps & {
   href?: string;
   isSingle?: boolean;
   disableLink?: boolean;
+  textColor?: string;
 };
 
 export const Logo = forwardRef<HTMLDivElement, LogoProps>(
   (
-    { width, href = '/', height, isSingle = true, disableLink = false, className, sx, ...other },
+    { width, href = '/', height, isSingle = true, disableLink = false, textColor, className, sx, ...other },
     ref
   ) => {
     const theme = useTheme();
@@ -195,7 +196,7 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
     };
 
     return (
-      <div className='flex'>
+      <div className='flex items-center'>
       {/* // <Box
       //   ref={ref}
       //   component={RouterLink}
@@ -233,7 +234,7 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
         }}
         {...other}
       />
-      <Typography variant="h4" sx={{ color: 'text.primary', mx: '16px', display: 'inline'}}>Huynh Hạnh</Typography>
+      <Typography variant="h4" sx={{ color: textColor ?? 'text.primary', mx: '16px', display: 'inline'}}>Huynh Hạnh</Typography>
 </div>
     );
   }

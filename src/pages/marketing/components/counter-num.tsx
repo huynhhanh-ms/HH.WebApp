@@ -2,7 +2,13 @@ import CountUp from 'react-countup';
 import { useState, useEffect } from 'react';
 // import { useInView } from "react-intersection-observer";
 
-const CounterNum = ({ endValue }: { endValue: number }) => {
+interface CounterNumProps {
+  endValue: number
+  leading?: string
+  suffix?: string
+}
+
+const CounterNum = ({ endValue, leading, suffix }: CounterNumProps) => {
   const [start, setStart] = useState(0);
 
   useEffect(() => {
@@ -11,11 +17,13 @@ const CounterNum = ({ endValue }: { endValue: number }) => {
 
   return (
     <div className="flex items-center justify-center">
-      <div className="font-extrabold text-7xl text-blue">
+      <div className="font-bold text-7xl text-blue-700">
+        {leading}
         {start && <CountUp
-        // enableScrollSpy
-        // scrollSpyOnce={true}
-        start={0} end={endValue ?? 0} duration={8} />}
+          // enableScrollSpy
+          // scrollSpyOnce={true}
+          start={0} end={endValue ?? 0} duration={8} />}
+        {suffix}
       </div>
     </div>
   );

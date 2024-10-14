@@ -2,7 +2,7 @@ import React from "react";
 
 import CounterNum from "./counter-num";
 
-export default function Statistic({ value, title, body, titleWidth }: { value: number, title: string, body: string, titleWidth: number }) {
+export default function Statistic({ value, title, body, titleWidth, leading, suffix}: { value: number, title: string, body: string, titleWidth: number ,leading?:string, suffix?:string}) {
   const formatText = (text: string) => text.split('\n').map((str, index) => (
       <React.Fragment key={index}>
         {str}
@@ -15,6 +15,8 @@ export default function Statistic({ value, title, body, titleWidth }: { value: n
         <div className="" >
           <CounterNum
             endValue={value}
+            leading={leading}
+            suffix={suffix}
            />
         </div>
         <div

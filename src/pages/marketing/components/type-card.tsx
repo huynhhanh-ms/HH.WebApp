@@ -12,12 +12,6 @@ export default function BigCategoryCard({
     description: string;
   }[];
 }) {
-  useEffect(() => {
-    AOS.init({
-      duration: 3000, // Animation duration
-      // once: true, // Whether animation should happen only once - while scrolling down
-    });
-  }, []);
   return (
     <div className="py-10 text-2xl text-center bg-white">
       <div className="py-10 text-3xl text-center font-dejaVuSerif">{title}</div>

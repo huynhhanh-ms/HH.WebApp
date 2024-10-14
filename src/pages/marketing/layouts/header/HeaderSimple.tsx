@@ -1,13 +1,15 @@
 // next
 // import NextLink from 'next/link';
 // @mui
-import { Link, Stack, AppBar, Divider, Container } from '@mui/material';
+import { Box, Link, Stack, AppBar, Button, Divider, Container } from '@mui/material';
 // config
 // hooks
 // import useOffSetTop from '../../hooks/useOffSetTop';
 // routes
 // import Routes from '../../routes';
 // components
+import { useRouter } from 'src/routes/hooks';
+
 // import { Logo } from '../../components';
 import { Logo } from 'src/components/logo';
 
@@ -27,8 +29,13 @@ type Props = {
 export default function HeaderSimple({ transparent }: Props) {
   const isScrolling = useOffSetTop(HEADER_DESKTOP_HEIGHT);
 
+  const router = useRouter();
+  const handleSignIn = (event: any) => {
+    router.push('sign-in');
+  }
+
   return (
-    <AppBar sx={{ boxShadow: 0, bgcolor: 'transparent'}}>
+    <AppBar sx={{ boxShadow: 0, bgcolor: 'transparent' }}>
       <ToolbarStyle disableGutters transparent={transparent} scrolling={isScrolling} sx={{ px: 2 }}>
         <Container
           maxWidth={false}
@@ -38,7 +45,9 @@ export default function HeaderSimple({ transparent }: Props) {
             justifyContent: 'space-between',
           }}
         >
-          <Logo />
+          <Logo textColor={
+            isScrolling ? 'text.primary' : 'white'
+          } />
 
           <Stack
             direction="row"
@@ -46,18 +55,15 @@ export default function HeaderSimple({ transparent }: Props) {
             divider={<Divider orientation="vertical" sx={{ height: 24 }} />}
             spacing={2.5}
           >
-            {/* <NextLink href={Routes.support} passHref> */}
-              <Link
-                color="inherit"
-                variant="body2"
-                sx={{
-                  fontWeight: 'fontWeightMedium',
-                  ...(isScrolling && { color: 'text.primary' }),
-                }}
-              >
-                Support
-              </Link>
-            {/* </NextLink> */}
+            <Button variant='text' color='inherit'
+              sx={{
+                fontWeight: 'fontWeightMedium',
+                ...(isScrolling && { color: 'text.primary' }),
+              }}
+              onClick={handleSignIn}
+            >
+              Đăng nhập
+            </Button>
           </Stack>
         </Container>
       </ToolbarStyle>

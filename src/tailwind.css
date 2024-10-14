@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  /* @font-face {
+    font-family: "Peristiwa";
+    src: url("./assets/SVN-Peristiwa.otf") format("OpenType");
+  } */
+}
+
 /* add the code bellow */ 
 @layer utilities {
   /* Hide scrollbar for Chrome, Safari and Opera */

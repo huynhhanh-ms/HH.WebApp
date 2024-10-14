@@ -12,12 +12,6 @@ export default function IntroComponent() {
   const setPlayback = () => {
     if (videoRef.current) videoRef.current.playbackRate = 4;
   };
-  useEffect(() => {
-    AOS.init({
-      duration: 6000, // Animation duration
-      // once: true, // Whether animation should happen only once - while scrolling down
-    });
-  }, []);
 
   // const image = "/banner2.jpg";
   const images = ["/banner2.jpg", "/banner3.jpg", "/banner4.jpg"];

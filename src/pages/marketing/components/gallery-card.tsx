@@ -4,12 +4,12 @@ import { Link } from "react-router-dom";
 // import { Heart, HeartFill } from "react-bootstrap-icons";
 
 export default function GalleryCard({ image, name , href}: { image: string; name: string; href: string}) {
-  useEffect(() => {
-    AOS.init({
-      duration: 1000, // Animation duration
-      once: true, // Whether animation should happen only once - while scrolling down
-    });
-  }, []);
+  // useEffect(() => {
+  //   AOS.init({
+  //     duration: 1000, // Animation duration
+  //     once: true, // Whether animation should happen only once - while scrolling down
+  //   });
+  // }, []);
   return (
     <div className="relative m-8 bg-brown" data-aos="fade-left">
       <Link to={href}>

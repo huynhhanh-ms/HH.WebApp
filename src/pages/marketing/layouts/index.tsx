@@ -3,9 +3,12 @@ import type { ReactNode } from 'react';
 import { lazy } from 'react';
 // next
 // import lazy from 'next/lazy';
-import { styled } from '@mui/material';
+import { Box, styled } from '@mui/material';
+
+import { stylesMode } from 'src/theme/styles';
 
 import { ProgressBar } from './header/progress-bar';
+import { HEADER_MOBILE_HEIGHT, HEADER_DESKTOP_HEIGHT } from '../config';
 // import { HEADER_MOBILE_HEIGHT, HEADER_DESKTOP_HEIGHT } from '../config';
 //
 const Header = lazy(() => import('./header/Header'));
@@ -39,7 +42,22 @@ export default function Layout({
   simpleFooter,
 }: Props) {
   return (
-    <>
+    <Box sx={{
+      '&::before': {
+        width: 1,
+        height: 1,
+        zIndex: -1,
+        content: "''",
+        opacity: 0.05,
+        position: 'fixed',
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center center',
+        // backgroundImage: `url(/assets/background/overlay2.jpg)`,
+        backgroundImage: `url(/assets/background/overlay-1.webp)`,
+        [stylesMode.dark]: { opacity: 0.08 },
+      },
+    }}>
       {disabledHeader ? null : (
         <ProgressBar>
           {simpleHeader ? (
@@ -49,10 +67,12 @@ export default function Layout({
           )}
         </ProgressBar>
       )}
-
+      {/* <Box sx={{
+        height: { xs: `${HEADER_MOBILE_HEIGHT}px`, md: `${HEADER_DESKTOP_HEIGHT}px` },
+      }}/> */}
       {children}
 
       {disabledFooter ? null : <>{simpleFooter ? <FooterSimple /> : <Footer />}</>}
-    </>
+    </Box>
   );
 }

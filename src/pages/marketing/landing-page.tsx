@@ -6,7 +6,10 @@ import AOS from "aos";
 import { useEffect } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
 
+import { Grid, useTheme, useMediaQuery } from '@mui/material';
+
 import Layout from "./layouts";
+import Intro from './components/intro';
 import Statistic from "./components/statistic";
 import IntroComponent from "./components/swiper";
 import GalleryCard from "./components/gallery-card";
@@ -15,54 +18,61 @@ import CompanyInfo from "./components/company-info";
 export default function LandingPage() {
   useEffect(() => {
     AOS.init({
-      duration: 3000, // Animation duration
+      duration: 2000, // Animation duration
       once: false, // Whether animation should happen only once - while scrolling down
       easing: "ease-out-cubic",
     });
   }, []);
 
+  // const theme = useTheme();
+  const matches = useMediaQuery((theme: any) => theme.breakpoints.down('md'));
 
   return (
-    <Layout transparentHeader>
+    <Layout transparentHeader simpleHeader={matches}>
       <div className="relative custom-cursor" >
-        <IntroComponent />
 
-        {/* mau vang */}
-        {/* <div className={`bg-current text-center pt-10 text-3xl`}>
-        Building Materials
-        <div className="p-10 text-xl">
+        <video autoPlay loop muted
+          className="object-cover w-full h-full rounded-lg shadow-lg"
+          src="/public/assets/marketing/intro_video.mp4"
+        >
+          <source src="/public/assets/marketing/banner.png" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+
+
+        <Intro />
+        <div className="bg-current text-center pt-10 text-3xl">
+          Building Materials
+          <div className="p-10 text-xl" />
         </div>
-      </div> */}
 
 
 
 
-        <div className="flex h-screen">
+        <Grid container className="flex h-screen">
           <div className="flex-1 mx-32 m-auto" data-aos="fade-right">
             <div className="text-5xl font-bold leading-tight">
-              <span className="mr-4 text-red-400">TÂM
+              <span className="mr-4 text-orange-800">Huynh
               </span>
-              <span className="mr-4 text-blue">NGÂN
+              <span className="mr-4 text-blue-900">Hạnh
               </span>
-              <span className="mr-4 text-green-400">PHÁT
-              </span>
-              tự tin giữ vị trí chủ lực trên thị trường sắt thép Bà Rịa - Vũng Tàu
+              tự tin giữ vị trí hàng đầu trong nguồn cung ứng nông sản và vật liệu xây dựng
             </div>
             <div
               className="m-5 mt-14 text-gray-700"
             >
-              Cùng các doanh nghiệp đầu mối kinh doanh sắt thép khác và hơn 120 thương nhân phân phối sắt thép, Tâm Ngân Phát bảo đảm đầy đủ và kịp thời các chủng loại sắt thép phục vụ phát triển kinh tế - xã hội, an ninh quốc phòng và nhu cầu tiêu dùng của nhân dân.
+              Cùng các doanh nghiệp đầu mối kinh doanh cũng như các đại lý nhỏ lẻ, Chúng tôi đảm bảo cung cấp đầy đủ và kịp thời các loại nông sản cũng như vật liệu xây đầy đủ và kịp thời nhằm phục vụ phát triển kinh tế - xã hội, an ninh quốc phòng và nhu cầu tiêu dùng của nhân dân.
             </div>
 
           </div>
           <div className="flex flex-col flex-1 gap-8 m-auto">
 
-            <Statistic value={20} title={"Đơn vị\n thành viên"} titleWidth={200} body={"Trực tiếp kinh doanh \ntrên toàn quốc"} />
-            <Statistic value={100} title={"Đơn vị\n thành viên"} titleWidth={200} body={"Trực tiếp kinh doanh \ntrên toàn quốc"} />
-            <Statistic value={4000} title={"Đơn vị\n thành viên"} titleWidth={200} body={"Trực tiếp kinh doanh \ntrên toàn quốc"} />
+            <Statistic value={10} leading='> ' title={"Loại\nmặt hàng"} titleWidth={200} body="Cung cấp cho các đại lý, doanh nghiệp" />
+            <Statistic value={50} leading='> ' title={"Đơn vị \nđại lý"} titleWidth={200} body={"Trực tiếp kinh doanh \ntrên toàn quốc"} />
+            <Statistic value={1} leading='> ' suffix=' Tỷ' title={"Tấn\nNông sản"} titleWidth={200} body="Cung cấp cho thị trường miền tây" />
 
           </div>
-        </div>
+        </Grid>
 
 
 
@@ -95,35 +105,35 @@ export default function LandingPage() {
       ></BigCategoryCard> */}
 
         {/* image with title left, right */}
-      <div className="bg-current">
-        <img
-          src="/use-brick.webp"
-          alt="image_alt"
-          className="object-cover w-[50%] h-full inline-block"
-          data-aos="fade-right"
-        />
-        <div
-          className="inline-block w-[50%] p-10 text-3xl"
-          data-aos="fade-left"
-        >
-          <div className="m-32">
-            <div className="py-3 text-4xl font-dejaVuSerif">
-              Foundation of the Industry
-            </div>
-            <div className="text-xl text-white">
-              &quot;Founded in 2008, Huynh Hanh Construction Supplies has been
-              dedicated to providing top-notch building materials to our valued
-              customers. Our mission is to deliver exceptional products and
-              services that meet the highest standards of quality and
-              reliability.&quot;
-            </div>
-            {/* <br />
+        <div className="bg-current">
+          <img
+            src="/use-brick.webp"
+            alt="image_alt"
+            className="object-cover w-[50%] h-full inline-block"
+            data-aos="fade-right"
+          />
+          <div
+            className="inline-block w-[50%] p-10 text-3xl"
+            data-aos="fade-left"
+          >
+            <div className="m-64">
+              <div className="py-3 text-4xl text-white">
+                Nền tảng của Doanh Nghiệp
+              </div>
+              <div className="text-xl text-white">
+                Được thành lập vào năm 2008, Công ty TNHH TM DV Huynh Hạnh đã cam kết 
+                cung cấp các sản phảm chất lượng hàng đầu cho khách hàng. 
+                <br/>
+                <br/>
+                Đó cũng là sứ mệnh và kim chỉ nam của chúng tôi trong suốt quá trình phát triển.
+              </div>
+              {/* <br />
         <a href="/shop" className="text-base underline underline-offset-8">
         Tìm hiểu thêm
         </a> */}
+            </div>
           </div>
         </div>
-      </div>
 
         <div className="h-screen">
           {/* shop by category */}
@@ -215,6 +225,8 @@ export default function LandingPage() {
       <div className="h-screen bg-green-500">Section 3</div> */}
 
       </div>
+
+
       <iframe
         title="Google Maps Embed"
         src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3892.6571756380413!2d108.43062897572!3d12.670468721407488!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3171c29ed3e312d3%3A0x8bd995115445caf7!2zWMSDbmcgRMOizIB1IEh1eW5oIEhhzKNuaA!5e0!3m2!1svi!2s!4v1717307771347!5m2!1svi!2s"
@@ -224,7 +236,7 @@ export default function LandingPage() {
         loading="lazy"
         referrerPolicy="no-referrer-when-downgrade"
       />
-    </Layout> 
+    </Layout>
   );
 
 }

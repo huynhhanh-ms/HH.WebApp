@@ -10,6 +10,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        roboto: ['Roboto', 'sans-serif'], // Thêm font Roboto
+      },
       // colors: {
       //   'blue': '#3366FF',
       // },
