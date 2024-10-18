@@ -196,7 +196,7 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
     };
 
     return (
-      <div className='flex items-center'>
+      <div className='flex items-center justify-center'>
       {/* // <Box
       //   ref={ref}
       //   component={RouterLink}

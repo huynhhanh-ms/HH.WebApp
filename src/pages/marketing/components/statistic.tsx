@@ -1,8 +1,10 @@
 import React from "react";
 
+import { Typography } from "@mui/material";
+
 import CounterNum from "./counter-num";
 
-export default function Statistic({ value, title, body, titleWidth, leading, suffix}: { value: number, title: string, body: string, titleWidth: number ,leading?:string, suffix?:string}) {
+export default function Statistic({ value, title, body, titleWidth, leading, suffix, className}: { value: number, title: string, body: string, titleWidth: number ,leading?:string, suffix?:string, className?:string}) {
   const formatText = (text: string) => text.split('\n').map((str, index) => (
       <React.Fragment key={index}>
         {str}
@@ -10,8 +12,8 @@ export default function Statistic({ value, title, body, titleWidth, leading, suf
       </React.Fragment>
     ));
   return (
-    <div data-aos="fade-up" className="">
-      <div className="flex items-end">
+    <div  className={className}>
+      <div className="flex items-end"data-aos="fade-up">
         <div className="" >
           <CounterNum
             endValue={value}
@@ -19,14 +21,14 @@ export default function Statistic({ value, title, body, titleWidth, leading, suf
             suffix={suffix}
            />
         </div>
-        <div
+        <Typography variant="h6"
           className="pb-1 pl-4 text-xl font-bold leading-5 text-blue"
           style={{ width: titleWidth }}
-        >{formatText(title)}</div>
+        >{formatText(title)}</Typography>
       </div>
-      <div
+      <Typography variant="body1"
       className="pt-2 text-sm leading-5 text-gray-800"
-      >{formatText(body)}</div>
+      >{formatText(body)}</Typography>
     </div>
   );
 }

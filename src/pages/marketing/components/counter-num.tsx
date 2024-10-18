@@ -1,5 +1,7 @@
 import CountUp from 'react-countup';
 import { useState, useEffect } from 'react';
+
+import { Typography } from '@mui/material';
 // import { useInView } from "react-intersection-observer";
 
 interface CounterNumProps {
@@ -17,14 +19,15 @@ const CounterNum = ({ endValue, leading, suffix }: CounterNumProps) => {
 
   return (
     <div className="flex items-center justify-center">
-      <div className="font-bold text-7xl text-blue-700">
+      <Typography variant='h1' className="font-bold text-7xl text-blue-700">
         {leading}
         {start && <CountUp
-          // enableScrollSpy
+          enableScrollSpy
+          key={endValue}
           // scrollSpyOnce={true}
           start={0} end={endValue ?? 0} duration={8} />}
         {suffix}
-      </div>
+      </Typography>
     </div>
   );
 };

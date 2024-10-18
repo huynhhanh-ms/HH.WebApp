@@ -19,7 +19,7 @@ function Intro() {
         <Typography variant="body1" sx={{ maxWidth: {xs:'80%', md:'70%' }, margin: '0 auto', mb: 4 }} data-aos='fade-up'>
           Tiên phong trong chuỗi cung ứng nông sản, vật liệu xây dựng khu vực Tây Nguyên
         </Typography>
-        <Button variant="contained" size='large' color="inherit" href="#" sx={{ mb: 4 }} data-aos='fade-right'>
+        <Button variant="outlined" style={{ borderRadius: 20 }} size='large' color="inherit" href="#" sx={{ mb: 4 }} data-aos='fade-right'>
           <Typography variant="h6">
             Hợp tác ngay
           </Typography>

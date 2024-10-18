@@ -51,7 +51,9 @@
     "react-helmet-async": "^2.0.5",
     "react-router-dom": "^6.26.1",
     "react-scroll": "^1.9.0",
+    "react-slick": "^0.30.2",
     "simplebar-react": "^3.2.6",
+    "slick-carousel": "^1.8.1",
     "swiper": "^11.1.14",
     "zustand": "4.5.2"
   },
@@ -62,6 +64,7 @@
     "@types/react": "^18.3.4",
     "@types/react-dom": "^18.3.0",
     "@types/react-scroll": "^1.8.10",
+    "@types/react-slick": "^0.23.13",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "@vitejs/plugin-react-swc": "^3.7.0",
