@@ -35,7 +35,7 @@ export function Handshake({enableImage = false} : {enableImage?: boolean}) {
             backgroundSize: 'cover', // Đảm bảo hình ảnh phủ đầy
             backgroundPosition: 'center', // Căn giữa hình ảnh
             backgroundRepeat: 'no-repeat', // Không lặp lại hình ảnh
-            backgroundImage: 'url(/public/assets/marketing/shakehand.png)',
+            backgroundImage: 'url(/assets/marketing/shakehand.png)',
           }}
         />
       </Box>}

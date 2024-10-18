@@ -54,7 +54,7 @@ export default function LandingPage() {
 
         <video autoPlay loop muted
           className="object-cover w-full h-full rounded-lg shadow-lg"
-          src="/public/assets/marketing/intro_video.mp4"
+          src="/assets/marketing/intro_video.mp4"
         >
           <source src="/assets/marketing/banner.png" type="video/mp4" />
           Trình duyệt không hỗ trợ video
