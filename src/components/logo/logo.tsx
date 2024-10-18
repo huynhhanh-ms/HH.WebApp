@@ -219,7 +219,7 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
         <Box
         ref={ref}
         component='img'
-        src="logo.png"
+        src="/logo.png"
         alt="Huynhhanh"
         href={href}
         className={logoClasses.root.concat(className ? ` ${className}` : '')}

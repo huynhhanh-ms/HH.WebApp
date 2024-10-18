@@ -12,7 +12,7 @@
 }
 
 .custom-cursor, *:hover {
-  cursor: url('public/assets/cursor.png'), auto !important;
+  cursor: url('/assets/cursor.png'), auto !important;
 }
 
 ::-webkit-scrollbar {

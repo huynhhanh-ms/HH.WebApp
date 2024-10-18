@@ -56,7 +56,7 @@ export default function LandingPage() {
           className="object-cover w-full h-full rounded-lg shadow-lg"
           src="/public/assets/marketing/intro_video.mp4"
         >
-          <source src="/public/assets/marketing/banner.png" type="video/mp4" />
+          <source src="/assets/marketing/banner.png" type="video/mp4" />
           Trình duyệt không hỗ trợ video
         </video>
 

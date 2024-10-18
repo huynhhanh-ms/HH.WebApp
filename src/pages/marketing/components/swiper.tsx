@@ -48,7 +48,7 @@ export default function IntroComponent() {
                   className="flex justify-center flex-col items-center absolute left-0 right-0 top-40 text-white text-center font-serif leading-3"
                 >
                   <div className="w-60 h-60 flex justify-center items-center mb-16" data-aos="flip-right">
-                    <img alt="" src="./logo.png" className="w-[80%] h-[80%]" />
+                    <img alt="" src="/logo.png" className="w-[80%] h-[80%]" />
                   </div>
                   <div>
                     <div className="text-2xl" data-aos="fade-down" >
