@@ -6,12 +6,12 @@ services:
      context: .
      dockerfile: Dockerfile
   #  container_name: HH_webapp
-   entrypoint: /bin/sh
+  #  entrypoint: /bin/sh
    ports:
-     - 80:80
-   working_dir: /srv/app
-   volumes:
-     - type: bind
-       source: ./
-       target: /srv/app
-   tty: true
+     - 3039:80
+  #  working_dir: /srv/app
+  #  volumes:
+  #    - type: bind
+  #      source: ./
+  #      target: /srv/app
+  #  tty: true
