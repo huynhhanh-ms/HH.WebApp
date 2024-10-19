@@ -9,7 +9,7 @@
     "module": "ESNext",
     "jsx": "react-jsx",
     "skipLibCheck": true,
-    "noImplicitAny": true,
+    "noImplicitAny": false,
     "noImplicitThis": true,
     "esModuleInterop": true,
     "isolatedModules": true,
@@ -21,8 +21,8 @@
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src"],
-  "exclude": ["node_modules"],
+  "include": ["src", "src/desktop"],
+  "exclude": ["node_modules","desktop"],
   "references": [
     {
       "path": "./tsconfig.node.json"

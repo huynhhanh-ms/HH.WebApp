@@ -1,3 +1,5 @@
+# desktop/*
+# src/desktop/*
 # Build directories
 build/*
 dist/*

@@ -22,7 +22,7 @@ const CounterNum = ({ endValue, leading, suffix }: CounterNumProps) => {
       <Typography variant='h1' className="font-bold text-7xl text-blue-700">
         {leading}
         {start && <CountUp
-          enableScrollSpy
+          // enableScrollSpy
           key={endValue}
           // scrollSpyOnce={true}
           start={0} end={endValue ?? 0} duration={8} />}

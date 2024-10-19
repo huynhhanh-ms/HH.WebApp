@@ -42,11 +42,11 @@ export const navData = [
     path: '/admin/land',
     icon: icon('ic-land'),
   },
-  // {
-  //   title: 'User',
-  //   path: '/admin/user',
-  //   icon: icon('ic-user'),
-  // },
+  {
+    title: 'Trạm cân',
+    path: '/admin/scale',
+    icon: icon('ic-user'),
+  },
   // {
   //   title: 'Product',
   //   path: '/admin/products',
