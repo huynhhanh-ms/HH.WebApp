@@ -1,5 +1,9 @@
 ## Minimal UI ([Free version](https://free.minimals.cc/))
 
+> Some Configuration
+
+- Change port -> update in nginx.conf file + vite.config + dockerfile and docker-compose file if you use docker compose right :D
+
 ![license](https://img.shields.io/badge/license-MIT-blue.svg)
 
 ![preview](public/assets/images/minimal-free-preview.jpg)

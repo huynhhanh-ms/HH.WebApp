@@ -1,17 +1,17 @@
 # version: "3.4"
 services:
- hh_webapp:
-  #  image: node:alpine
-   build:
-     context: .
-     dockerfile: Dockerfile
-  #  container_name: HH_webapp
-  #  entrypoint: /bin/sh
-   ports:
-     - 3039:3039
-  #  working_dir: /srv/app
-  #  volumes:
-  #    - type: bind
-  #      source: ./
-  #      target: /srv/app
-  #  tty: true
+  hh_webapp:
+    image: jinergenkai/hh-webapp:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    #  container_name: HH_webapp
+    #  entrypoint: /bin/sh
+    ports:
+      - 3039:3039
+    #  working_dir: /srv/app
+    #  volumes:
+    #    - type: bind
+    #      source: ./
+    #      target: /srv/app
+    #  tty: true
