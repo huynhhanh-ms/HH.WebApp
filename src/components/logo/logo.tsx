@@ -3,8 +3,10 @@ import type { BoxProps } from '@mui/material/Box';
 import { useId, forwardRef } from 'react';
 
 import Box from '@mui/material/Box';
-import { Typography } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { Button, Typography } from '@mui/material';
+
+import { useRouter } from 'src/routes/hooks';
 
 import { logoClasses } from './classes';
 
@@ -195,9 +197,11 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
       }),
     };
 
+    const router = useRouter();
+
     return (
-      <div className='flex items-center justify-center'>
-      {/* // <Box
+      <Button size='small' onClick={()=>router.push('/')} className='flex items-center justify-center'>
+        {/* // <Box
       //   ref={ref}
       //   component={RouterLink}
       //   href={href}
@@ -217,25 +221,25 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
       // </Box>
       // <Image alt="Logo" src="logo.png" width="100%" height="100%" /> */}
         <Box
-        ref={ref}
-        component='img'
-        src="/logo.png"
-        alt="Huynhhanh"
-        href={href}
-        className={logoClasses.root.concat(className ? ` ${className}` : '')}
-        aria-label="Logo"
-        sx={{
-          ...baseSize,
-          flexShrink: 0,
-          display: 'inline-flex',
-          verticalAlign: 'middle',
-          ...(disableLink && { pointerEvents: 'none' }),
-          ...sx,
-        }}
-        {...other}
-      />
-      <Typography variant="h4" sx={{ color: textColor ?? 'text.primary', mx: '16px', display: 'inline'}}>Huynh Hạnh</Typography>
-</div>
+          ref={ref}
+          component='img'
+          src="/logo.png"
+          alt="Huynhhanh"
+          href={href}
+          className={logoClasses.root.concat(className ? ` ${className}` : '')}
+          aria-label="Logo"
+          sx={{
+            ...baseSize,
+            flexShrink: 0,
+            display: 'inline-flex',
+            verticalAlign: 'middle',
+            ...(disableLink && { pointerEvents: 'none' }),
+            ...sx,
+          }}
+          {...other}
+        />
+        <Typography variant="h4" sx={{ color: textColor ?? 'text.primary', mx: '16px', display: 'inline' }}>Huynh Hạnh</Typography>
+      </Button>
     );
   }
 );

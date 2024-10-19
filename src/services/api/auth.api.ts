@@ -2,6 +2,8 @@ import type { LoginRequest } from 'src/domains/dto/login-request';
 import type { AuthResponse } from 'src/domains/dto/auth-response';
 import type { AccountResponse } from 'src/domains/dto/account-response';
 
+import { enqueueSnackbar } from 'notistack';
+
 import axiosClient from '../axios-client';
 import { apiEndpoint } from '../endpoint';
 
@@ -18,7 +20,8 @@ export const AuthApi = {
       return result?.data?.accessToken;
 
     } catch (error) {
-      throw new Error(error.response.data.Message);
+      enqueueSnackbar(error.message);
+      return '';
     }
   },
   me: async (token: string): Promise<AccountResponse> => {

@@ -1,4 +1,7 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useSnackbar } from 'notistack';
+import { useLocation } from 'react-router-dom';
+import { useMutation } from '@tanstack/react-query';
+import { useState, useEffect, useCallback } from 'react';
 
 import Box from '@mui/material/Box';
 import Link from '@mui/material/Link';
@@ -11,17 +14,24 @@ import InputAdornment from '@mui/material/InputAdornment';
 
 import { useRouter } from 'src/routes/hooks';
 
-import { Iconify } from 'src/components/iconify';
 import { useApp } from 'src/stores/use-app';
-import { useMutation } from '@tanstack/react-query';
 import { AuthApi } from 'src/services/api/auth.api';
 import { ApiQueryKey } from 'src/services/api-query-key';
-import { useSnackbar } from 'notistack';
+
+import { Iconify } from 'src/components/iconify';
 
 // ----------------------------------------------------------------------
 
 export function SignInView() {
   const router = useRouter();
+  const { pathname } = useLocation();
+  const isLoggedIn = useApp((state) => state.isLoggedIn);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      router.replace('/admin');
+    }
+  }, [isLoggedIn, router]);
 
   const [showPassword, setShowPassword] = useState(false);
   const [account, setAccount] = useState({ username: 'admin', password: '123456' });

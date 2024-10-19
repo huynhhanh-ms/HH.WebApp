@@ -8,7 +8,7 @@ services:
   #  container_name: HH_webapp
   #  entrypoint: /bin/sh
    ports:
-     - 3039:80
+     - 3039:3039
   #  working_dir: /srv/app
   #  volumes:
   #    - type: bind
