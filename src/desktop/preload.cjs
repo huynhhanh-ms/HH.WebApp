@@ -14,6 +14,7 @@ const { contextBridge, ipcRenderer } = require('electron')
 
 const handleApi = {
   setTitle: (title) => ipcRenderer.send('set-title', title),
+  onSerialData: (data) => ipcRenderer.on('serial-data', data),
   getData: () => ipcRenderer.invoke('get-data')
 }
 

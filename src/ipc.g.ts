@@ -6,6 +6,7 @@ declare global {
   interface Window {
     electronApi: {
       setTitle: (title: string) => void;
+      onSerialData: (callback) => void,
       
     };
   }
