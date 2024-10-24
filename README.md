@@ -42,4 +42,8 @@ Distributed under the [MIT](https://github.com/huynhhanh-ms/HH.Webapp/blob/main/
 - type:'module" in package.json to use ES6 module
 - use require() for commonJS module
 - I push all code Main process in src/desktop folder all use cjs file type and require() to import module.
-- 
+
+> Work with SERIAL PORT API
+- use Web serial API (support only in chrome, edge...) 
+- turn on flag in chrome://flags/#enable-experimental-web-platform-features 
+- it not work in http, must use https (or allow insecure localhost for development purpose)

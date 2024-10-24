@@ -13,6 +13,11 @@ export const navData = [
     icon: icon('ic-analytics'),
   },
   {
+    title: 'Trạm cân',
+    path: '/admin/scale',
+    icon: icon('ic-scale'),
+  },
+  {
     title: 'Chốt sổ',
     path: '/admin/session',
     icon: icon('ic-session'),
@@ -41,11 +46,6 @@ export const navData = [
     title: 'Đất đai',
     path: '/admin/land',
     icon: icon('ic-land'),
-  },
-  {
-    title: 'Trạm cân',
-    path: '/admin/scale',
-    icon: icon('ic-user'),
   },
   // {
   //   title: 'Product',

@@ -20,7 +20,7 @@ const AddressInfo = () => (
     <Grid item xs={12} md={6} alignContent="center" justifyContent="center">
 
       <Card sx={{ minHeight: '400px', marginY: '20px', marginX: '10px' }}>
-        <CardHeader title=" CTY TNHH TM DV Huynh Hạnh " titleTypographyProps="h4" />
+        <CardHeader title=" CTY TNHH TM DV Huynh Hạnh " />
         <CardContent sx={{ padding: 4 }}>
           <Typography variant="h6" gutterBottom>
             <strong>Địa chỉ:</strong> 69 Thăng Quý, Vụ Bổn, Krông Pắc, Đắk Lắk, Việt Nam

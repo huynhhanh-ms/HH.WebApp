@@ -10,6 +10,8 @@ import { Box, Grid, Divider, useTheme, Typography, useMediaQuery } from '@mui/ma
 
 import { background } from 'src/theme/core';
 
+import SerialComponent from 'src/components/scale/serial-port-test';
+
 import Layout from "./layouts";
 import Intro from './components/intro';
 import Statistic from "./components/statistic";
@@ -79,6 +81,7 @@ export default function LandingPage() {
         <AddressInfo />
 
       </div>
+      <SerialComponent />
 
     </Layout>
   );

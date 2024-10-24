@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Serial Port Reader</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    #data {
+      margin-top: 20px;
+      white-space: pre-wrap;
+      background-color: #f4f4f4;
+      padding: 10px;
+      border: 1px solid #ddd;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Serial Port Data Reader</h1>
+  <button id="connectBtn">Connect to Serial Port</button>
+  <div id="data">No data received yet.</div>
+
+  <script>
+    const connectBtn = document.getElementById('connectBtn');
+    const dataDiv = document.getElementById('data');
+
+    async function connectSerialPort() {
+      try {
+        // Yêu cầu người dùng chọn thiết bị Serial Port
+        const port = await navigator.serial.requestPort();
+
+        // Mở cổng serial với tốc độ baud (ví dụ: 9600, có thể thay đổi)
+        await port.open({ baudRate: 9600 });
+
+        // Tạo bộ đọc dữ liệu từ serial port
+        const textDecoder = new TextDecoderStream();
+        const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
+        const reader = textDecoder.readable.getReader();
+
+        dataDiv.innerText = "Connected to serial port. Waiting for data...";
+
+        // Đọc dữ liệu liên tục từ serial port
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) {
+            // Nếu hoàn thành, ngắt kết nối
+            dataDiv.innerText += '\nSerial port closed.';
+            break;
+          }
+          // Hiển thị dữ liệu nhận được trên trang
+          dataDiv.innerText += value;
+        }
+
+        // Đóng reader khi hoàn thành
+        reader.releaseLock();
+      } catch (error) {
+        console.error('Error connecting to serial port:', error);
+        dataDiv.innerText = "Failed to connect to serial port. See console for details.";
+      }
+    }
+
+    // Gắn sự kiện cho nút 'Connect'
+    connectBtn.addEventListener('click', connectSerialPort);
+  </script>
+
+</body>
+</html>

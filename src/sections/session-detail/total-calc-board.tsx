@@ -6,6 +6,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Box, Grid, Button, Divider, CardHeader, Typography } from "@mui/material";
 
+import { fNumber } from "src/utils/format-number";
+
 import { ApiQueryKey } from "src/services/api-query-key";
 import { SessionApi } from "src/services/api/session.api";
 
@@ -57,7 +59,7 @@ export function TotalCalcBoard({ session }: TotalCalcBoardProps) {
           {/* chi phi phat sinh */}
           <div className='flex justify-between py-3 px-6'>
             <Typography variant="body1" fontStyle="italic">Doanh số (Tổng): </Typography>
-            <Typography variant="body1">{session?.petrolPumps?.reduce((acc, pump) => acc + pump.revenue, 0)}</Typography>
+            <Typography variant="body1">{fNumber(session?.petrolPumps?.reduce((acc, pump) => acc + pump.revenue, 0))}</Typography>
           </div>
 
           <Divider orientation="horizontal" variant='middle' flexItem />
@@ -69,7 +71,7 @@ export function TotalCalcBoard({ session }: TotalCalcBoardProps) {
 
           <div className='flex justify-between py-3 px-6'>
             <Typography variant="body1" fontStyle="italic">Biên độ</Typography>
-            <Typography variant="body1">{(session?.totalExpense ?? 0) - (session?.petrolPumps?.reduce((acc, pump) => acc + pump.revenue, 0) ?? 0)}</Typography>
+            <Typography variant="body1">{fNumber((session?.totalExpense ?? 0) - (session?.petrolPumps?.reduce((acc, pump) => acc + pump.revenue, 0) ?? 0))}</Typography>
 
           </div>
         </Grid>
