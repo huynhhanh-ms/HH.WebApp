@@ -30,6 +30,8 @@ import { Scrollbar } from 'src/components/scrollbar';
 
 import { applyFilter, getComparator } from 'src/sections/tank/utils';
 
+import TicketModal from '../ticket-modal';
+
 
 
 // ----------------------------------------------------------------------
@@ -50,7 +52,7 @@ export function ScaleView() {
     {
       name: 'Cân Hàng + Xe',
       icon: 'mingcute:scale',
-      weight: () => { console.log('123') }
+      weight: () => { console.log('123') },
     },
     {
       name: 'Cân Xác Xe',
@@ -60,7 +62,10 @@ export function ScaleView() {
     {
       name: 'Phiếu cân',
       icon: 'mingcute:scale',
-      weight: () => { console.log('123') }
+      weight: () => { console.log('123') },
+      func: (value) => {
+        isOpenPrint(true);  
+      }
     },
     {
       name: 'Phiếu cân',
@@ -90,10 +95,13 @@ export function ScaleView() {
 
   ]
 
+  // print function
+  const [openPrint, isOpenPrint] = useState(false);
+
   return (
     <DashboardContent maxWidth='xl'>
       <Grid container spacing={3} mb={2}>
-        {/* Button in Left */}
+        {/* Weight Scale in Left */}
         <Grid item xs={12} md={4}>
           <Card>
             <CardContent >
@@ -107,49 +115,15 @@ export function ScaleView() {
         <Grid item xs={12} md={8} container alignContent="space-evenly" spacing={1}>
           {functions.map((item) => (
             <Grid item xs={3} md={3}>
-                <Button size='large' variant='contained' fullWidth>{item.name}</Button>
+              <Button size='large' variant='contained' fullWidth onClick={item.func}>{item.name}</Button>
             </Grid>
           ))}
-
         </Grid>
       </Grid>
 
-      {/* <Grid container spacing={3} sx={{ mb: { xs: 2, md: 3 } }}>
-        <Grid item xs={12} sm={6} md={3} >
-          {gasoline &&
-            <AnalyticsTankVolume
-              title={gasoline.name}
-              percent={Math.ceil(gasoline.currentVolume / gasoline.capacity * 100)}
-              // percent={14.2} 
-              total={gasoline.currentVolume}
-              color='success'
-              icon={<img alt="icon" src="/assets/icons/tank/xang.svg" />}
-              chart={{
-                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-                series: [22, 8, 35, 50, 82, 84, 77, 12],
-              }}
-            />
-          }
-        </Grid>
-        <Grid item xs={12} sm={6} md={3}>
-          {diesel &&
-            <AnalyticsTankVolume
-              title={diesel.name}
-              percent={diesel.currentVolume / diesel.capacity * 100}
-              total={diesel.currentVolume}
-              color='warning'
-              icon={<img alt="icon" src="/assets/icons/tank/dau.svg" />}
-              chart={{
-                categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug'],
-                series: [22, 8, 35, 50, 82, 84, 77, 12],
-              }}
-            />}
-        </Grid>
-      </Grid> */}
-
       <Box display="flex" alignItems="center" mb={3}>
         <Typography variant="h4" flexGrow={1}>
-        Trạm cân
+          Trạm cân
         </Typography>
         <Button
           variant="contained"
@@ -175,6 +149,7 @@ export function ScaleView() {
 
       />
 
+      <TicketModal open={openPrint} onClose={() => isOpenPrint(false)} ticketData={{customer_name: "123", wh_id: 1}}/>
     </DashboardContent>
   );
 }

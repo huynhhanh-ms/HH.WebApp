@@ -7,6 +7,8 @@ type Props = {
   apikey?: string;
   area?: AreaAdmin;
   onAreaChange?: (points: {lat:number, lng:number}[]) => void
+  reset?: boolean
+  afterReset?: () => void
 };
 const HereMapDrawArea = (props: Props) => {
   const [boundary, setBoundary] = useState<{ lat: number; lng: number }[]>([]);
@@ -15,9 +17,10 @@ const HereMapDrawArea = (props: Props) => {
   const mapRef = useRef(null);
   const map = useRef<H.Map | null>(null);
   const platform = useRef<H.service.Platform | null>(null);
-  const { apikey = "7h1jyg35V5JfNIgPA8m1XEN39K9giRbtrfNj8nJ5kd4" , onAreaChange} =
+  const { apikey = "7h1jyg35V5JfNIgPA8m1XEN39K9giRbtrfNj8nJ5kd4", onAreaChange, reset, afterReset} =
     props;
   
+
   useEffect(() => {
     if (boundary.length > 1) {
       const linePoints = boundary?.reduce<number[]>(
@@ -30,13 +33,13 @@ const HereMapDrawArea = (props: Props) => {
       const lineString = new H.geo.LineString(linePoints);
       const newPolygon = new H.map.Polygon(lineString, {
         style: {
-          fillColor: "rgba(230, 244, 255, 0.7)",
-          strokeColor: "#829",
+          fillColor: "rgba(150, 183, 222, 0.7)",
+          strokeColor: "#000000",
           lineWidth: 1,
         },
         data: [],
       });
-      const redDotIcon = new H.map.Icon('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" fill="red" viewBox="0 0 10 10"><circle cx="5" cy="5" r="5"/></svg>');
+      const redDotIcon = new H.map.Icon('/assets/icons/land/point.svg');
       // Create markers at the coordinates of each point
         const markers:any = [];
         boundary.map((point) => {
@@ -67,6 +70,16 @@ const HereMapDrawArea = (props: Props) => {
     }
     onAreaChange?.(boundary);
   }, [boundary,onAreaChange]);
+
+  // reset point
+  useEffect(() => {
+    if (reset) {
+      console.log("reset")
+      setBoundary([]);
+      afterReset?.();
+    }
+  }, [reset, afterReset]);
+
   useEffect(()=>{
     if(!!map.current && !!polygon){
         map.current.addObject(polygon)
