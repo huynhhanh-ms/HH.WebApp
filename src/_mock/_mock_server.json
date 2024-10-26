@@ -1,0 +1,58 @@
+{
+  "weighing-history": [
+    {
+      "id": 1,
+      "customerName": "Nguyễn Văn A",
+      "address": "123 Phạm Văn Đồng, Q.9, TP.HCM",
+      "goodsType": "Xi măng",
+      "licensePlate": "51A-12345",
+      "totalWeight": 15000,
+      "vehicleWeight": 5000,
+      "goodsWeight": 10000,
+      "totalWeighingDate": "2024-10-25T09:30:00",
+      "vehicleWeighingDate": "2024-10-25T09:00:00",
+      "note": "Lô hàng quan trọng",
+      "vehicleImages": ["img1.jpg", "img2.jpg"],
+      "createdDate": "2024-10-25T09:00:00",
+      "updatedDate": "2024-10-25T09:30:00",
+      "createdBy": 1,
+      "updatedBy": 1
+    },
+    {
+      "id": 2,
+      "customerName": "Trần Thị B",
+      "address": "456 Nguyễn Trãi, Q.1, TP.HCM",
+      "goodsType": "Thép",
+      "licensePlate": "60C-98765",
+      "totalWeight": 12000,
+      "vehicleWeight": 4500,
+      "goodsWeight": 7500,
+      "totalWeighingDate": "2024-10-26T10:45:00",
+      "vehicleWeighingDate": "2024-10-26T10:15:00",
+      "note": "Kiểm tra khối lượng kỹ",
+      "vehicleImages": ["img3.jpg", "img4.jpg"],
+      "createdDate": "2024-10-26T10:00:00",
+      "updatedDate": "2024-10-26T10:45:00",
+      "createdBy": 2,
+      "updatedBy": 2
+    },
+    {
+      "id": 3,
+      "customerName": "Vô Danh",
+      "address": "789 Cách Mạng Tháng Tám, Q.3, TP.HCM",
+      "goodsType": "Gạo",
+      "licensePlate": "63B-65432",
+      "totalWeight": 10000,
+      "vehicleWeight": 3000,
+      "goodsWeight": 7000,
+      "totalWeighingDate": "2024-10-27T11:15:00",
+      "vehicleWeighingDate": "2024-10-27T11:00:00",
+      "note": null,
+      "vehicleImages": [],
+      "createdDate": "2024-10-27T11:00:00",
+      "updatedDate": "2024-10-27T11:15:00",
+      "createdBy": 0,
+      "updatedBy": 0
+    }
+  ]
+}

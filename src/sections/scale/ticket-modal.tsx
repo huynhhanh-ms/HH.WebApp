@@ -1,4 +1,6 @@
 
+import type { WeighingHistory } from 'src/domains/dto/weighing-history';
+
 import React, { useRef, Component } from 'react';
 import ReactToPrint, { useReactToPrint } from 'react-to-print';
 
@@ -12,11 +14,6 @@ interface Props {
   ticketData: WeighingHistory;
 }
 
-
-
-
-
-
 function TicketModal({ open, onClose, ticketData }: Props) {
   const handlePrint1 = () => {
     window.print();
@@ -24,23 +21,26 @@ function TicketModal({ open, onClose, ticketData }: Props) {
 
   const contentRef = useRef<HTMLDivElement>(null);
   const handlePrint = useReactToPrint({ contentRef });
-  
+
+  // console.log(ticketData.id);
+
 
 
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md">
+    <Dialog open={open} onClose={onClose} fullWidth maxWidth="md" PaperProps={{
+      sx: {
+        minHeight: 700,
+      }
+    }}>
       <DialogTitle>Phiếu Cân</DialogTitle>
       <DialogContent>
-        {/* <style type="text/css" media="print">{"\
-          @page { size: portrait; }\
-        "}</style> */}
         <div>
-          <Printable innerRef={contentRef} />
+          {/* Print preview */}
+          <Printable innerRef={contentRef} data={ticketData}/>
         </div>
       </DialogContent>
       <DialogActions>
-        {/* Nút để in hợp đồng */}
-          <Button onClick={() => handlePrint()}>Print</Button>
+        <Button onClick={() => handlePrint()}>Print</Button>
         <Button onClick={handlePrint1} color="primary" variant="contained">
           In
         </Button>

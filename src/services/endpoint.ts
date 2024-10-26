@@ -7,4 +7,5 @@ export const apiEndpoint = {
   Session: "/session",
   Expense: "/expense",
   ExpenseType: "/expense-type",
+  WeighingHistory: "/weighing-history",
 };

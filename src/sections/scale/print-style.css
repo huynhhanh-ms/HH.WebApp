@@ -1,6 +1,6 @@
 @media print {
   @page {
     /* margin: 27mm 16mm 27mm 16mm; */
-    size: landscape;
+    size: portrait;
   }
 }

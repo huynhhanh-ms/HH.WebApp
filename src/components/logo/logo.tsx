@@ -17,11 +17,11 @@ export type LogoProps = BoxProps & {
   isSingle?: boolean;
   disableLink?: boolean;
   textColor?: string;
+  clickable?: boolean;
 };
 
-export const Logo = forwardRef<HTMLDivElement, LogoProps>(
-  (
-    { width, href = '/', height, isSingle = true, disableLink = false, textColor, className, sx, ...other },
+export const Logo = forwardRef<HTMLDivElement, LogoProps>(( { 
+  clickable = true, width, href = '/', height, isSingle = true, disableLink = false, textColor, className, sx, ...other },
     ref
   ) => {
     const theme = useTheme();
@@ -192,15 +192,20 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
       width: width ?? 40,
       height: height ?? 40,
       ...(!isSingle && {
-        width: width ?? 102,
-        height: height ?? 36,
+        width: width ?? 30,
+        height: height ?? 30,
       }),
     };
 
     const router = useRouter();
 
     return (
-      <Button size='small' onClick={()=>router.push('/')} className='flex items-center justify-center'>
+      <Button size='small' onClick={
+        () => {
+          router.push('/');
+        }
+
+      } disabled={!clickable} className='flex items-center justify-center'>
         {/* // <Box
       //   ref={ref}
       //   component={RouterLink}
@@ -238,7 +243,7 @@ export const Logo = forwardRef<HTMLDivElement, LogoProps>(
           }}
           {...other}
         />
-        <Typography variant="h4" sx={{ color: textColor ?? 'text.primary', mx: '16px', display: 'inline' }}>Huynh Hạnh</Typography>
+        {isSingle && <Typography variant="h4" sx={{ color: textColor ?? 'text.primary', mx: '16px', display: 'inline' }}>Huynh Hạnh</Typography> }
       </Button>
     );
   }

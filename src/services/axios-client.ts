@@ -10,6 +10,7 @@ const headerObj = {
 };
 const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? `${BASE_URL}/api`,
+  // baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3000',
   headers: headerObj,
 });
 

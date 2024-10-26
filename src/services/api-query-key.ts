@@ -27,4 +27,5 @@ export const ApiQueryKey = {
   petrolPump : "PETROL_PUMP",
   expense : "EXPENSE",
   expenseType : "EXPENSE_TYPE",
+  weighingHistory : "WEIGHING_HISTORY",
 };
