@@ -46,6 +46,7 @@ export function ScaleView() {
   const queryClient = useQueryClient();
   const apiRef = useGridApiRef();
 
+  const [dialogKey, setDialogKey] = useState(0);
   const [weightScale, setWeightScale] = useState<number>(0);
   const [selectionTicket, setSelectionTicket] = useState<WeighingHistory | null>(null);
 
@@ -53,7 +54,7 @@ export function ScaleView() {
     // each time gen a random number
     setTimeout(() => {
       setWeightScale(Math.floor(Math.random() * 100000));
-    }, 1000);
+    }, 4000);
   });
 
   const { data } = useQuery({
@@ -80,22 +81,39 @@ export function ScaleView() {
       func: () => {
         setRows(
           rows.map((row) =>
-            row.id === selectionTicket?.id ? { ...row, totalWeight: weightScale } : row
+            row.id === selectionTicket?.id ? {
+              ...row,
+              totalWeight: weightScale,
+              totalWeighingDate: new Date().toISOString(),
+            } : row
           )
-        )
+        );
+        setDialogKey(pre => pre + 1);
       },
       disabled: false,
     },
     {
       name: 'Cân Xác Xe',
       icon: 'bi:truck-flatbed',
-      weight: () => { console.log('123') },
-      disabled: true,
+      func: () => {
+        setRows(
+          rows.map((row) =>
+            row.id === selectionTicket?.id ? {
+              ...row,
+              vehicleWeight: weightScale,
+              vehicleWeighingDate: new Date().toISOString(),
+            } : row
+          )
+        );
+        setDialogKey(pre => pre + 1);
+      },
+      disabled: false,
     },
     {
       name: 'Phiếu cân',
       icon: 'fluent:document-print-20-regular',
       func: (value) => {
+        setDialogKey(pre => pre + 1);
         if (selectionTicket === null) {
           enqueueSnackbar('Chưa chọn dòng để tạo phiếu cân', { variant: 'error' });
           return;
@@ -225,7 +243,7 @@ export function ScaleView() {
       // disableRowSelectionOnClick
       />
 
-      {selectionTicket !== null && <TicketModal open={openPrint} onClose={() => isOpenPrint(false)} ticketData={selectionTicket} />}
+      {selectionTicket !== null && <TicketModal key={dialogKey} open={openPrint} onClose={() => isOpenPrint(false)} ticketData={selectionTicket} />}
     </DashboardContent>
   );
 }
@@ -237,12 +255,14 @@ const columns: GridColDef<WeighingHistory>[] = [
     headerName: 'Khách hàng',
     width: 160,
     editable: true,
+    sortable: false,
   },
 
   {
     field: 'licensePlate',
     headerName: 'Biển số xe',
     width: 125,
+    sortable: false,
     editable: true,
   },
 
@@ -250,7 +270,8 @@ const columns: GridColDef<WeighingHistory>[] = [
     field: 'totalWeight',
     headerName: 'Kl hàng + xe',
     description: 'This column has a value getter and is not sortable.',
-    sortable: true,
+    sortable: false,
+
     editable: true,
     width: 100,
     type: 'number',
@@ -260,7 +281,8 @@ const columns: GridColDef<WeighingHistory>[] = [
     field: 'vehicleWeight',
     headerName: 'Kl xe',
     editable: true,
-    sortable: true,
+    sortable: false,
+
     width: 100,
     type: 'number',
   },
@@ -269,7 +291,8 @@ const columns: GridColDef<WeighingHistory>[] = [
     field: 'goodsWeight',
     headerName: 'Kl hàng',
     description: 'This column has a value getter and is not sortable.',
-    sortable: true,
+    sortable: false,
+
     width: 100,
     type: 'number',
     valueGetter: (value, row) => getGoodsWeight(row as WeighingHistory),
@@ -278,7 +301,8 @@ const columns: GridColDef<WeighingHistory>[] = [
     field: 'time',
     headerName: 'Ngày cân',
     align: 'center',
-    sortable: true,
+    sortable: false,
+
     // width: 160,
     valueGetter: (value, row) => fDateTime((row as WeighingHistory).totalWeighingDate, formatStr.split.date),
   },
@@ -286,7 +310,8 @@ const columns: GridColDef<WeighingHistory>[] = [
     field: 'totalWeighingDate',
     headerName: 'Giờ XH',
     align: 'center',
-    sortable: true,
+    sortable: false,
+
     // width: 100,
     valueGetter: (value, row) => fDateTime((row as WeighingHistory).totalWeighingDate, formatStr.time),
   },
@@ -294,35 +319,43 @@ const columns: GridColDef<WeighingHistory>[] = [
     field: 'vehicleWeighingDate',
     headerName: 'Giờ xe',
     align: 'center',
-    sortable: true,
+    sortable: false,
+
     // width: 160,
     valueGetter: (value, row) => fDateTime((row as WeighingHistory).vehicleWeighingDate, formatStr.time),
   },
   {
     field: 'note',
     headerName: 'Ghi chú',
-    sortable: true,
+    sortable: false,
+
     width: 160,
     type: 'string',
+    editable: true,
   },
   {
     field: 'address',
     headerName: 'Địa chỉ',
     width: 100,
     editable: true,
+    sortable: false,
+
   },
   {
     field: 'goodsType',
     headerName: 'Loại hàng',
     width: 110,
     editable: true,
+    sortable: false,
+
   },
   {
     field: 'vehicleImages',
     headerName: 'hình ảnh',
-    sortable: true,
+    sortable: false,
     width: 160,
     type: 'string',
+
   },
 ];
 

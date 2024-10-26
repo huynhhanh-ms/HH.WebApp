@@ -15,9 +15,9 @@ interface Props {
 }
 
 function TicketModal({ open, onClose, ticketData }: Props) {
-  const handlePrint1 = () => {
-    window.print();
-  };
+  // const handlePrint1 = () => {
+  //   window.print();
+  // };
 
   const contentRef = useRef<HTMLDivElement>(null);
   const handlePrint = useReactToPrint({ contentRef });
@@ -29,7 +29,7 @@ function TicketModal({ open, onClose, ticketData }: Props) {
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md" PaperProps={{
       sx: {
-        minHeight: 700,
+        minHeight: 600,
       }
     }}>
       <DialogTitle>Phiếu Cân</DialogTitle>
@@ -40,11 +40,10 @@ function TicketModal({ open, onClose, ticketData }: Props) {
         </div>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => handlePrint()}>Print</Button>
-        <Button onClick={handlePrint1} color="primary" variant="contained">
+        <Button onClick={() => handlePrint()}>
           In
         </Button>
-        <Button onClick={onClose} color="secondary" variant="outlined">
+        <Button onClick={onClose} color="inherit">
           Đóng
         </Button>
       </DialogActions>

@@ -15,6 +15,8 @@ export interface WeighingHistory {
   totalWeight?: number;
   vehicleWeight?: number;
   goodsWeight?: number;
+  price?: number;
+  total?: number;
   totalWeighingDate?: string;
   vehicleWeighingDate?: string;
   note?: string;
