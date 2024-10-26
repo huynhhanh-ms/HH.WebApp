@@ -119,6 +119,19 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
                     }
                   }} > <Icon icon={fullIcon} width="20" height="20" style={{ color: "#454545" }} /> </Button>
 
+                <Button color='inherit'
+                  sx={{ minWidth: 40, height: 40 }}
+
+                  onClick={() => {
+                    // window.location.reload();
+                    // window.location.href = window.location.href;
+                    window.location.reload();
+
+                  }}
+                >
+                  <Icon icon='mdi:reload' width="20" height="20" style={{ color: "#454545" }} />
+                </Button>
+
                 {/* <LanguagePopover data={_langs} /> */}
                 <NotificationsPopover data={_notifications} />
                 <AccountPopover
@@ -161,8 +174,8 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
       cssVars={{
         '--layout-nav-vertical-width': '300px',
         '--layout-dashboard-content-pt': theme.spacing(1),
-        '--layout-dashboard-content-pb': theme.spacing(1),
-        '--layout-dashboard-content-px': theme.spacing(1),
+        '--layout-dashboard-content-pb': theme.spacing(3),
+        '--layout-dashboard-content-px': theme.spacing(3),
       }}
       sx={{
         [`& .${layoutClasses.hasSidebar}`]: {

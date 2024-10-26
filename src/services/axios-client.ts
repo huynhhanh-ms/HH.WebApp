@@ -9,8 +9,8 @@ const headerObj = {
   'Access-Control-Allow-Origin': '*',
 };
 const axiosClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? `${BASE_URL}/api`,
-  // baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3000',
+  // baseURL: import.meta.env.VITE_API_URL ?? `${BASE_URL}/api`,
+  baseURL: import.meta.env.VITE_API_URL ?? 'http://localhost:3000',
   headers: headerObj,
 });
 

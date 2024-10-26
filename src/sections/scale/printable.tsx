@@ -68,7 +68,7 @@ class Printable extends Component<Props> {
               {contentLeft.map((item, index) => {
                 if (item.divider) {
                   return (
-                    <Divider />
+                    <Divider key={index} />
                   )
                 }
                 return (
