@@ -4,11 +4,12 @@ import { Icon } from '@iconify/react';
 import { useRef, useState } from 'react';
 
 import Box from '@mui/material/Box';
-import { Button } from '@mui/material';
 import Alert from '@mui/material/Alert';
 import { useTheme } from '@mui/material/styles';
+import { Button, useMediaQuery } from '@mui/material';
 
 import { useHeader } from 'src/stores/use-header';
+import { useGlobal } from 'src/stores/use-global';
 import { _langs, _notifications } from 'src/_mock';
 
 import { Iconify } from 'src/components/iconify';
@@ -45,6 +46,9 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
 
   const layoutQuery: Breakpoint = 'lg';
 
+  const matchDown = useMediaQuery(theme.breakpoints.up(layoutQuery));
+  const { isSimpleNav, setSimpleNav } = useGlobal();
+
   const [fullIcon, setFullIcon] = useState("icon-park-outline:full-screen-one");
 
   return (
@@ -71,10 +75,18 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
             leftArea: (
               <>
                 <MenuButton
-                  onClick={() => setNavOpen(true)}
+                  onClick={() => {
+                    // set simple nav or open nav in mobile
+                    if (!matchDown) {
+                      setNavOpen(true);
+                    }
+                    else {
+                      setSimpleNav(!isSimpleNav);
+                    }
+                  }}
                   sx={{
                     ml: -1,
-                    [theme.breakpoints.up(layoutQuery)]: { display: 'none' },
+                    // [theme.breakpoints.up(layoutQuery)]: { display: 'none' },
                   }}
                 />
                 <HeaderTitle
@@ -137,7 +149,7 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
        * Sidebar
        *************************************** */
       sidebarSection={
-        <NavDesktop data={navData} layoutQuery={layoutQuery} workspaces={_workspaces} />
+        <NavDesktop data={navData} layoutQuery={layoutQuery} workspaces={_workspaces} disabled={isSimpleNav} />
       }
       /** **************************************
        * Footer
@@ -149,13 +161,13 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
       cssVars={{
         '--layout-nav-vertical-width': '300px',
         '--layout-dashboard-content-pt': theme.spacing(1),
-        '--layout-dashboard-content-pb': theme.spacing(8),
-        '--layout-dashboard-content-px': theme.spacing(5),
+        '--layout-dashboard-content-pb': theme.spacing(1),
+        '--layout-dashboard-content-px': theme.spacing(1),
       }}
       sx={{
         [`& .${layoutClasses.hasSidebar}`]: {
           [theme.breakpoints.up(layoutQuery)]: {
-            pl: 'var(--layout-nav-vertical-width)',
+            pl: !isSimpleNav ? 'var(--layout-nav-vertical-width)' : '0px',
           },
         },
         ...sx,

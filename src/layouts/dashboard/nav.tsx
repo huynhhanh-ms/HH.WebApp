@@ -35,6 +35,7 @@ export type NavContentProps = {
   };
   workspaces: WorkspacesPopoverProps['data'];
   sx?: SxProps<Theme>;
+  disabled?: boolean;
 };
 
 export function NavDesktop({
@@ -43,6 +44,7 @@ export function NavDesktop({
   slots,
   workspaces,
   layoutQuery,
+  disabled = false,
 }: NavContentProps & { layoutQuery: Breakpoint }) {
   const theme = useTheme();
 
@@ -62,7 +64,7 @@ export function NavDesktop({
         width: 'var(--layout-nav-vertical-width)',
         borderRight: `1px solid var(--layout-nav-border-color, ${varAlpha(theme.vars.palette.grey['500Channel'], 0.12)})`,
         [theme.breakpoints.up(layoutQuery)]: {
-          display: 'flex',
+          display: (disabled ? 'none' : 'flex'),
         },
         ...sx,
       }}
