@@ -55,7 +55,7 @@ export function ScaleView() {
     setTimeout(() => {
       setWeightScale(Math.floor(Math.random() * 100000));
     }, 4000);
-  });
+  }, [weightScale]);
 
   const { data } = useQuery({
     queryKey: [ApiQueryKey.weighingHistory],
@@ -79,16 +79,22 @@ export function ScaleView() {
       name: 'Cân Hàng + Xe',
       icon: 'mdi:tanker-truck',
       func: () => {
-        setRows(
-          rows.map((row) =>
+        setRows(pre =>
+          pre.map((row) =>
             row.id === selectionTicket?.id ? {
               ...row,
               totalWeight: weightScale,
               totalWeighingDate: new Date().toISOString(),
+              note: 'Cân hàng + xe',
             } : row
           )
         );
-        setDialogKey(pre => pre + 1);
+
+        // // setDialogKey(pre => pre + 1);
+        // const selection = rows.find((row) => row.id === selectionTicket?.id);
+        // if (selection) {
+        //   setSelectionTicket(rows[(selection[0] as number) - 1]);
+        // }
       },
       disabled: false,
     },
@@ -96,16 +102,25 @@ export function ScaleView() {
       name: 'Cân Xác Xe',
       icon: 'bi:truck-flatbed',
       func: () => {
+
+        const selection = rows.find((row) => row.id === selectionTicket?.id);
+        if (selection === undefined) {
+          enqueueSnackbar('Chưa chọn dòng để cân', { variant: 'error' });
+          return;
+        }
+        const updateSelection: WeighingHistory = {
+          ...selection,
+          vehicleWeight: weightScale,
+          vehicleWeighingDate: new Date().toISOString(),
+        };
+
+        setSelectionTicket(updateSelection);
         setRows(
           rows.map((row) =>
-            row.id === selectionTicket?.id ? {
-              ...row,
-              vehicleWeight: weightScale,
-              vehicleWeighingDate: new Date().toISOString(),
-            } : row
+            row.id === selectionTicket?.id ?
+              updateSelection : row
           )
         );
-        setDialogKey(pre => pre + 1);
       },
       disabled: false,
     },
@@ -150,9 +165,8 @@ export function ScaleView() {
           goodsType: '',
           vehicleImages: ['hàng+Xe', 'Xác'],
         }]);
-        setSelectionTicket(rows[rows.length - 2]);
-        apiRef.current?.selectRow(selectionTicket?.id ?? 0, false);
-        apiRef.current?.selectRow(rows.length, true);
+        // setSelectionTicket(rows[rows.length - 2]);
+
         // apiRef.current?.re
 
       },
@@ -236,8 +250,24 @@ export function ScaleView() {
 
         // onCellClick={handleCellClick}
 
+        onCellModesModelChange={(cell) => {
+          // alert("cell model change");
+        }}
+        onRowModesModelChange={(row) => {
+          alert("row model change");
+        }}
         onRowSelectionModelChange={(selection) => {
+          alert("row selection model change");
           setSelectionTicket(rows[(selection[0] as number) - 1]);
+          // apiRef.current?.selectRow(selectionTicket?.id ?? 0, false);
+          // apiRef.current?.selectRow(rows.length, true);
+        }}
+        onRowCountChange={(newCount) => {
+          alert("row count change");
+          // update when add new row
+          // apiRef.current?.selectRow(selectionTicket?.id ?? 0, false);
+          // setSelectionTicket(rows[newCount]);
+          // apiRef.current?.selectRow(rows.length, true);
         }}
       // checkboxSelection
       // disableRowSelectionOnClick
