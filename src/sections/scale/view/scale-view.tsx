@@ -299,6 +299,14 @@ export function ScaleView() {
       </Typography>
 
       <DataGrid rows={rows} columns={columns} sx={sxDataGrid}
+        
+        slots={{
+          noRowsOverlay: () => <Box display="flex" justifyContent="center" height="100%">
+            <Typography variant="h6" color="textSecondary" align="center" textAlign="center" sx={{ mt: 2 }}>
+            Không có dòng nào - Hãy thêm mới
+            </Typography>
+            </Box>,
+        }}
         initialState={{
           pagination: {
             paginationModel: {
