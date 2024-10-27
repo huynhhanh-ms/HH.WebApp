@@ -46,15 +46,53 @@ export function ScaleView() {
   const queryClient = useQueryClient();
   const apiRef = useGridApiRef();
 
-  const [dialogKey, setDialogKey] = useState(0);
-  const [weightScale, setWeightScale] = useState<number>(0);
+  const [weightScale, setWeightScale] = useState<number>(-1);
   const [selectionTicket, setSelectionTicket] = useState<WeighingHistory | null>(null);
 
+  const connectSerialPort = async () => {
+    try {
+      // Yêu cầu người dùng chọn thiết bị Serial Port
+      const port = await (navigator as any).serial.requestPort();
+
+      // Mở cổng serial với tốc độ baud (ví dụ: 9600, có thể thay đổi)
+      await port.open({ baudRate: 9600 });
+
+      // Tạo bộ đọc dữ liệu từ serial port
+      const textDecoder = new TextDecoderStream();
+      const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
+      const reader = textDecoder.readable.getReader();
+
+      // setWeightScale(0);
+
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
+
+        // eslint-disable-next-line no-await-in-loop
+        const { value, done } = await reader.read();
+        if (done) {
+          setWeightScale(-1);
+          break;
+        }
+        console.log('Received data:', value);
+        setWeightScale(parseInt(value));
+      }
+
+      // Đóng reader khi hoàn thành
+      reader.releaseLock();
+    } catch (error) {
+      console.error('Error connecting to serial port:', error);
+      setWeightScale(-1);
+    }
+  }
+
+
+  // fake data
   useEffect(() => {
     // each time gen a random number
-    setTimeout(() => {
-      setWeightScale(Math.floor(Math.random() * 100000));
-    }, 4000);
+    // setTimeout(() => {
+    //   setWeightScale(Math.floor(Math.random() * 100));
+    // }, 4000);
+    console.log("weightScale", weightScale);
   }, [weightScale]);
 
   const { data } = useQuery({
@@ -70,31 +108,33 @@ export function ScaleView() {
     }
   }, [data]);
 
-  useEffect(() => {
-    console.log(selectionTicket);
-  });
-
   const functions = [
     {
       name: 'Cân Hàng + Xe',
       icon: 'mdi:tanker-truck',
       func: () => {
-        setRows(pre =>
-          pre.map((row) =>
-            row.id === selectionTicket?.id ? {
-              ...row,
-              totalWeight: weightScale,
-              totalWeighingDate: new Date().toISOString(),
-              note: 'Cân hàng + xe',
-            } : row
+        const selection = rows.find((row) => row.id === selectionTicket?.id);
+        if (selection === undefined) {
+          enqueueSnackbar('Chưa chọn dòng để cân', { variant: 'error' });
+          return;
+        }
+        const updateSelection: WeighingHistory = {
+          ...selection,
+          totalWeight: weightScale,
+          totalWeighingDate: new Date().toISOString(),
+          goodsWeight: weightScale - (selection.vehicleWeight ?? 0),
+          totalCost: (weightScale - (selection.vehicleWeight ?? 0)) * (selection.price ?? 0)
+        };
+
+        // update state
+        console.log("selection change");
+        setSelectionTicket(updateSelection);
+        setRows(
+          rows.map((row) =>
+            row.id === selectionTicket?.id ?
+              updateSelection : row
           )
         );
-
-        // // setDialogKey(pre => pre + 1);
-        // const selection = rows.find((row) => row.id === selectionTicket?.id);
-        // if (selection) {
-        //   setSelectionTicket(rows[(selection[0] as number) - 1]);
-        // }
       },
       disabled: false,
     },
@@ -112,8 +152,12 @@ export function ScaleView() {
           ...selection,
           vehicleWeight: weightScale,
           vehicleWeighingDate: new Date().toISOString(),
+          goodsWeight: (selection.totalWeight ?? 0) - weightScale,
+          totalCost: ((selection.totalWeight ?? 0) - weightScale) * (selection.price ?? 0)
         };
 
+        // update state
+        console.log("selection change");
         setSelectionTicket(updateSelection);
         setRows(
           rows.map((row) =>
@@ -128,7 +172,6 @@ export function ScaleView() {
       name: 'Phiếu cân',
       icon: 'fluent:document-print-20-regular',
       func: (value) => {
-        setDialogKey(pre => pre + 1);
         if (selectionTicket === null) {
           enqueueSnackbar('Chưa chọn dòng để tạo phiếu cân', { variant: 'error' });
           return;
@@ -165,10 +208,6 @@ export function ScaleView() {
           goodsType: '',
           vehicleImages: ['hàng+Xe', 'Xác'],
         }]);
-        // setSelectionTicket(rows[rows.length - 2]);
-
-        // apiRef.current?.re
-
       },
     },
     {
@@ -178,13 +217,26 @@ export function ScaleView() {
 
       },
     }
-
-
   ]
 
   // print function
   const [openPrint, isOpenPrint] = useState(false);
 
+
+  const handleProcessRowUpdate = (newRow: WeighingHistory, oldRow: WeighingHistory): WeighingHistory | Promise<WeighingHistory> => {
+    const newGoodsWeight = (newRow.totalWeight ?? 0) - (newRow.vehicleWeight ?? 0);
+    const updatedTotal = newGoodsWeight * (newRow.price ?? 0);
+
+    setRows(
+      rows.map((row) =>
+        row.id === newRow.id ?
+          { ...newRow, totalCost: updatedTotal } : row
+      )
+    );
+
+    return { ...newRow, totalCost: updatedTotal };
+
+  }
 
   return (
     <DashboardContent maxWidth={false}>
@@ -194,9 +246,17 @@ export function ScaleView() {
           <Grid item xs={12} md={4}>
             <Card>
               <CardContent >
-                <Typography variant="h1" align='right' sx={{ paddingLeft: '40px' }}>
-                  {fNumber(weightScale)} Kg
-                </Typography>
+                {weightScale !== -1 ?
+                  <Typography variant="h1" align='right' sx={{ paddingLeft: '40px' }}>
+                    {fNumber(weightScale)} Kg
+                  </Typography>
+                  :
+                  <Button onClick={connectSerialPort} size='large'> 
+                  <Typography variant="h1" align='right' sx={{ paddingLeft: '40px' }}>
+                  Chọn Cân 
+                  </Typography> </Button>
+                }
+
               </CardContent>
             </Card>
           </Grid>
@@ -229,7 +289,8 @@ export function ScaleView() {
 
         {/* //*Camera  */}
         <Grid item xs={2}>
-          <CameraFeed />
+          {/* <CameraFeed /> */}
+          {/* <OCRComponent/> */}
         </Grid>
       </Grid>
 
@@ -247,33 +308,20 @@ export function ScaleView() {
         }}
         apiRef={apiRef}
         // pageSizeOptions={[5]}
-
-        // onCellClick={handleCellClick}
-
-        onCellModesModelChange={(cell) => {
-          // alert("cell model change");
-        }}
-        onRowModesModelChange={(row) => {
-          alert("row model change");
-        }}
         onRowSelectionModelChange={(selection) => {
-          alert("row selection model change");
-          setSelectionTicket(rows[(selection[0] as number) - 1]);
-          // apiRef.current?.selectRow(selectionTicket?.id ?? 0, false);
-          // apiRef.current?.selectRow(rows.length, true);
+          console.log("selection change");
+          setSelectionTicket(rows[selection[0] as number - 1]);
         }}
         onRowCountChange={(newCount) => {
-          alert("row count change");
-          // update when add new row
-          // apiRef.current?.selectRow(selectionTicket?.id ?? 0, false);
-          // setSelectionTicket(rows[newCount]);
-          // apiRef.current?.selectRow(rows.length, true);
+          apiRef.current?.setRowSelectionModel([rows.length]);
         }}
-      // checkboxSelection
-      // disableRowSelectionOnClick
+        processRowUpdate={handleProcessRowUpdate}
+        onProcessRowUpdateError={(error) => console.error(error)}
+        disableMultipleRowSelection
+
       />
 
-      {selectionTicket !== null && <TicketModal key={dialogKey} open={openPrint} onClose={() => isOpenPrint(false)} ticketData={selectionTicket} />}
+      {selectionTicket !== null && <TicketModal open={openPrint} onClose={() => isOpenPrint(false)} ticketData={selectionTicket} />}
     </DashboardContent>
   );
 }
@@ -325,7 +373,19 @@ const columns: GridColDef<WeighingHistory>[] = [
 
     width: 100,
     type: 'number',
-    valueGetter: (value, row) => getGoodsWeight(row as WeighingHistory),
+  },
+  {
+    field: 'price',
+    headerName: 'Đơn giá',
+    sortable: false,
+    editable: true,
+    type: 'number',
+  },
+  {
+    field: 'totalCost',
+    headerName: 'Tổng tiền',
+    sortable: false,
+    type: 'number',
   },
   {
     field: 'time',
@@ -388,13 +448,3 @@ const columns: GridColDef<WeighingHistory>[] = [
 
   },
 ];
-
-const getGoodsWeight = (row: WeighingHistory) => {
-  if (!row) return '';
-  if (row.totalWeight === undefined) return '';
-  if (row.vehicleWeight === undefined) return '';
-  if ((row.totalWeight || 0) - (row.vehicleWeight || 0) === 0) {
-    return '';
-  }
-  return (row.totalWeight || 0) - (row.vehicleWeight || 0);
-}

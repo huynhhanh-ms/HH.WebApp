@@ -26,13 +26,16 @@ class Printable extends Component<Props> {
       { title: 'Trọng Lượng Xe', value: `${data.vehicleWeight || 0} Kg` },
       { divider: true },
       { title: 'Trọng Lượng Hàng', value: `${data.goodsWeight || 0} Kg` },
+      { title: 'Giá', value: `${data.price || 0}` },
+      { divider: true },
+      { title: 'Thành tiền', value: `${data.totalCost || 0}` },
     ];
 
     const contentRight = [
-      { title: 'Loại Hàng', value: data.goodsType || 'h' },
+      { title: 'Loại Hàng', value: data.goodsType || '' },
       // { title: 'Kho', value: data.storage || '' },
       { title: 'Biển Số Xe', value: data.licensePlate },
-      { title: 'Ngày Cân', value: fDateTime(data.totalWeighingDate || '', formatStr.split.date) },
+      // { title: 'Ngày Cân', value: fDateTime(data.totalWeighingDate || '', formatStr.split.date) },
       { title: 'Giờ Cân 1', value: fDateTime(data.totalWeighingDate || '') },
       { title: 'Giờ Cân 2', value: fDateTime(data.vehicleWeighingDate || '') },
       // { title: 'Nhập/Xuất', value: data.entryExit || '' },
@@ -104,7 +107,7 @@ class Printable extends Component<Props> {
 
           {/* <Divider sx={{ mt: 4, mb: 2 }} /> */}
           {/* Adventise */}
-          <Box sx={{ mt: 2 }}>
+          <Box sx={{ mt: 16 }}>
             <Typography variant="caption">
               Phầm mềm quản lý doanh nghiệp - Mạnh Hùng - KrongPac - Đắk Lắk - 0947.339.718
             </Typography>
