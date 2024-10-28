@@ -133,14 +133,6 @@ export function RecordInitialMeter({ title, subheader, pumps: parentPumps, sessi
         <Button size="small" color="inherit" variant='contained' onClick={handleSave} >
           Lưu
         </Button></Condition>
-        {/* <Button
-          size="small"
-          color="inherit"
-          endIcon={<Iconify icon="mingcute:down-fill" width={18} sx={{ ml: -0.5 }} />}
-        // onClick={handleSave}
-        >
-          Chi tiết hơn
-        </Button> */}
       </Box>
     </Card>
   );

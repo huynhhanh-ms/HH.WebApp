@@ -2,7 +2,8 @@
 import type { Session } from 'src/domains/dto/session';
 
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { enqueueSnackbar } from 'notistack';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
@@ -12,6 +13,8 @@ import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
+
+import { useRouter } from 'src/routes/hooks';
 
 import { TankApi } from 'src/services/api/tank.api';
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -56,8 +59,46 @@ export function SessionView() {
   // create session modal
   const [openCreateSession, setOpenCreateSession] = useState(false);
   const handleCreateSession = () => {
-    setOpenCreateSession(true);
+    if (!tanks || tanks.length === 0) {
+      enqueueSnackbar('bạn thực hiện quá nhanh, vui lòng bấm lại', { variant: 'warning' });
+      return;
+    }
+    mutateAsync({
+      cashForChange: 0,
+      startDate: '',
+      endDate: '',
+      totalRevenue: 0,
+      petrolPumps: tanks?.map((tank) => ({
+        tankId: tank.id,
+      })),
+      status: '',
+    } as any);
+    // setOpenCreateSession(true);
   }
+
+  // get tank
+  const { data: tanks } = useQuery({
+    queryKey: [ApiQueryKey.tank],
+    queryFn: TankApi.gets,
+  });
+  // Create session
+  const queryClient = useQueryClient();
+  const router = useRouter();
+  const { mutateAsync } = useMutation({
+    mutationFn: SessionApi.create,
+    mutationKey: [ApiQueryKey.session],
+    onSuccess: async (data) => {
+      enqueueSnackbar('Tạo đợt chốt thành công', { variant: 'success' });
+      await queryClient.invalidateQueries({ queryKey: [ApiQueryKey.session] })
+      // onClose();
+      router.push(`/admin/session/${data}`);
+    },
+    onError: (error) => {
+      enqueueSnackbar(error.message, { variant: 'error' });
+    }
+  });
+
+
 
   return (
     <DashboardContent>
@@ -67,17 +108,17 @@ export function SessionView() {
         </Typography>
 
         <Button variant="contained" color="inherit"
-        startIcon={<Iconify icon="mingcute:add-line" />}
-        onClick={handleCreateSession}
+          startIcon={<Iconify icon="mingcute:add-line" />}
+          onClick={handleCreateSession}
         >
           Tạo mới
         </Button>
       </Box>
 
-      <CreateSessionModal
+      {openCreateSession && <CreateSessionModal
         open={openCreateSession}
         onClose={() => setOpenCreateSession(false)}
-      />
+      />}
 
       <Card>
         {/* <UserTableToolbar

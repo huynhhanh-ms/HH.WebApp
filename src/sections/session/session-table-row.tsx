@@ -1,6 +1,8 @@
 import type { Session } from 'src/domains/dto/session';
 
+import { enqueueSnackbar } from 'notistack';
 import { useState, useCallback } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
@@ -15,9 +17,15 @@ import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 import { useRouter } from 'src/routes/hooks';
 
 import { fDateTime } from 'src/utils/format-time';
+import { fNumber, fCurrency, fShortenNumber } from 'src/utils/format-number';
+
+import { ApiQueryKey } from 'src/services/api-query-key';
+import { SessionApi } from 'src/services/api/session.api';
 
 import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
+
+import DeleteDialog from '../tank/delete-dialog';
 
 import type { TableRowProps } from '../tank/utils';
 
@@ -26,12 +34,32 @@ export function SessionTableRow({ row, selected, onSelectRow }: TableRowProps<Se
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
     setOpenPopover(event.currentTarget);
   }, []);
 
   const handleClosePopover = useCallback(() => {
     setOpenPopover(null);
   }, []);
+
+  const [openDelete, setOpenDelete] = useState(false);
+  const handleDeleteDialog = () => {
+    setOpenDelete(true);
+  }
+
+  const queryClient = useQueryClient();
+  const {mutateAsync: deleteSession } = useMutation({
+    mutationFn: SessionApi.delete,
+    mutationKey: [ApiQueryKey.session],
+    onSuccess: () => {
+      setOpenDelete(false);
+      enqueueSnackbar('Xóa đợt chốt thành công', { variant: 'success' });
+      queryClient.invalidateQueries({queryKey: [ApiQueryKey.session]});
+    },
+    onError: (error) => {
+      enqueueSnackbar('Xóa đợt chốt thất bại', { variant: 'error' });
+    }
+  });
 
   // Open session detail
   const router = useRouter();
@@ -51,7 +79,7 @@ export function SessionTableRow({ row, selected, onSelectRow }: TableRowProps<Se
         <TableCell>{fDateTime(row.startDate)}</TableCell>
 
 
-        <TableCell>{row?.petrolPumps?.reduce((pre, cur, idx) => pre + cur.revenue, 0)}</TableCell>
+        <TableCell>{fCurrency(row?.petrolPumps?.reduce((pre, cur, idx) => pre + cur.revenue, 0))}</TableCell>
         <TableCell>{row?.petrolPumps?.every(pump => pump.totalVolume === 0 || pump.totalVolume == null) ? "" : row?.petrolPumps?.map(pumps => pumps.totalVolume).join('/')}</TableCell>
         <TableCell>{fDateTime(row.endDate)}</TableCell>
         <TableCell>
@@ -79,7 +107,7 @@ export function SessionTableRow({ row, selected, onSelectRow }: TableRowProps<Se
           sx={{
             p: 0.5,
             gap: 0.5,
-            width: 140,
+            width: 200,
             display: 'flex',
             flexDirection: 'column',
             [`& .${menuItemClasses.root}`]: {
@@ -90,15 +118,13 @@ export function SessionTableRow({ row, selected, onSelectRow }: TableRowProps<Se
             },
           }}
         >
-          <MenuItem onClick={handleClosePopover}>
-            <Iconify icon="solar:pen-bold" />
-            Edit
-          </MenuItem>
-
-          <MenuItem onClick={handleClosePopover} sx={{ color: 'error.main' }}>
+          <MenuItem onClick={handleDeleteDialog} sx={{ color: 'error.main' }}>
             <Iconify icon="solar:trash-bin-trash-bold" />
-            Delete
+            Xóa đợt chốt
           </MenuItem>
+          <DeleteDialog open={openDelete} onClose={() => setOpenDelete(false)} onConfirm={() => {
+            deleteSession(row.id);
+          }} />
         </MenuList>
       </Popover>
     </>

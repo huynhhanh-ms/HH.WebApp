@@ -13,7 +13,7 @@ import IconButton from '@mui/material/IconButton';
 import MenuItem, { menuItemClasses } from '@mui/material/MenuItem';
 
 import { fDateTime } from 'src/utils/format-time';
-import { fNumber } from 'src/utils/format-number';
+import { fNumber, fCurrency } from 'src/utils/format-number';
 
 import { ApiQueryKey } from 'src/services/api-query-key';
 import { FuelImportApi } from 'src/services/api/fuel-import.api';
@@ -84,8 +84,8 @@ export function FuelImportTableRow({ row, selected, onSelectRow }: TableRowProps
 
         <TableCell>{fDateTime(row?.importDate)}</TableCell>
         <TableCell align="right">{fNumber(row?.importVolume)}</TableCell>
-        <TableCell align="right">{fNumber(row?.importPrice)}</TableCell>
-        <TableCell align="right">{fNumber(row?.totalCost)}</TableCell>
+        <TableCell align="right">{fCurrency(row?.importPrice)}</TableCell>
+        <TableCell align="right">{fCurrency(row?.totalCost)}</TableCell>
         <TableCell align="right">{fNumber(row?.weight)}</TableCell>
         <TableCell align="right">{row?.weight && row?.importVolume ? fNumber(row.weight / row.importVolume) : '-'}</TableCell>
 

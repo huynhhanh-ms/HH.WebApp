@@ -6,10 +6,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { Box, Grid, Button, Divider, CardHeader, Typography } from "@mui/material";
 
-import { fNumber } from "src/utils/format-number";
+import { fNumber, fCurrency } from "src/utils/format-number";
 
 import { ApiQueryKey } from "src/services/api-query-key";
 import { SessionApi } from "src/services/api/session.api";
+
+import { Condition } from "src/components/condition";
 
 import ChickiesDialog from "../tank/chickies-dialog";
 
@@ -53,13 +55,13 @@ export function TotalCalcBoard({ session }: TotalCalcBoardProps) {
           {/* chi phi phat sinh */}
           <div className='flex justify-between py-3 px-6'>
             <Typography variant="body1" fontStyle="italic">Chi phí phát sinh:</Typography>
-            <Typography variant="body1">{session?.totalExpense}</Typography>
+            <Typography variant="body1">{fCurrency(session?.totalExpense)}</Typography>
           </div>
 
           {/* chi phi phat sinh */}
           <div className='flex justify-between py-3 px-6'>
             <Typography variant="body1" fontStyle="italic">Doanh số (Tổng): </Typography>
-            <Typography variant="body1">{fNumber(session?.petrolPumps?.reduce((acc, pump) => acc + pump.revenue, 0))}</Typography>
+            <Typography variant="body1">{fCurrency(session?.petrolPumps?.reduce((acc, pump) => acc + pump.revenue, 0))}</Typography>
           </div>
 
           <Divider orientation="horizontal" variant='middle' flexItem />
@@ -71,7 +73,7 @@ export function TotalCalcBoard({ session }: TotalCalcBoardProps) {
 
           <div className='flex justify-between py-3 px-6'>
             <Typography variant="body1" fontStyle="italic">Biên độ</Typography>
-            <Typography variant="body1">{fNumber((session?.totalExpense ?? 0) - (session?.petrolPumps?.reduce((acc, pump) => acc + pump.revenue, 0) ?? 0))}</Typography>
+            <Typography variant="body1">{fCurrency((session?.totalExpense ?? 0) - (session?.petrolPumps?.reduce((acc, pump) => acc + pump.revenue, 0) ?? 0))}</Typography>
 
           </div>
         </Grid>
@@ -83,9 +85,12 @@ export function TotalCalcBoard({ session }: TotalCalcBoardProps) {
   </Grid> */}
       </Grid>
       <Box sx={{ p: 2, textAlign: 'right', display: 'flex', justifyContent: 'space-between' }}>
+        
+        <Condition condition={session?.status !== "Closed"}>
         <Button variant="contained" color="inherit" size="small" className="m-10" onClick={handleSubmit}>
           Khóa sổ
         </Button>
+        </Condition>
       </Box>
       <ChickiesDialog open={openDialog} onClose={() => setOpenDialog(false)} title="Xác nhận khóa sổ" description="Bạn chắc chắn muốn khóa sổ này không?" closeText="Hủy" confirmText="Khóa sổ" onConfirm={handleConfirmSubmit} />
     </>

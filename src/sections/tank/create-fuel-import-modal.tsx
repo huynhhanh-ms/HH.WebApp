@@ -22,7 +22,7 @@ const CreateFuelImportModal: React.FC<CreateFuelImportModalProps> = ({ open, onC
     tankId: '',
     importVolume: '',
     importPrice: '',
-    weight: ''
+    weight: '1'
   });
 
   // Handle changes in the form fields

@@ -32,6 +32,7 @@ export default function HeaderSimple({ transparent }: Props) {
   const router = useRouter();
   const handleSignIn = (event: any) => {
     router.push('sign-in');
+    document.location.reload();
   }
 
   return (

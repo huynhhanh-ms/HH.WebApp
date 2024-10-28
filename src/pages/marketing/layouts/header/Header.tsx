@@ -45,6 +45,7 @@ export default function Header({ transparent }: Props) {
   const handleGotoSignIn = (event: any): void => {
     event.preventDefault();
     router.push('/sign-in');
+    document.location.reload();
   }
 
   return (

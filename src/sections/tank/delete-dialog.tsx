@@ -20,8 +20,8 @@ const DeleteDialog = ({ open, onClose, onConfirm } : any) => (
         </Button>
         <Button 
           onClick={() => {
-            onConfirm(); // Gọi hàm xác nhận khi nhấn nút Xóa
-            onClose(); // Đóng modal
+            onConfirm(); 
+            onClose(); 
           }} 
           color="error">
           Xóa

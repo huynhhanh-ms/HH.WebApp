@@ -99,7 +99,7 @@ const CreateSessionModal: React.FC<CreateSessionModalProps> = ({ open, onClose }
 
   // Handle form submission
   const handleSubmit = async () => {
-    if (formValues.petrolPumps.every(pump => pump.startVolume > 0)) {
+    if (formValues.petrolPumps.every(pump => pump.startVolume >= 0)) {
       await mutateAsync(formValues as any);
     } else {
       enqueueSnackbar('Vui lòng điền đầy đủ thông tin.', { variant: 'error' });
