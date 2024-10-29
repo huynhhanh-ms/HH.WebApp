@@ -83,9 +83,15 @@ export function FuelImportTableRow({ row, selected, onSelectRow }: TableRowProps
         <TableCell>{row?.tank.name}</TableCell>
 
         <TableCell>{fDateTime(row?.importDate)}</TableCell>
-        <TableCell align="right">{fNumber(row?.importVolume)}</TableCell>
+        <TableCell>
+          <Label color={((row.status === 'Closed') && 'warning') || 'success'}>{
+            row.status === 'Closed' ? 'đã hết' : 'còn'
+          }</Label>
+        </TableCell>
+        <TableCell align="right">{[fNumber(row?.volumeUsed),fNumber(row?.importVolume)].join('/')}</TableCell>
         <TableCell align="right">{fCurrency(row?.importPrice)}</TableCell>
         <TableCell align="right">{fCurrency(row?.totalCost)}</TableCell>
+        <TableCell align="right">{fCurrency(row?.totalSalePrice)}</TableCell>
         <TableCell align="right">{fNumber(row?.weight)}</TableCell>
         <TableCell align="right">{row?.weight && row?.importVolume ? fNumber(row.weight / row.importVolume) : '-'}</TableCell>
 

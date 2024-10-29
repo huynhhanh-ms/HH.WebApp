@@ -9,5 +9,8 @@ export interface FuelImport {
   weight: number;
   totalCost: number;
   importDate: Date;
+  status: string;
+  totalSalePrice: string;
+  volumeUsed: string;
   density: number;
 }
