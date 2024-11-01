@@ -144,13 +144,13 @@ export function OverviewAnalyticsView() {
             title="Doanh số "
             subheader="(+43%) than last year hảdtitle"
             chart={{
-              colors: ['#9affa7', '#ffdd81'],
+              colors: ['#00a116', '#ffc628'],
               categories: sessionData?.sort((pre, nxt) => new Date(pre.startDate).getTime() - new Date(nxt.startDate).getTime()).map(session => fDateTime(session.startDate, formatStr.minialDate) ?? '') ?? [],
               series: [
-                { name: 'Xăng hảdtitle', data: 
+                { name: 'Xăng', data: 
                   sessionData?.map(session => session?.petrolPumps?.[0].revenue) ?? [],
                 },
-                { name: 'Dầu hảdtitle', data: 
+                { name: 'Dầu', data: 
                   // [43, 33, 22, 37, 67, 68, 37, 24, 55] 
                   sessionData?.map(session => session?.petrolPumps?.[1].revenue) ?? [],
                 },

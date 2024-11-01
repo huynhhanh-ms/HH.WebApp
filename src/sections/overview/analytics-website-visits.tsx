@@ -5,6 +5,8 @@ import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import { useTheme, alpha as hexAlpha } from '@mui/material/styles';
 
+import { fCurrency, fShortenNumber } from 'src/utils/format-number';
+
 import { Chart, useChart } from 'src/components/chart';
 
 // ----------------------------------------------------------------------
@@ -37,6 +39,13 @@ export function AnalyticsWebsiteVisits({ title, subheader, chart, ...other }: Pr
       width: 2,
       colors: ['transparent'],
     },
+    yaxis: {
+      labels: {
+        formatter (value) {
+          return `${fShortenNumber(value)}`;
+        }
+      },
+    },
     xaxis: {
       categories: chart.categories,
     },
@@ -45,7 +54,7 @@ export function AnalyticsWebsiteVisits({ title, subheader, chart, ...other }: Pr
     },
     tooltip: {
       y: {
-        formatter: (value: number) => `${value} visits`,
+        formatter: (value: number) => `${fCurrency(value)}`,
       },
     },
     ...chart.options,
