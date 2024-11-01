@@ -8,15 +8,11 @@ const icon = (name: string) => (
 
 export const navData = [
   {
-    title: 'Dashboard',
+    title: 'Thống kê',
     path: '/admin',
     icon: icon('ic-analytics'),
   },
-  {
-    title: 'Trạm cân',
-    path: '/admin/scale',
-    icon: icon('ic-scale'),
-  },
+
   {
     title: 'Chốt sổ',
     path: '/admin/session',
@@ -26,6 +22,11 @@ export const navData = [
     title: 'Bồn chứa',
     path: '/admin/tank',
     icon: icon('ic-tank'),
+  },
+  {
+    title: 'Trạm cân',
+    path: '/admin/scale',
+    icon: icon('ic-scale'),
   },
   // {
   //   title: 'Công nợ',

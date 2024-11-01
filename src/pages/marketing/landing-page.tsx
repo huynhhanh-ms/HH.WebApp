@@ -81,7 +81,7 @@ export default function LandingPage() {
         <AddressInfo />
 
       </div>
-      <SerialComponent />
+      {/* <SerialComponent /> */}
 
     </Layout>
   );

@@ -29,6 +29,7 @@ export const formatStr = {
     dateTime: 'DD-MM-YYYY h:mm a', // 17-04-2022 12:00 am
     date: 'DD-MM-YYYY', // 17-04-2022
   },
+  minialDate: 'DD-MM',
 };
 
 export function today(format?: string) {

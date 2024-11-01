@@ -174,6 +174,7 @@ export function TankView() {
                   { id: 'importPrice', label: 'Giá nhập', align: 'right' },
                   { id: 'totalCost', label: 'Đơn giá', align: 'right' },
                   { id: 'totalSalePrice', label: 'Tổng thu', align: 'right' },
+                  { id: 'profit', label: 'lợi nhuận', align: 'right' },
                   { id: 'weight', label: 'Trọng lượng', align: 'right' },
                   { id: 'density', label: 'Kl riêng', align: 'right'},
                   { id: '', label: ''},

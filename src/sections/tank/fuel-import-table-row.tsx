@@ -22,6 +22,7 @@ import { Label } from 'src/components/label';
 import { Iconify } from 'src/components/iconify';
 
 import DeleteDialog from './delete-dialog';
+import { ImportDetailDialog } from './import-detail-dialog';
 
 import type { TableRowProps } from './utils';
 
@@ -32,6 +33,7 @@ export function FuelImportTableRow({ row, selected, onSelectRow }: TableRowProps
   const [openPopover, setOpenPopover] = useState<HTMLButtonElement | null>(null);
 
   const handleOpenPopover = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
     setOpenPopover(event.currentTarget);
   }, []);
 
@@ -69,9 +71,14 @@ export function FuelImportTableRow({ row, selected, onSelectRow }: TableRowProps
     handleClosePopover();
   }, [handleClosePopover]);
 
+  const [openDetail, setOpenDetail] = useState<FuelImport | undefined>();
+  const handleViewDetail = (event: any): void => {
+    setOpenDetail(row);
+  }
+
   return (
     <>
-      <TableRow hover tabIndex={-1} role="checkbox" selected={selected}>
+      <TableRow hover tabIndex={-1} role="checkbox" selected={selected} onClick={handleViewDetail}>
         <TableCell padding="checkbox">
           <Checkbox disableRipple checked={selected} onChange={onSelectRow} />
         </TableCell>
@@ -92,6 +99,7 @@ export function FuelImportTableRow({ row, selected, onSelectRow }: TableRowProps
         <TableCell align="right">{fCurrency(row?.importPrice)}</TableCell>
         <TableCell align="right">{fCurrency(row?.totalCost)}</TableCell>
         <TableCell align="right">{fCurrency(row?.totalSalePrice)}</TableCell>
+        <TableCell align="right">{fCurrency((row?.totalSalePrice ?? 0) - (row?.totalCost ?? 0))}</TableCell>
         <TableCell align="right">{fNumber(row?.weight)}</TableCell>
         <TableCell align="right">{row?.weight && row?.importVolume ? fNumber(row.weight / row.importVolume) : '-'}</TableCell>
 
@@ -143,6 +151,7 @@ export function FuelImportTableRow({ row, selected, onSelectRow }: TableRowProps
         onClose={() => setIsOpenDeleteDialog(false)}
         onConfirm={() => handleDelete()}
       />
+      <ImportDetailDialog data={openDetail} open={openDetail !== undefined} onClose={() => setOpenDetail(undefined)}/>
     </>
   );
 

@@ -1,4 +1,5 @@
 import type { Tank } from "./tank";
+import type { FuelImportSession } from "./fuel-import-session";
 
 export interface FuelImport {
   id: number;
@@ -10,7 +11,9 @@ export interface FuelImport {
   totalCost: number;
   importDate: Date;
   status: string;
-  totalSalePrice: string;
+  totalSalePrice: number;
   volumeUsed: string;
   density: number;
+  profit: number;
+  fuelImportSessions: FuelImportSession[];
 }
