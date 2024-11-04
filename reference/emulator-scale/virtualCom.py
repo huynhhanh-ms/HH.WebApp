@@ -41,9 +41,9 @@ try:
       try:
         # Tạo số ngẫu nhiên từ 1 đến 100
         # random_data = str(random.randint(1, 100))
-        # random_data = "+00000001B"
-        random_data = str(cnt)
-        cnt += 50
+        random_data = "+0000" + str(cnt) + "1B"
+        # random_data = str(cnt)
+        cnt += 10
         
         # Gửi dữ liệu qua cổng COM
         ser.write(random_data.encode())

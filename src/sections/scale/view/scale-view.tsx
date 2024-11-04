@@ -1,43 +1,34 @@
-import type { Tank } from 'src/domains/dto/tank';
 import type { GridColDef } from '@mui/x-data-grid';
-import type { FuelImport } from 'src/domains/dto/fuel-import';
-import type { GridApiCommunity } from '@mui/x-data-grid/internals';
 import type { WeighingHistory } from 'src/domains/dto/weighing-history';
 
 import { enqueueSnackbar } from 'notistack';
-import { useRef, useState, useEffect, useCallback } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
-import Table from '@mui/material/Table';
 import { LoadingButton } from '@mui/lab';
 import Button from '@mui/material/Button';
-import TableBody from '@mui/material/TableBody';
 import Typography from '@mui/material/Typography';
-import TableContainer from '@mui/material/TableContainer';
-import TablePagination from '@mui/material/TablePagination';
-import { Grid, Icon, Tooltip, CardContent } from '@mui/material';
-import { DataGrid, useGridApiRef, useGridApiContext } from '@mui/x-data-grid';
+import { Grid, Tooltip, CardContent } from '@mui/material';
+import { DataGrid, useGridApiRef } from '@mui/x-data-grid';
 
 import { fNumber } from 'src/utils/format-number';
+import { viVN } from 'src/utils/viVN-localize-data-grid';
 import { fDateTime, formatStr } from 'src/utils/format-time';
 
 import sxDataGrid from 'src/customs/sx-datagrid';
-import { TankApi } from 'src/services/api/tank.api';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { ApiQueryKey } from 'src/services/api-query-key';
-import { FuelImportApi } from 'src/services/api/fuel-import.api';
+import { useScaleSetting } from 'src/stores/use-scale-setting';
 import { WeighingHistoryApi } from 'src/services/api/weighing-history.api';
 
 import { Iconify } from 'src/components/iconify';
-import { Scrollbar } from 'src/components/scrollbar';
-
-import { applyFilter, getComparator } from 'src/sections/tank/utils';
 
 import ScaleCamera from '../scale-camera';
 import TicketModal from '../ticket-modal';
 import CustomDatePicker from '../custom-date-picker';
+import { columns, editableColumns } from '../column-scale';
 import { ScaleSettingModal } from '../scale-setting-modal';
 
 
@@ -48,15 +39,15 @@ export function ScaleView() {
   const queryClient = useQueryClient();
   const apiRef = useGridApiRef();
 
+  const { settings } = useScaleSetting();
   const [weightScale, setWeightScale] = useState<number>(-1);
-  const [selectionTicket, setSelectionTicket] = useState<WeighingHistory | null>(null);
+  const [selectionTicket, setSelectionTicket] = useState<number>(-1);
 
-
+  // take picture
   const childRef = useRef<any>();
   const saveImageFromCamera = async (imageId) => {
     if (childRef.current) {
       const imageUrl = await childRef.current.captureImage(imageId);
-      // console.log('image url', imageUrl);
       return imageUrl;
     }
     return null;
@@ -64,15 +55,14 @@ export function ScaleView() {
 
   const connectSerialPort = async () => {
     try {
-      // Yêu cầu người dùng chọn thiết bị Serial Port
       const port = await (navigator as any).serial.requestPort();
-      // Mở cổng serial với tốc độ baud (ví dụ: 9600, có thể thay đổi)
       await port.open({ baudRate: 9600 });
-      // Tạo bộ đọc dữ liệu từ serial port
       const textDecoder = new TextDecoderStream();
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
       const reader = textDecoder.readable.getReader();
       // setWeightScale(0);
+      // await setTimeout(() => { }, 10000);
       // eslint-disable-next-line no-constant-condition
       while (true) {
         // eslint-disable-next-line no-await-in-loop
@@ -84,19 +74,26 @@ export function ScaleView() {
         // console.log('Received data:', value);
         setWeightScale(parseInt(value));
       }
-      // Đóng reader khi hoàn thành
       reader.releaseLock();
     } catch (error) {
-      console.error('Error connecting to serial port:', error);
+      console.error('Không kết nối được port', error);
       setWeightScale(-1);
     }
   }
 
+  // get data
   const { data } = useQuery({
     queryKey: [ApiQueryKey.weighingHistory],
     queryFn: WeighingHistoryApi.gets,
   });
   const [rows, setRows] = useState<WeighingHistory[]>([]);
+
+  useEffect(() => {
+    if (data) {
+      setRows(data);
+      console.log('123');
+    }
+  }, [data]);
 
   // create record
   const { mutateAsync: createRecord } = useMutation({
@@ -123,28 +120,62 @@ export function ScaleView() {
     }
   });
 
-  useEffect(() => {
-    if (data) {
-      setRows(data);
-    }
-  }, [data]);
 
   const [openSetting, setOpenSetting] = useState(false);
+  const [openPrint, isOpenPrint] = useState(false);
 
-  const [onLoadTotal, setOnLoadTotal] = useState(false);
-  const [onLoadVehicle, setOnLoadVehicle] = useState(false);
-  const [onLoadAdd, setOnLoadAdd] = useState(false);
+  const [onLoadButton, setOnLoadButton] = useState(false);
+
+  // update list image
+  interface UpdateProps {
+    url: string;
+    type: 'vehicle' | 'total';
+    list: string[];
+  };
+
+
+  const updateImage = ({ url, type, list }: UpdateProps): string[] => {
+    while (list.length < 2) {
+      list.push('not yet');
+    }
+
+    if (type === 'vehicle') {
+      list[1] = url;
+    } else {
+      list[0] = url;
+    }
+    return list;
+  };
+
+  const validateWeight = (weight: number): boolean => {
+    if (weight < 0) {
+      return false;
+    }
+    return true;
+  }
 
   const functions = [
     {
+      //* Cân Hàng + Xe
       name: 'Cân Hàng + Xe',
       icon: 'mdi:tanker-truck',
       func: async () => {
-        setOnLoadTotal(true);
+        setOnLoadButton(true);
 
-        const selection = rows.find((row) => row.id === selectionTicket?.id);
+        const selection = rows[selectionTicket];
         if (selection === undefined) {
           enqueueSnackbar('Chưa chọn dòng để cân', { variant: 'error' });
+          setOnLoadButton(false)
+          return;
+        }
+        if (validateWeight(weightScale) === false) {
+          enqueueSnackbar('Số cân hiển thị không đúng, vui lòng thử lại', { variant: 'error' });
+          setOnLoadButton(false);
+          return;
+        }
+        if ((selection?.totalWeight ?? 0) > 0 && settings.continueWeighing.value === false) {
+          enqueueSnackbar('Đã cân rồi, không thể tiếp tục cân', { variant: 'error' });
+          setOnLoadButton(false);
           return;
         }
 
@@ -154,54 +185,55 @@ export function ScaleView() {
           totalWeighingDate: new Date(),
           goodsWeight: weightScale - (selection.vehicleWeight ?? 0),
           totalCost: (weightScale - (selection.vehicleWeight ?? 0)) * (selection.price ?? 0),
+          vehicleImages: (settings.takeWeighingPhoto.value === true) ? selection.vehicleImages : updateImage({ url: 'not yet', type: 'total', list: selection.vehicleImages ?? [] }),
         };
 
         // update state
         console.log("update api h+x");
-        setSelectionTicket(updateSelection);
+        // setSelectionTicket(updateSelection);
 
         await updateRecord(updateSelection);
-        // offline
-        // setRows(
-        //   rows.map((row) =>
-        //     row.id === selection.id ?
-        //       updateSelection : row
-        //   )
-        // );
-
-        setOnLoadTotal(false);
+        setOnLoadButton(false);
 
         // save image from camera
-        saveImageFromCamera(`total${selection.id}`).then((imageUrl) => {
-          const listImage = selection.vehicleImages ?? [];
-          if ((selection?.vehicleImages?.length ?? 0) <= 0) {
-            listImage.push(imageUrl);
-          } else {
-            listImage[0] = imageUrl;
-          }
+        if (settings.takeWeighingPhoto.value === true) {
+          saveImageFromCamera(`total${selection.id}`).then((imageUrl) => {
+            const listImage = updateImage({ url: imageUrl, type: 'total', list: selection.vehicleImages ?? [] });
+            const selectionWithImage: WeighingHistory = {
+              id: updateSelection.id,
+              vehicleImages: listImage,
+            };
+            // setSelectionTicket({ ...updateSelection, vehicleImages: listImage });
+            updateRecord(selectionWithImage);
+          });
+        }
 
-          // update image later
-          const selectionWithImage: WeighingHistory = {
-            id: updateSelection.id,
-            vehicleImages: listImage,
-          };
-          setSelectionTicket({...updateSelection, vehicleImages: listImage});
-          updateRecord(selectionWithImage);
-        });
+
       },
       disabled: false,
-      onLoad: onLoadTotal,
+      onLoad: onLoadButton,
     },
     {
+      //* Cân Xác xe
       name: 'Cân Xác Xe',
       icon: 'bi:truck-flatbed',
       func: async () => {
+        setOnLoadButton(true);
 
-        setOnLoadVehicle(true);
-
-        const selection = rows.find((row) => row.id === selectionTicket?.id);
+        const selection = rows[selectionTicket];
         if (selection === undefined) {
           enqueueSnackbar('Chưa chọn dòng để cân', { variant: 'error' });
+          setOnLoadButton(false);
+          return;
+        }
+        if (validateWeight(weightScale) === false) {
+          enqueueSnackbar('Số cân hiển thị không đúng, vui lòng thử lại', { variant: 'error' });
+          setOnLoadButton(false);
+          return;
+        }
+        if ((selection?.vehicleWeight ?? 0) > 0 && settings.continueWeighing.value === false) {
+          enqueueSnackbar('Đã cân rồi, không thể tiếp tục cân', { variant: 'error' });
+          setOnLoadButton(false);
           return;
         }
 
@@ -211,11 +243,12 @@ export function ScaleView() {
           vehicleWeighingDate: new Date(),
           goodsWeight: (selection.totalWeight ?? 0) - weightScale,
           totalCost: ((selection.totalWeight ?? 0) - weightScale) * (selection.price ?? 0),
+          vehicleImages: (settings.takeWeighingPhoto.value === true) ? selection.vehicleImages : updateImage({ url: 'not yet', type: 'vehicle', list: selection.vehicleImages ?? [] }),
         };
 
         // update state
         console.log("update api x");
-        setSelectionTicket(updateSelection);
+        // setSelectionTicket(updateSelection);
 
         await updateRecord(updateSelection);
         // offline
@@ -226,49 +259,40 @@ export function ScaleView() {
         //   )
         // );
 
-        setOnLoadVehicle(false);
+        setOnLoadButton(false);
 
         // save image from camera
-        saveImageFromCamera(`vehicle${selection.id}`).then((imageUrl) => {
-          const listImage = selection.vehicleImages ?? [];
-          if ((selection?.vehicleImages?.length ?? 0) <= 1) {
-            if ((selection?.vehicleImages?.length ?? 0) <= 0) {
-              listImage.push('not yet');
-            }
-            listImage.push(imageUrl);
-          } else {
-            listImage[1] = imageUrl;
-          }
-
-          // update image later
-          const selectionWithImage: WeighingHistory = {
-            id: updateSelection.id,
-            vehicleImages: listImage,
-          };
-          setSelectionTicket({...updateSelection, vehicleImages: listImage});
-          updateRecord(selectionWithImage);
-        });
-
+        if (settings.takeWeighingPhoto.value === true) {
+          saveImageFromCamera(`vehicle${selection.id}`).then((imageUrl) => {
+            const listImage = updateImage({ url: imageUrl, type: 'vehicle', list: selection.vehicleImages ?? [] });
+            // update image later
+            const selectionWithImage: WeighingHistory = {
+              id: updateSelection.id,
+              vehicleImages: listImage,
+            };
+            // setSelectionTicket({ ...updateSelection, vehicleImages: listImage });
+            updateRecord(selectionWithImage);
+          });
+        }
       },
-      disabled: onLoadVehicle,
+      disabled: onLoadButton,
     },
     {
       name: 'Phiếu cân',
       icon: 'fluent:document-print-20-regular',
       func: (value) => {
-        if (selectionTicket === null) {
+        if (selectionTicket < 0) {
           enqueueSnackbar('Chưa chọn dòng để tạo phiếu cân', { variant: 'error' });
           return;
         }
         isOpenPrint(true);
       },
-      disabled: selectionTicket === null,
+      disabled: selectionTicket < 0,
     },
     {
       name: 'Lịch sử',
       icon: 'material-symbols:history',
       func: (value) => {
-
       },
       disabled: true,
     },
@@ -277,17 +301,7 @@ export function ScaleView() {
       icon: 'solar:add-square-broken',
       func: () => {
         const newRow = {
-          id: rows.length + 1,
-          customerName: '',
-          licensePlate: '',
-          totalWeight: 0,
-          vehicleWeight: 0,
-          goodsWeight: 0,
-          note: '',
-          address: '',
-          goodsType: '',
-          // vehicleImages: ['🖼️','🖼️'],
-          vehicleImages: [],
+          id: 0, customerName: '', licensePlate: '', totalWeight: 0, vehicleWeight: 0, goodsWeight: 0, note: '', address: '', goodsType: '', vehicleImages: [],
         };
 
         // offline
@@ -299,15 +313,8 @@ export function ScaleView() {
         console.log("create api");
         createRecord(newRow);
       },
+      disabled: onLoadButton,
     },
-    // {
-    //   name: 'Lưu',
-    //   icon: 'ic:round-save',
-    //   func: () => {
-
-    //   },
-    //   disabled: true,
-    // },
     {
       name: 'Cài đặt',
       icon: 'lsicon:setting-outline',
@@ -318,10 +325,6 @@ export function ScaleView() {
     },
 
   ]
-
-  // print function
-  const [openPrint, isOpenPrint] = useState(false);
-
 
   const handleProcessRowUpdate = (newRow: WeighingHistory, oldRow: WeighingHistory): WeighingHistory | Promise<WeighingHistory> => {
     if (newRow?.totalWeight !== 0 && newRow?.vehicleWeight !== 0) {
@@ -363,7 +366,7 @@ export function ScaleView() {
               <CardContent >
                 {weightScale !== -1 ?
                   <Typography variant="h1" align='right' sx={{ paddingLeft: '40px' }}>
-                    {fNumber(weightScale)} Kg
+                    {fNumber(weightScale)}{''}
                   </Typography>
                   :
                   <Button onClick={connectSerialPort} size='large'>
@@ -378,7 +381,7 @@ export function ScaleView() {
           {/* Button in Middle */}
           <Grid item xs={12} md={8} container alignContent="space-evenly" spacing={1}>
             {functions.map((item, index) => (
-              <Grid key={index} item xs={6} md={4} lg={3}>
+              <Grid key={index} item xs={6} md={6} lg={4}>
                 <LoadingButton loading={item?.onLoad} color="inherit" startIcon={<Iconify icon={item.icon} />} size='large' variant='contained' disabled={item.disabled} fullWidth onClick={item.func}>{item.name}</LoadingButton>
               </Grid>
             ))}
@@ -409,16 +412,15 @@ export function ScaleView() {
         </Grid>
       </Grid>
 
-      <Typography variant="h4"padding={1} >
+      <Typography variant="h4" padding={1} >
         Trạm cân
       </Typography>
 
-      <DataGrid rows={rows} columns={columns} sx={sxDataGrid}
-        autoHeight
+      <DataGrid rows={rows} columns={settings.manualEdit.value ? editableColumns : columns} sx={sxDataGrid}
         slots={{
           noRowsOverlay: () => <Box display="flex" justifyContent="center" height="100%">
             <Typography variant="h6" color="textSecondary" align="center" textAlign="center" sx={{ mt: 2 }}>
-              Không có dòng nào - Hãy thêm mới
+              Không có dòng nào
             </Typography>
           </Box>,
         }}
@@ -433,7 +435,7 @@ export function ScaleView() {
         // pageSizeOptions={[5]}
         onRowSelectionModelChange={(selection) => {
           console.log("selection record change", selection);
-          setSelectionTicket(rows[selection[0] as number - 1]);
+          setSelectionTicket(selection[0] as number - 1);
         }}
         onRowCountChange={(newCount) => {
           apiRef.current?.setRowSelectionModel([rows.length]);
@@ -441,162 +443,12 @@ export function ScaleView() {
         processRowUpdate={handleProcessRowUpdate}
         onProcessRowUpdateError={(error) => console.error(error)}
         disableMultipleRowSelection
-
+        localeText={viVN.components.MuiDataGrid.defaultProps.localeText}
       />
 
-      {selectionTicket !== null && <TicketModal open={openPrint} onClose={() => isOpenPrint(false)} ticketData={selectionTicket} />}
+      {selectionTicket >= 0 && <TicketModal open={openPrint} onClose={() => isOpenPrint(false)} ticketData={rows[selectionTicket]} />}
       {openSetting && <ScaleSettingModal open={openSetting} onClose={() => setOpenSetting(false)} />}
     </DashboardContent>
   );
 }
 
-const columns: GridColDef<WeighingHistory>[] = [
-  { field: 'id', headerName: 'ID', width: 30 },
-  {
-    field: 'customerName',
-    headerName: 'Khách hàng',
-    width: 160,
-    editable: true,
-    sortable: false,
-  },
-
-  {
-    field: 'licensePlate',
-    headerName: 'Biển số xe',
-    width: 125,
-    sortable: false,
-    editable: true,
-  },
-
-  {
-    field: 'totalWeight',
-    headerName: 'Kl hàng + xe',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
-
-    editable: true,
-    width: 100,
-    type: 'number',
-  },
-
-  {
-    field: 'vehicleWeight',
-    headerName: 'Kl xe',
-    editable: true,
-    sortable: false,
-
-    width: 100,
-    type: 'number',
-  },
-  {
-    field: 'goodsWeight',
-    headerName: 'Kl hàng',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
-
-    width: 100,
-    type: 'number',
-  },
-  {
-    field: 'price',
-    headerName: 'Đơn giá',
-    sortable: false,
-    editable: true,
-    type: 'number',
-  },
-  {
-    field: 'totalCost',
-    headerName: 'Tổng tiền',
-    sortable: false,
-    type: 'number',
-  },
-  {
-    field: 'time',
-    headerName: 'Ngày cân',
-    align: 'center',
-    sortable: false,
-
-    // width: 160,
-    valueGetter: (value, row) => fDateTime((row as WeighingHistory).totalWeighingDate, formatStr.split.date),
-  },
-  {
-    field: 'totalWeighingDate',
-    headerName: 'Giờ XH',
-    align: 'center',
-    sortable: false,
-
-    // width: 100,
-    valueGetter: (value, row) => fDateTime((row as WeighingHistory).totalWeighingDate, formatStr.time),
-  },
-  {
-    field: 'vehicleWeighingDate',
-    headerName: 'Giờ xe',
-    align: 'center',
-    sortable: false,
-
-    // width: 160,
-    valueGetter: (value, row) => fDateTime((row as WeighingHistory).vehicleWeighingDate, formatStr.time),
-  },
-  {
-    field: 'vehicleImages',
-    headerName: 'Hình ảnh',
-    sortable: false,
-    // width: 160,
-    type: 'string',
-    renderCell: (params) => (
-      <Tooltip
-        enterDelay={500}
-        enterTouchDelay={500}
-        enterNextDelay={500}
-        title={(
-          <Box display="flex" flexDirection="row" alignItems="center">
-            {params.value?.map((img, index) => (
-              <Box
-                key={index}
-                component="img"
-                alt={`Ảnh cân ${img}`}
-                onError={(e: any) => {
-                  e.target.style.display = 'none';
-                }}
-                src={img}
-                sx={{ marginRight: '8px' }}
-              />
-            ))}
-          </Box>
-        )} >
-        <Box>
-          {params.value?.map((img, index) => (
-            <Iconify key={index} icon="line-md:image-twotone" style={{ color: "#828282" }} />
-          ))}
-        </Box>
-      </Tooltip >
-
-    ),
-  },
-  {
-    field: 'note',
-    headerName: 'Ghi chú',
-    sortable: false,
-
-    width: 160,
-    type: 'string',
-    editable: true,
-  },
-  {
-    field: 'address',
-    headerName: 'Địa chỉ',
-    width: 100,
-    editable: true,
-    sortable: false,
-
-  },
-  {
-    field: 'goodsType',
-    headerName: 'Loại hàng',
-    width: 110,
-    editable: true,
-    sortable: false,
-
-  },
-
-];

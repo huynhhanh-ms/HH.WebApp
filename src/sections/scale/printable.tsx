@@ -22,7 +22,7 @@ class Printable extends Component<Props> {
     const contentLeft = [
       { title: 'Số Phiếu', value: data.id },
       { title: 'Khách Hàng', value: data.customerName },
-      { title: 'Trọng Lượng Xe Và Hàng', value: `${data.totalWeight || 0} Kg` },
+      { title: 'Trọng Lượng Xe + Hàng', value: `${data.totalWeight || 0} Kg` },
       { title: 'Trọng Lượng Xe', value: `${data.vehicleWeight || 0} Kg` },
       { divider: true },
       { title: 'Trọng Lượng Hàng', value: `${data.goodsWeight || 0} Kg` },
@@ -94,7 +94,8 @@ class Printable extends Component<Props> {
                         item.list?.map((img, i) => (
                           <img key={i} src={img} alt="vehicle"
                             onError={(e: any) => {
-                              e.target.style.display = 'none';
+                              // e.target.style.display = 'none';
+                              e.target.src = '/assets/scale/placeholder.png';
                             }}
                             style={{ height: '80px', objectFit: 'contain' }} />
                         ))
