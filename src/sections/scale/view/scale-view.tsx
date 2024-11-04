@@ -11,12 +11,13 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Table from '@mui/material/Table';
+import { LoadingButton } from '@mui/lab';
 import Button from '@mui/material/Button';
 import TableBody from '@mui/material/TableBody';
-import { Grid, CardContent } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
+import { Grid, Icon, Tooltip, CardContent } from '@mui/material';
 import { DataGrid, useGridApiRef, useGridApiContext } from '@mui/x-data-grid';
 
 import { fNumber } from 'src/utils/format-number';
@@ -34,9 +35,10 @@ import { Scrollbar } from 'src/components/scrollbar';
 
 import { applyFilter, getComparator } from 'src/sections/tank/utils';
 
-import CameraFeed from '../camera-feed';
+import ScaleCamera from '../scale-camera';
 import TicketModal from '../ticket-modal';
 import CustomDatePicker from '../custom-date-picker';
+import { ScaleSettingModal } from '../scale-setting-modal';
 
 
 
@@ -49,34 +51,39 @@ export function ScaleView() {
   const [weightScale, setWeightScale] = useState<number>(-1);
   const [selectionTicket, setSelectionTicket] = useState<WeighingHistory | null>(null);
 
+
+  const childRef = useRef<any>();
+  const saveImageFromCamera = async (imageId) => {
+    if (childRef.current) {
+      const imageUrl = await childRef.current.captureImage(imageId);
+      // console.log('image url', imageUrl);
+      return imageUrl;
+    }
+    return null;
+  };
+
   const connectSerialPort = async () => {
     try {
       // Yêu cầu người dùng chọn thiết bị Serial Port
       const port = await (navigator as any).serial.requestPort();
-
       // Mở cổng serial với tốc độ baud (ví dụ: 9600, có thể thay đổi)
       await port.open({ baudRate: 9600 });
-
       // Tạo bộ đọc dữ liệu từ serial port
       const textDecoder = new TextDecoderStream();
       const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
       const reader = textDecoder.readable.getReader();
-
       // setWeightScale(0);
-
       // eslint-disable-next-line no-constant-condition
       while (true) {
-
         // eslint-disable-next-line no-await-in-loop
         const { value, done } = await reader.read();
         if (done) {
           setWeightScale(-1);
           break;
         }
-        console.log('Received data:', value);
+        // console.log('Received data:', value);
         setWeightScale(parseInt(value));
       }
-
       // Đóng reader khi hoàn thành
       reader.releaseLock();
     } catch (error) {
@@ -85,22 +92,36 @@ export function ScaleView() {
     }
   }
 
-
-  // fake data
-  useEffect(() => {
-    // each time gen a random number
-    // setTimeout(() => {
-    //   setWeightScale(Math.floor(Math.random() * 100));
-    // }, 4000);
-    console.log("weightScale", weightScale);
-  }, [weightScale]);
-
   const { data } = useQuery({
     queryKey: [ApiQueryKey.weighingHistory],
     queryFn: WeighingHistoryApi.gets,
   });
-
   const [rows, setRows] = useState<WeighingHistory[]>([]);
+
+  // create record
+  const { mutateAsync: createRecord } = useMutation({
+    mutationFn: WeighingHistoryApi.create,
+    mutationKey: [ApiQueryKey.weighingHistory],
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [ApiQueryKey.weighingHistory] });
+    },
+    onError: (error) => {
+      console.error(error);
+      enqueueSnackbar('tạo thất bại, vui lòng thử lại hoặc sử dụng phần mềm cân offline', { variant: 'error' });
+    }
+  });
+  // update record
+  const { mutateAsync: updateRecord } = useMutation({
+    mutationFn: WeighingHistoryApi.update,
+    mutationKey: [ApiQueryKey.weighingHistory],
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [ApiQueryKey.weighingHistory] });
+    },
+    onError: (error) => {
+      console.error(error);
+      enqueueSnackbar('cập nhật thất bại, vui lòng thử lại hoặc sử dụng phần mềm cân offline', { variant: 'error' });
+    }
+  });
 
   useEffect(() => {
     if (data) {
@@ -108,65 +129,128 @@ export function ScaleView() {
     }
   }, [data]);
 
+  const [openSetting, setOpenSetting] = useState(false);
+
+  const [onLoadTotal, setOnLoadTotal] = useState(false);
+  const [onLoadVehicle, setOnLoadVehicle] = useState(false);
+  const [onLoadAdd, setOnLoadAdd] = useState(false);
+
   const functions = [
     {
       name: 'Cân Hàng + Xe',
       icon: 'mdi:tanker-truck',
-      func: () => {
+      func: async () => {
+        setOnLoadTotal(true);
+
         const selection = rows.find((row) => row.id === selectionTicket?.id);
         if (selection === undefined) {
           enqueueSnackbar('Chưa chọn dòng để cân', { variant: 'error' });
           return;
         }
+
         const updateSelection: WeighingHistory = {
           ...selection,
           totalWeight: weightScale,
-          totalWeighingDate: new Date().toISOString(),
+          totalWeighingDate: new Date(),
           goodsWeight: weightScale - (selection.vehicleWeight ?? 0),
-          totalCost: (weightScale - (selection.vehicleWeight ?? 0)) * (selection.price ?? 0)
+          totalCost: (weightScale - (selection.vehicleWeight ?? 0)) * (selection.price ?? 0),
         };
 
         // update state
-        console.log("selection change");
+        console.log("update api h+x");
         setSelectionTicket(updateSelection);
-        setRows(
-          rows.map((row) =>
-            row.id === selectionTicket?.id ?
-              updateSelection : row
-          )
-        );
+
+        await updateRecord(updateSelection);
+        // offline
+        // setRows(
+        //   rows.map((row) =>
+        //     row.id === selection.id ?
+        //       updateSelection : row
+        //   )
+        // );
+
+        setOnLoadTotal(false);
+
+        // save image from camera
+        saveImageFromCamera(`total${selection.id}`).then((imageUrl) => {
+          const listImage = selection.vehicleImages ?? [];
+          if ((selection?.vehicleImages?.length ?? 0) <= 0) {
+            listImage.push(imageUrl);
+          } else {
+            listImage[0] = imageUrl;
+          }
+
+          // update image later
+          const selectionWithImage: WeighingHistory = {
+            id: updateSelection.id,
+            vehicleImages: listImage,
+          };
+          setSelectionTicket({...updateSelection, vehicleImages: listImage});
+          updateRecord(selectionWithImage);
+        });
       },
       disabled: false,
+      onLoad: onLoadTotal,
     },
     {
       name: 'Cân Xác Xe',
       icon: 'bi:truck-flatbed',
-      func: () => {
+      func: async () => {
+
+        setOnLoadVehicle(true);
 
         const selection = rows.find((row) => row.id === selectionTicket?.id);
         if (selection === undefined) {
           enqueueSnackbar('Chưa chọn dòng để cân', { variant: 'error' });
           return;
         }
+
         const updateSelection: WeighingHistory = {
           ...selection,
           vehicleWeight: weightScale,
-          vehicleWeighingDate: new Date().toISOString(),
+          vehicleWeighingDate: new Date(),
           goodsWeight: (selection.totalWeight ?? 0) - weightScale,
-          totalCost: ((selection.totalWeight ?? 0) - weightScale) * (selection.price ?? 0)
+          totalCost: ((selection.totalWeight ?? 0) - weightScale) * (selection.price ?? 0),
         };
 
         // update state
-        console.log("selection change");
+        console.log("update api x");
         setSelectionTicket(updateSelection);
-        setRows(
-          rows.map((row) =>
-            row.id === selectionTicket?.id ?
-              updateSelection : row
-          )
-        );
+
+        await updateRecord(updateSelection);
+        // offline
+        // setRows(
+        //   rows.map((row) =>
+        //     row.id === selection.id ?
+        //       updateSelection : row
+        //   )
+        // );
+
+        setOnLoadVehicle(false);
+
+        // save image from camera
+        saveImageFromCamera(`vehicle${selection.id}`).then((imageUrl) => {
+          const listImage = selection.vehicleImages ?? [];
+          if ((selection?.vehicleImages?.length ?? 0) <= 1) {
+            if ((selection?.vehicleImages?.length ?? 0) <= 0) {
+              listImage.push('not yet');
+            }
+            listImage.push(imageUrl);
+          } else {
+            listImage[1] = imageUrl;
+          }
+
+          // update image later
+          const selectionWithImage: WeighingHistory = {
+            id: updateSelection.id,
+            vehicleImages: listImage,
+          };
+          setSelectionTicket({...updateSelection, vehicleImages: listImage});
+          updateRecord(selectionWithImage);
+        });
+
       },
-      disabled: false,
+      disabled: onLoadVehicle,
     },
     {
       name: 'Phiếu cân',
@@ -178,7 +262,7 @@ export function ScaleView() {
         }
         isOpenPrint(true);
       },
-      disabled: false,
+      disabled: selectionTicket === null,
     },
     {
       name: 'Lịch sử',
@@ -186,37 +270,53 @@ export function ScaleView() {
       func: (value) => {
 
       },
-      disabled: false,
+      disabled: true,
     },
     {
       name: 'Thêm mới',
       icon: 'solar:add-square-broken',
       func: () => {
-        setRows([...rows,
-        {
+        const newRow = {
           id: rows.length + 1,
           customerName: '',
           licensePlate: '',
           totalWeight: 0,
           vehicleWeight: 0,
           goodsWeight: 0,
-          // time: new Date(),
-          totalWeighingDate: '',
-          vehicleWeighingDate: '',
           note: '',
           address: '',
           goodsType: '',
-          vehicleImages: ['hàng+Xe', 'Xác'],
-        }]);
+          // vehicleImages: ['🖼️','🖼️'],
+          vehicleImages: [],
+        };
+
+        // offline
+        // setRows([...rows,
+        //   newRow
+        // ]);
+
+        // create api
+        console.log("create api");
+        createRecord(newRow);
       },
     },
-    {
-      name: 'Lưu',
-      icon: 'ic:round-save',
-      func: () => {
+    // {
+    //   name: 'Lưu',
+    //   icon: 'ic:round-save',
+    //   func: () => {
 
+    //   },
+    //   disabled: true,
+    // },
+    {
+      name: 'Cài đặt',
+      icon: 'lsicon:setting-outline',
+      func: () => {
+        setOpenSetting(true);
       },
-    }
+      disabled: false,
+    },
+
   ]
 
   // print function
@@ -224,18 +324,33 @@ export function ScaleView() {
 
 
   const handleProcessRowUpdate = (newRow: WeighingHistory, oldRow: WeighingHistory): WeighingHistory | Promise<WeighingHistory> => {
-    const newGoodsWeight = (newRow.totalWeight ?? 0) - (newRow.vehicleWeight ?? 0);
-    const updatedTotal = newGoodsWeight * (newRow.price ?? 0);
+    if (newRow?.totalWeight !== 0 && newRow?.vehicleWeight !== 0) {
+      newRow.goodsWeight = (newRow.totalWeight ?? 0) - (newRow.vehicleWeight ?? 0);
+      newRow.totalCost = newRow.goodsWeight * (newRow.price ?? 0);
+    }
+    else {
+      newRow.goodsWeight = 0;
+      newRow.totalCost = 0;
+    }
 
-    setRows(
-      rows.map((row) =>
-        row.id === newRow.id ?
-          { ...newRow, totalCost: updatedTotal } : row
-      )
-    );
+    if (newRow.goodsWeight === 0) {
+      newRow.goodsWeight = undefined;
+    }
+    if (newRow.totalCost === 0) {
+      newRow.totalCost = undefined;
+    }
 
-    return { ...newRow, totalCost: updatedTotal };
+    console.log('onProcessRowUpdate', newRow);
 
+    updateRecord(newRow);
+    // offline
+    // setRows(
+    //   rows.map((row) =>
+    //     row.id === newRow.id ?
+    //       newRow  : row
+    //   )
+    // );
+    return newRow;
   }
 
   return (
@@ -251,10 +366,10 @@ export function ScaleView() {
                     {fNumber(weightScale)} Kg
                   </Typography>
                   :
-                  <Button onClick={connectSerialPort} size='large'> 
-                  <Typography variant="h1" align='right' sx={{ paddingLeft: '40px' }}>
-                  Chọn Cân 
-                  </Typography> </Button>
+                  <Button onClick={connectSerialPort} size='large'>
+                    <Typography variant="h1" align='right' sx={{ paddingLeft: '40px' }}>
+                      Chọn Cân
+                    </Typography> </Button>
                 }
 
               </CardContent>
@@ -263,8 +378,8 @@ export function ScaleView() {
           {/* Button in Middle */}
           <Grid item xs={12} md={8} container alignContent="space-evenly" spacing={1}>
             {functions.map((item, index) => (
-              <Grid key={index} item xs={3} md={3}>
-                <Button startIcon={<Iconify icon={item.icon} />} size='large' variant='contained' disabled={item.disabled} fullWidth onClick={item.func}>{item.name}</Button>
+              <Grid key={index} item xs={6} md={4} lg={3}>
+                <LoadingButton loading={item?.onLoad} color="inherit" startIcon={<Iconify icon={item.icon} />} size='large' variant='contained' disabled={item.disabled} fullWidth onClick={item.func}>{item.name}</LoadingButton>
               </Grid>
             ))}
           </Grid>
@@ -289,23 +404,23 @@ export function ScaleView() {
 
         {/* //*Camera  */}
         <Grid item xs={2}>
-          {/* <CameraFeed /> */}
+          <ScaleCamera ref={childRef} />
           {/* <OCRComponent/> */}
         </Grid>
       </Grid>
 
-      <Typography variant="h4" flexGrow={1} padding={2} >
+      <Typography variant="h4"padding={1} >
         Trạm cân
       </Typography>
 
       <DataGrid rows={rows} columns={columns} sx={sxDataGrid}
-        
+        autoHeight
         slots={{
           noRowsOverlay: () => <Box display="flex" justifyContent="center" height="100%">
             <Typography variant="h6" color="textSecondary" align="center" textAlign="center" sx={{ mt: 2 }}>
-            Không có dòng nào - Hãy thêm mới
+              Không có dòng nào - Hãy thêm mới
             </Typography>
-            </Box>,
+          </Box>,
         }}
         initialState={{
           pagination: {
@@ -317,7 +432,7 @@ export function ScaleView() {
         apiRef={apiRef}
         // pageSizeOptions={[5]}
         onRowSelectionModelChange={(selection) => {
-          console.log("selection change");
+          console.log("selection record change", selection);
           setSelectionTicket(rows[selection[0] as number - 1]);
         }}
         onRowCountChange={(newCount) => {
@@ -330,6 +445,7 @@ export function ScaleView() {
       />
 
       {selectionTicket !== null && <TicketModal open={openPrint} onClose={() => isOpenPrint(false)} ticketData={selectionTicket} />}
+      {openSetting && <ScaleSettingModal open={openSetting} onClose={() => setOpenSetting(false)} />}
     </DashboardContent>
   );
 }
@@ -372,7 +488,6 @@ const columns: GridColDef<WeighingHistory>[] = [
     width: 100,
     type: 'number',
   },
-
   {
     field: 'goodsWeight',
     headerName: 'Kl hàng',
@@ -423,6 +538,42 @@ const columns: GridColDef<WeighingHistory>[] = [
     valueGetter: (value, row) => fDateTime((row as WeighingHistory).vehicleWeighingDate, formatStr.time),
   },
   {
+    field: 'vehicleImages',
+    headerName: 'Hình ảnh',
+    sortable: false,
+    // width: 160,
+    type: 'string',
+    renderCell: (params) => (
+      <Tooltip
+        enterDelay={500}
+        enterTouchDelay={500}
+        enterNextDelay={500}
+        title={(
+          <Box display="flex" flexDirection="row" alignItems="center">
+            {params.value?.map((img, index) => (
+              <Box
+                key={index}
+                component="img"
+                alt={`Ảnh cân ${img}`}
+                onError={(e: any) => {
+                  e.target.style.display = 'none';
+                }}
+                src={img}
+                sx={{ marginRight: '8px' }}
+              />
+            ))}
+          </Box>
+        )} >
+        <Box>
+          {params.value?.map((img, index) => (
+            <Iconify key={index} icon="line-md:image-twotone" style={{ color: "#828282" }} />
+          ))}
+        </Box>
+      </Tooltip >
+
+    ),
+  },
+  {
     field: 'note',
     headerName: 'Ghi chú',
     sortable: false,
@@ -447,12 +598,5 @@ const columns: GridColDef<WeighingHistory>[] = [
     sortable: false,
 
   },
-  {
-    field: 'vehicleImages',
-    headerName: 'hình ảnh',
-    sortable: false,
-    width: 160,
-    type: 'string',
 
-  },
 ];

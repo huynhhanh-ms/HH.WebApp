@@ -10,11 +10,11 @@ import type { ResponseObject } from '../response';
 export const WeighingHistoryApi = {
   gets: async (): Promise<WeighingHistory[]> => {
     try {
-      const response = await axiosClient.get<WeighingHistory[]>(
+      const response = await axiosClient.get<ResponseObject<WeighingHistory[]>>(
         apiEndpoint.WeighingHistory
       );
       const result = response.data;
-      return result;
+      return result.data;
     } catch (error) {
       throw new Error(error);
     }

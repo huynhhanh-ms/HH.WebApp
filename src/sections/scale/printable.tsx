@@ -39,7 +39,8 @@ class Printable extends Component<Props> {
       { title: 'Giờ Cân 1', value: fDateTime(data.totalWeighingDate || '') },
       { title: 'Giờ Cân 2', value: fDateTime(data.vehicleWeighingDate || '') },
       // { title: 'Nhập/Xuất', value: data.entryExit || '' },
-      { title: 'Ghi Chú', value: data.note || '' }
+      { title: 'Ghi Chú', value: data.note || '' },
+      { image: true, list: data.vehicleImages || [] }
     ];
 
     return (
@@ -49,7 +50,7 @@ class Printable extends Component<Props> {
           {/* <Box> */}
           {/* Header */}
           <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-            <Logo isSingle={false} clickable={false}/>
+            <Logo isSingle={false} clickable={false} />
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'start', flex: '1' }}>
               <Typography variant="h6" fontWeight="bold">
                 CÔNG TY TNHH TM DV HUYNH HẠNH
@@ -85,21 +86,38 @@ class Printable extends Component<Props> {
 
             {/* Right Content */}
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              {contentRight.map((item, index) => (
-                <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <Typography variant="body1" paddingRight="40px">{item.title}:</Typography>
-                  <Typography variant="body1">{item.value}</Typography>
-                </Box>
-              ))}
+              {contentRight.map((item, index) => {
+                if (item.image) {
+                  return (
+                    <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                      {
+                        item.list?.map((img, i) => (
+                          <img key={i} src={img} alt="vehicle"
+                            onError={(e: any) => {
+                              e.target.style.display = 'none';
+                            }}
+                            style={{ height: '80px', objectFit: 'contain' }} />
+                        ))
+                      }
+                    </Box>
+                  )
+                }
+                return (
+                  <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="body1" paddingRight="40px">{item.title}:</Typography>
+                    <Typography variant="body1">{item.value}</Typography>
+                  </Box>
+                );
+              })}
             </Box>
           </Box>
 
           {/* Footer */}
-          <Box sx={{ mt: 4, textAlign: 'right', paddingX: '80px' }}>
+          <Box sx={{ mt: 1, textAlign: 'right', paddingX: '80px' }}>
             <Typography variant="body2">Vụ Bổn, Ngày {new Date().toLocaleDateString('vi-VN')}</Typography>
           </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 4 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 1 }}>
             <Typography variant="body2">Khách Hàng</Typography>
             <Typography variant="body2">NV Bảo Vệ</Typography>
             <Typography variant="body2">Người Cân</Typography>

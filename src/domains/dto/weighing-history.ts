@@ -17,12 +17,12 @@ export interface WeighingHistory {
   goodsWeight?: number;
   price?: number;
   totalCost?: number;
-  totalWeighingDate?: string;
-  vehicleWeighingDate?: string;
+  totalWeighingDate?: Date;
+  vehicleWeighingDate?: Date;
   note?: string;
   vehicleImages?: string[];
-  createdDate?: string;
-  updatedDate?: string;
+  createdAt?: Date;
+  updatedAt?: Date;
   createdBy?: number;
   updatedBy?: number;
 }
