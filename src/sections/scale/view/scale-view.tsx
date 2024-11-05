@@ -77,6 +77,8 @@ export function ScaleView() {
       const reader = textDecoder.readable.getReader();
       // setWeightScale(0);
       // await setTimeout(() => { }, 10000);
+      enqueueSnackbar(`Đã kết nối cổng cân`, { variant: 'success' });
+
       // eslint-disable-next-line no-constant-condition
       while (true) {
         // eslint-disable-next-line no-await-in-loop
@@ -90,6 +92,7 @@ export function ScaleView() {
       }
       reader.releaseLock();
     } catch (error) {
+      enqueueSnackbar(`Không kết nối được cổng cân`, { variant: 'warning' });
       console.error('Không kết nối được port', error);
       setWeightScale(-1);
     }
