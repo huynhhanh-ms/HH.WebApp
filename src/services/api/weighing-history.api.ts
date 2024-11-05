@@ -7,11 +7,36 @@ import { apiEndpoint } from '../endpoint';
 
 import type { ResponseObject } from '../response';
 
+interface BaseParams {
+  
+}
+
+interface WeighingHistoryApiParams extends BaseParams{
+  startDate?: Date;
+  endDate?: Date;
+}
+
 export const WeighingHistoryApi = {
-  gets: async (): Promise<WeighingHistory[]> => {
+  gets: async (params: WeighingHistoryApiParams): Promise<WeighingHistory[]> => {
     try {
+      // Fix Utc date time - hardcode +7 to compare utc with local time in backend
+      const fixStartDate = params?.startDate ? new Date(params.startDate) : undefined;
+      if (fixStartDate) {
+        fixStartDate.setHours(fixStartDate.getHours() + 7);
+      }
+      const fixEndDate = params?.endDate ? new Date(params.endDate) : undefined;
+      if (fixEndDate) {
+        fixEndDate.setHours(fixEndDate.getHours() + 7);
+      }
+
       const response = await axiosClient.get<ResponseObject<WeighingHistory[]>>(
-        apiEndpoint.WeighingHistory
+        apiEndpoint.WeighingHistory,
+        {
+          params: {
+            ...(params?.startDate ? { "startDate": fixStartDate } : {}),
+            ...(params?.endDate ? { "endDate": fixEndDate } : {}),
+          }
+        }
       );
       const result = response.data;
       return result.data;

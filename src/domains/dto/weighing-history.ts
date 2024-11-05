@@ -7,6 +7,7 @@ export enum WeighingStatus {
 }
 
 export interface WeighingHistory {
+  serial?: number;
   id: number;
   customerName?: string;
   address?: string;

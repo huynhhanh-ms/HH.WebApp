@@ -21,10 +21,7 @@ interface Props {
 }
 
 const CustomDatePicker = ({title = 'Chọn ngày', date, setDate}: Props) => {
-  const [selectedDate, setSelectedDate] = useState<Dayjs>(dayjs(date ?? new Date()));
-
   const handleDateChange = (newDate) => {
-    setSelectedDate(newDate);
     setDate?.(newDate.toDate());
   };
 
@@ -37,7 +34,7 @@ const CustomDatePicker = ({title = 'Chọn ngày', date, setDate}: Props) => {
         <DemoContainer components={['DatePicker']}>
           <DatePicker label={title}
 
-            value={selectedDate}
+            value={dayjs(date)}
             onChange={handleDateChange}
             slotProps={{ textField: { fullWidth: true } }}
             format='DD/MM/YYYY'

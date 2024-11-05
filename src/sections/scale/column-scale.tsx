@@ -9,8 +9,12 @@ import { fDateTime, formatStr } from "src/utils/format-time";
 
 import { Iconify } from "src/components/iconify";
 
+
+export type ScaleColumnField = keyof WeighingHistory;
+
 export const editableColumns: GridColDef<WeighingHistory>[] = [
-  { field: 'id', headerName: 'ID', width: 30 },
+  // { field: 'id', headerName: 'ID', width: 30 },
+  { field: 'serial', headerName: 'STT', width: 30 },
   {
     field: 'customerName',
     headerName: 'Khách hàng',
@@ -187,4 +191,24 @@ export const columns: GridColDef<WeighingHistory>[] = editableColumns.map((colum
     })
   }
   return column;
+});
+
+export const filterColumns: GridColDef<WeighingHistory>[] = editableColumns.map((column) => {
+  if (column.field ==='serial') {
+    return ({
+      ...column,
+      filterable: false,
+      // valueGetter: (value, row) => (row as WeighingHistory).id,
+    })
+  }
+  if (column.field === 'vehicleImages') {
+    return ({
+      ...column,
+      editable: false,
+    })
+  }
+  return ({
+    ...column,
+    editable: true,
+  })
 });

@@ -2,7 +2,7 @@ import type { GridColDef } from '@mui/x-data-grid';
 import type { WeighingHistory } from 'src/domains/dto/weighing-history';
 
 import { enqueueSnackbar } from 'notistack';
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 import Box from '@mui/material/Box';
@@ -10,26 +10,30 @@ import Card from '@mui/material/Card';
 import { LoadingButton } from '@mui/lab';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
-import { Grid, Tooltip, CardContent } from '@mui/material';
-import { DataGrid, useGridApiRef } from '@mui/x-data-grid';
+import { DataGrid, GridToolbar, useGridApiRef, GridClearIcon, GridSearchIcon } from '@mui/x-data-grid';
+import { Grid, Tooltip, debounce, TextField, IconButton, CardContent, ThemeProvider } from '@mui/material';
 
 import { fNumber } from 'src/utils/format-number';
 import { viVN } from 'src/utils/viVN-localize-data-grid';
 import { fDateTime, formatStr } from 'src/utils/format-time';
+import { setToEndOfDay, setToStartOfDay, removeVietnameseTones } from 'src/utils/global-util';
 
-import sxDataGrid from 'src/customs/sx-datagrid';
 import { DashboardContent } from 'src/layouts/dashboard';
 import { ApiQueryKey } from 'src/services/api-query-key';
 import { useScaleSetting } from 'src/stores/use-scale-setting';
 import { WeighingHistoryApi } from 'src/services/api/weighing-history.api';
+import sxDataGrid, { filterColumnTheme, sxSelectorDataGrid } from 'src/customs/sx-datagrid';
 
 import { Iconify } from 'src/components/iconify';
 
 import ScaleCamera from '../scale-camera';
 import TicketModal from '../ticket-modal';
+import { CustomToolbar } from '../custom-toolbar';
 import CustomDatePicker from '../custom-date-picker';
-import { columns, editableColumns } from '../column-scale';
 import { ScaleSettingModal } from '../scale-setting-modal';
+import { columns, filterColumns, editableColumns } from '../column-scale';
+
+import type { ScaleColumnField } from '../column-scale';
 
 
 
@@ -42,6 +46,16 @@ export function ScaleView() {
   const { settings } = useScaleSetting();
   const [weightScale, setWeightScale] = useState<number>(-1);
   const [selectionTicket, setSelectionTicket] = useState<number>(-1);
+
+  const [dataKey, setDataKey] = useState<number>(0);
+  const [startDate, setStartDate] = useState<Date>(setToStartOfDay(new Date()));
+  const [endDate, setEndDate] = useState<Date>(setToEndOfDay(new Date()));
+
+
+  // manual filter
+  // const initFilterRow = { id: 0, customerName: '', licensePlate: '', totalWeight: undefined, vehicleWeight: undefined, goodsWeight: undefined, note: '', address: '', goodsType: '', vehicleImages: [], }
+  // const [quickSearch, setQuickSearch] = useState<string>('');
+  // const [filterRow, setFilterRow] = useState<WeighingHistory[]>([initFilterRow]);
 
   // take picture
   const childRef = useRef<any>();
@@ -83,15 +97,14 @@ export function ScaleView() {
 
   // get data
   const { data } = useQuery({
-    queryKey: [ApiQueryKey.weighingHistory],
-    queryFn: WeighingHistoryApi.gets,
+    queryKey: [ApiQueryKey.weighingHistory, { startDate, endDate }],
+    queryFn: () => WeighingHistoryApi.gets({ startDate, endDate }),
   });
   const [rows, setRows] = useState<WeighingHistory[]>([]);
 
   useEffect(() => {
     if (data) {
-      setRows(data);
-      console.log('123');
+      setRows(data.map((item, index) => ({ ...item, serial: index + 1 })));
     }
   }, [data]);
 
@@ -289,12 +302,19 @@ export function ScaleView() {
       },
       disabled: selectionTicket < 0,
     },
+    //* reset
     {
-      name: 'Lịch sử',
+      name: 'Tải lại',
       icon: 'material-symbols:history',
       func: (value) => {
+        // setFilterRow([initFilterRow]);
+        setDataKey(dataKey + 1);
+
+        setStartDate(setToStartOfDay(new Date()));
+        setEndDate(setToEndOfDay(new Date()));
+        // apiRef.current.stopHeaderFilterEditMode();
       },
-      disabled: true,
+      disabled: false,
     },
     {
       name: 'Thêm mới',
@@ -346,20 +366,29 @@ export function ScaleView() {
     console.log('onProcessRowUpdate', newRow);
 
     updateRecord(newRow);
-    // offline
-    // setRows(
-    //   rows.map((row) =>
-    //     row.id === newRow.id ?
-    //       newRow  : row
-    //   )
-    // );
     return newRow;
   }
 
+  //* search performance
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // const handleSearchPerformance = useCallback(debounce((value) => { setQuickSearch(value); }, 500) , []);
+  // const handleQuickSearch = (event) => { const { value } = event.target; handleSearchPerformance(value); };
+
+  // const searchableFields: ScaleColumnField[] = 
+  // ['customerName', 'address', 'licensePlate', 'totalWeighingDate', 'vehicleWeight','goodsWeight','price','totalCost','note'];
+  // // Lọc rows dựa trên filterValue
+  // const filteredRows = rows.filter(row =>
+  //   searchableFields.some(field =>
+  //     removeVietnameseTones(String(row[field]).toLowerCase()).includes(
+  //       removeVietnameseTones(quickSearch.toLowerCase())
+  //     )
+  //   )
+  // );
+
   return (
     <DashboardContent maxWidth={false}>
-      <Grid container spacing={3}>
-        <Grid item container spacing={3} xs={12} md={10}>
+      <Grid container spacing={0}>
+        <Grid item container spacing={1} xs={12} md={10}>
           {/* //*Weight Number in Left */}
           <Grid item xs={12} md={4}>
             <Card>
@@ -378,7 +407,7 @@ export function ScaleView() {
               </CardContent>
             </Card>
           </Grid>
-          {/* Button in Middle */}
+          {/* //*Button in Middle */}
           <Grid item xs={12} md={8} container alignContent="space-evenly" spacing={1}>
             {functions.map((item, index) => (
               <Grid key={index} item xs={6} md={6} lg={4}>
@@ -387,22 +416,18 @@ export function ScaleView() {
             ))}
           </Grid>
 
-          {/* Button in Right */}
-          <Grid item xs={12} md={6} container alignItems="end" spacing={1}>
+          {/* //*filter date */}
+          <Grid item xs={12} container alignItems="start" spacing={1} justifyContent="start">
             <Grid item>
-              <CustomDatePicker title='Từ ngày' />
+              <CustomDatePicker title='Từ ngày' date={startDate} setDate={setStartDate} />
             </Grid>
             <Grid item>
-              <CustomDatePicker title='Đến ngày' />
+              <CustomDatePicker title='Đến ngày' date={endDate} setDate={setEndDate} />
             </Grid>
-            <Grid item>
-              <div className='flex flex-col gap-2'>
-                <Button size='small' variant='contained' > Đặt lại</Button>
-                <Button size='small' variant='contained' > Tìm kiếm</Button>
-              </div>
-            </Grid>
+            {/* <Grid item alignSelf="center">
+                <Button size='medium' variant='contained' > Tìm kiếm</Button>
+            </Grid> */}
           </Grid>
-
         </Grid>
 
         {/* //*Camera  */}
@@ -413,11 +438,23 @@ export function ScaleView() {
       </Grid>
 
       <Typography variant="h4" padding={1} >
-        Trạm cân
+        {/* Trạm cân */}
       </Typography>
 
-      <DataGrid rows={rows} columns={settings.manualEdit.value ? editableColumns : columns} sx={sxDataGrid}
+      {/* //*Filter */}
+      {/* <ThemeProvider theme={filterColumnTheme}>
+        <Box height={40}>
+          <DataGrid rows={filterRow} columns={filterColumns} sx={sxSelectorDataGrid} hideFooter columnHeaderHeight={0} disableMultipleRowSelection onCellKeyDown={(params) => {
+            console.log('key down');
+            // apiRef.current.showFilterPanel();
+            apiRef.current.setFilterModel({ items: [{ field: params.field, value: params.formattedValue, operator: 'contains' }] })
+          }} onCellModesModelChange={(params) => { }} rowHeight={30} /></Box> </ThemeProvider> */}
+
+      {/* //*Data table */}
+      <DataGrid key={dataKey} rows={rows} columns={settings.manualEdit.value ? editableColumns : columns} sx={sxDataGrid}
+        getRowId={(row) => row?.serial ?? -1}
         slots={{
+          toolbar: CustomToolbar,
           noRowsOverlay: () => <Box display="flex" justifyContent="center" height="100%">
             <Typography variant="h6" color="textSecondary" align="center" textAlign="center" sx={{ mt: 2 }}>
               Không có dòng nào
@@ -425,10 +462,18 @@ export function ScaleView() {
           </Box>,
         }}
         initialState={{
-          pagination: {
-            paginationModel: {
-              pageSize: 100,
+          filter: {
+            filterModel: {
+              items: [],
+              quickFilterValues: [],
             },
+          },
+          density: 'compact',
+        }}
+
+        slotProps={{
+          toolbar: {
+            showQuickFilter: true,
           },
         }}
         apiRef={apiRef}
@@ -443,9 +488,11 @@ export function ScaleView() {
         processRowUpdate={handleProcessRowUpdate}
         onProcessRowUpdateError={(error) => console.error(error)}
         disableMultipleRowSelection
+        ignoreDiacritics
         localeText={viVN.components.MuiDataGrid.defaultProps.localeText}
       />
 
+      {/* //*Modal */}
       {selectionTicket >= 0 && <TicketModal open={openPrint} onClose={() => isOpenPrint(false)} ticketData={rows[selectionTicket]} />}
       {openSetting && <ScaleSettingModal open={openSetting} onClose={() => setOpenSetting(false)} />}
     </DashboardContent>

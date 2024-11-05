@@ -1,6 +1,7 @@
 
 import type { WeighingHistory } from 'src/domains/dto/weighing-history';
 
+import { enqueueSnackbar } from 'notistack';
 import React, { useRef, Component } from 'react';
 import ReactToPrint, { useReactToPrint } from 'react-to-print';
 
@@ -25,6 +26,10 @@ function TicketModal({ open, onClose, ticketData }: Props) {
   // console.log(ticketData.id);
 
 
+
+  if (!ticketData) {
+    return null;
+  }
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="md" PaperProps={{

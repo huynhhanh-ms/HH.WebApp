@@ -17,16 +17,16 @@ export type DatePickerFormat = Dayjs | Date | string | number | null | undefined
  * Docs: https://day.js.org/docs/en/display/format
  */
 export const formatStr = {
-  default: 'HH:mm DD/MM', // 2022-04-17 12:00
-  dateTime: 'DD MMM YYYY h:mm a', // 17 Apr 2022 12:00 am
+  default: 'HH:MM DD/MM', // 2022-04-17 12:00
+  dateTime: 'DD MMM YYYY HH:MM', // 17 Apr 2022 12:00 am
   date: 'DD MMM YYYY', // 17 Apr 2022
-  time: 'hh:mm', // 12:00 am
+  time: 'HH:MM', // 12:00 am
   split: {
-    dateTime: 'DD/MM/YYYY h:mm a', // 17/04/2022 12:00 am
+    dateTime: 'DD/MM/YYYY HH:MM', // 17/04/2022 12:00 am
     date: 'DD/MM/YYYY', // 17/04/2022
   },
   paramCase: {
-    dateTime: 'DD-MM-YYYY h:mm a', // 17-04-2022 12:00 am
+    dateTime: 'DD-MM-YYYY HH:MM', // 17-04-2022 12:00 am
     date: 'DD-MM-YYYY', // 17-04-2022
   },
   minialDate: 'DD-MM',

@@ -230,7 +230,7 @@ const ScaleCamera = forwardRef((props, ref) => {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 2,
+        margin: 1,
       }}
     >
       <Box
@@ -240,8 +240,9 @@ const ScaleCamera = forwardRef((props, ref) => {
         playsInline
         sx={{
           width: '100%',
-          height: '200px',
-          border: '2px solid #b0d8ff',
+          height: '160px',
+          border: '2px solid #272727',
+          borderRadius: '10px',
         }}
       />
       <Grid container alignItems="stretch">
