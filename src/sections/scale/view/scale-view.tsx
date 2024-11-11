@@ -30,6 +30,7 @@ import ScaleCamera from '../scale-camera';
 import TicketModal from '../ticket-modal';
 import { CustomToolbar } from '../custom-toolbar';
 import CustomDatePicker from '../custom-date-picker';
+import { UseWeightPort } from '../hook/use-weight-port';
 import { ScaleSettingModal } from '../scale-setting-modal';
 import { columns, filterColumns, editableColumns } from '../column-scale';
 
@@ -44,18 +45,11 @@ export function ScaleView() {
   const apiRef = useGridApiRef();
 
   const { settings } = useScaleSetting();
-  const [weightScale, setWeightScale] = useState<number>(-1);
   const [selectionTicket, setSelectionTicket] = useState<number>(-1);
 
   const [dataKey, setDataKey] = useState<number>(0);
   const [startDate, setStartDate] = useState<Date>(setToStartOfDay(new Date()));
   const [endDate, setEndDate] = useState<Date>(setToEndOfDay(new Date()));
-
-
-  // manual filter
-  // const initFilterRow = { id: 0, customerName: '', licensePlate: '', totalWeight: undefined, vehicleWeight: undefined, goodsWeight: undefined, note: '', address: '', goodsType: '', vehicleImages: [], }
-  // const [quickSearch, setQuickSearch] = useState<string>('');
-  // const [filterRow, setFilterRow] = useState<WeighingHistory[]>([initFilterRow]);
 
   // take picture
   const childRef = useRef<any>();
@@ -67,36 +61,7 @@ export function ScaleView() {
     return null;
   };
 
-  const connectSerialPort = async () => {
-    try {
-      const port = await (navigator as any).serial.requestPort();
-      await port.open({ baudRate: 9600 });
-      const textDecoder = new TextDecoderStream();
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
-      const reader = textDecoder.readable.getReader();
-      // setWeightScale(0);
-      // await setTimeout(() => { }, 10000);
-      enqueueSnackbar(`Đã kết nối cổng cân`, { variant: 'success' });
-
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        // eslint-disable-next-line no-await-in-loop
-        const { value, done } = await reader.read();
-        if (done) {
-          setWeightScale(-1);
-          break;
-        }
-        // console.log('Received data:', value);
-        setWeightScale(parseInt(value));
-      }
-      reader.releaseLock();
-    } catch (error) {
-      enqueueSnackbar(`Không kết nối được cổng cân`, { variant: 'warning' });
-      console.error('Không kết nối được port', error);
-      setWeightScale(-1);
-    }
-  }
+  const { connectSerialPort, data: weightStreamData, xData, yData, yDataAmplitude, isReady} = UseWeightPort();
 
   // get data
   const { data } = useQuery({
@@ -184,7 +149,7 @@ export function ScaleView() {
           setOnLoadButton(false)
           return;
         }
-        if (validateWeight(weightScale) === false) {
+        if (validateWeight(weightStreamData) === false) {
           enqueueSnackbar('Số cân hiển thị không đúng, vui lòng thử lại', { variant: 'error' });
           setOnLoadButton(false);
           return;
@@ -197,10 +162,10 @@ export function ScaleView() {
 
         const updateSelection: WeighingHistory = {
           ...selection,
-          totalWeight: weightScale,
+          totalWeight: weightStreamData,
           totalWeighingDate: new Date(),
-          goodsWeight: weightScale - (selection.vehicleWeight ?? 0),
-          totalCost: (weightScale - (selection.vehicleWeight ?? 0)) * (selection.price ?? 0),
+          goodsWeight: weightStreamData - (selection.vehicleWeight ?? 0),
+          totalCost: (weightStreamData - (selection.vehicleWeight ?? 0)) * (selection.price ?? 0),
           vehicleImages: (settings.takeWeighingPhoto.value === true) ? selection.vehicleImages : updateImage({ url: 'not yet', type: 'total', list: selection.vehicleImages ?? [] }),
         };
 
@@ -242,7 +207,7 @@ export function ScaleView() {
           setOnLoadButton(false);
           return;
         }
-        if (validateWeight(weightScale) === false) {
+        if (validateWeight(weightStreamData) === false) {
           enqueueSnackbar('Số cân hiển thị không đúng, vui lòng thử lại', { variant: 'error' });
           setOnLoadButton(false);
           return;
@@ -255,10 +220,10 @@ export function ScaleView() {
 
         const updateSelection: WeighingHistory = {
           ...selection,
-          vehicleWeight: weightScale,
+          vehicleWeight: weightStreamData,
           vehicleWeighingDate: new Date(),
-          goodsWeight: (selection.totalWeight ?? 0) - weightScale,
-          totalCost: ((selection.totalWeight ?? 0) - weightScale) * (selection.price ?? 0),
+          goodsWeight: (selection.totalWeight ?? 0) - weightStreamData,
+          totalCost: ((selection.totalWeight ?? 0) - weightStreamData) * (selection.price ?? 0),
           vehicleImages: (settings.takeWeighingPhoto.value === true) ? selection.vehicleImages : updateImage({ url: 'not yet', type: 'vehicle', list: selection.vehicleImages ?? [] }),
         };
 
@@ -372,22 +337,6 @@ export function ScaleView() {
     return newRow;
   }
 
-  //* search performance
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  // const handleSearchPerformance = useCallback(debounce((value) => { setQuickSearch(value); }, 500) , []);
-  // const handleQuickSearch = (event) => { const { value } = event.target; handleSearchPerformance(value); };
-
-  // const searchableFields: ScaleColumnField[] = 
-  // ['customerName', 'address', 'licensePlate', 'totalWeighingDate', 'vehicleWeight','goodsWeight','price','totalCost','note'];
-  // // Lọc rows dựa trên filterValue
-  // const filteredRows = rows.filter(row =>
-  //   searchableFields.some(field =>
-  //     removeVietnameseTones(String(row[field]).toLowerCase()).includes(
-  //       removeVietnameseTones(quickSearch.toLowerCase())
-  //     )
-  //   )
-  // );
-
   return (
     <DashboardContent maxWidth={false}>
       <Grid container spacing={0}>
@@ -396,9 +345,9 @@ export function ScaleView() {
           <Grid item xs={12} md={4}>
             <Card>
               <CardContent >
-                {weightScale !== -1 ?
+                {isReady !== false ?
                   <Typography variant="h1" align='right' sx={{ paddingLeft: '40px' }}>
-                    {fNumber(weightScale)}{''}
+                    {fNumber(weightStreamData)}{''}
                   </Typography>
                   :
                   <Button onClick={connectSerialPort} size='large'>
@@ -497,7 +446,16 @@ export function ScaleView() {
 
       {/* //*Modal */}
       {selectionTicket >= 0 && <TicketModal open={openPrint} onClose={() => isOpenPrint(false)} ticketData={rows[selectionTicket]} />}
-      {openSetting && <ScaleSettingModal open={openSetting} onClose={() => setOpenSetting(false)} />}
+      {openSetting && <ScaleSettingModal open={openSetting} onClose={() => setOpenSetting(false)}
+        chartData={
+          {
+            xTitle: xData,
+            yData: [
+              yData,
+              yDataAmplitude
+            ]
+          }
+        } />}
     </DashboardContent>
   );
 }

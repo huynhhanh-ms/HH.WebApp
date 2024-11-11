@@ -1,5 +1,10 @@
 import argparse
+
+import numpy as np
 import serial, random, time
+
+from smooth_random_wave import smooth_random_wave
+
 
 # print(dir(serial))
 def createPort(portName, baudRate):
@@ -27,31 +32,33 @@ args = parser.parse_args()
 
 ser = createPort(args.port, 9600)
 
-#delete com port virtual
-# import serial.tools.list_ports
-# ports = serial.tools.list_ports.comports()
-# for port, desc, hwid in sorted(ports):
-#     if "USB Serial Port" in desc:
-#         print("Deleting {}".format(port))
-#         serial.tools.list_ports.comports().remove(port)
+x = np.linspace(0, 10, 1000000)
+y = smooth_random_wave(x, amplitude=2, frequency=1, noise_level=0.3, smoothness=100)
 
-cnt = 0
+y_min = np.min(y)
+y_max = np.max(y)
+y_normalized = (y - y_min) / (y_max - y_min) * 5000
+
+delay = 1
+index = 0
+step = 50
+
+
 try:
     while True:
       try:
-        # Tạo số ngẫu nhiên từ 1 đến 100
-        # random_data = str(random.randint(1, 100))
-        random_data = "+0000" + str(cnt) + "1B"
-        # random_data = str(cnt)
-        cnt += 10
-        
+        # random_data = "+000001B"
+        random_data = "+0000" + str(int(y_normalized[index])) + "0B"
+
         # Gửi dữ liệu qua cổng COM
         ser.write(random_data.encode())
 
         print(f"Sent: {random_data}")
 
-        # Chờ một khoảng thời gian ngẫu nhiên trước khi gửi dữ liệu tiếp theo
-        time.sleep(1)
+        time.sleep(delay)
+        index += step
+
+
       except serial.SerialException:
         print(f"COM port {ser.port} is not available.")
         break

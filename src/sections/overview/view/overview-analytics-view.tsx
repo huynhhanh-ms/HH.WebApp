@@ -142,7 +142,7 @@ export function OverviewAnalyticsView() {
         <Grid xs={12} md={6} lg={8}>
           <AnalyticsWebsiteVisits
             title="Doanh số "
-            subheader="(+43%) than last year hảdtitle"
+            subheader="(+43%) than last year"
             chart={{
               colors: ['#00a116', '#ffc628'],
               categories: sessionData?.sort((pre, nxt) => new Date(pre.startDate).getTime() - new Date(nxt.startDate).getTime()).map(session => fDateTime(session.startDate, formatStr.minialDate) ?? '') ?? [],
