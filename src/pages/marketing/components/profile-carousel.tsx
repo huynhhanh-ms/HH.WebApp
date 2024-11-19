@@ -22,8 +22,8 @@ const profiles = [
     quote: "Thành công không chỉ đến từ một người, mà từ sự đoàn kết, quyết tâm và niềm tin lẫn nhau trên con đường chung."
   },
   {
-    name: "Lariach French",
-    role: "Online Teacher",
+    name: "Ông Phúc",
+    role: "Quản lý kỹ thuật",
     imageUrl: "/assets/marketing/CEO03.png",
     quote: "Khởi đầu từ tay trắng không phải là bất lợi, đó là cơ hội để chứng minh rằng bạn đủ bản lĩnh để chinh phục mọi thử thách."
   },
