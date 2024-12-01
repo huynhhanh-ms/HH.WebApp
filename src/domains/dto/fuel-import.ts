@@ -7,7 +7,7 @@ export interface FuelImport {
   tankId: string;
   importVolume: number;
   importPrice: number;
-  weight: number;
+  weight?: number;
   totalCost: number;
   importDate: Date;
   status: string;
@@ -15,5 +15,6 @@ export interface FuelImport {
   volumeUsed: string;
   density: number;
   profit: number;
+  note?: string;
   fuelImportSessions: FuelImportSession[];
 }

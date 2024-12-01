@@ -9,6 +9,7 @@ export interface Session {
   endDate: string;
   status: string;
   volumeSold: number;
+  note?: string;
 
   totalExpense?: number;
 

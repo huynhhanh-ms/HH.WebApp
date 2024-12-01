@@ -10,6 +10,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Button from '@mui/material/Button';
+import { TextField } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
 import sxDataGrid from 'src/customs/sx-datagrid';
@@ -115,6 +116,17 @@ export function RecordInitialMeter({ title, subheader, pumps: parentPumps, sessi
     });
   }
 
+  // note
+  const [note, setNote] = useState<string>('');
+  useEffect(() => {
+      setNote(sessionData?.note ?? '');
+  }, [sessionData?.note]);
+  const handleChangeNote = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    if (!sessionData) return;
+    setNote(event.target.value);
+    sessionData.note = event.target.value;
+  }
+
   return (
     <Card {...other}>
       {/* <CardHeader title={title} subheader={subheader} sx={{ mb: 1 }} /> */}
@@ -128,11 +140,26 @@ export function RecordInitialMeter({ title, subheader, pumps: parentPumps, sessi
         autoHeight
         hideFooter
       />
+      <div className='pt-2'/>
+      <TextField
+        sx={{ m:1, pr:2 }}
+        label="Ghi chú (Không bắt buộc)"
+        variant="outlined"
+        multiline
+        rows={3}
+        fullWidth
+        name='note'
+        value={note}
+        onFocus={event => { event.target.select(); }}
+        onChange={handleChangeNote}
+        type='text'
+      // helperText="Thêm ghi chú (Không bắt buộc)"
+      />
       <Box sx={{ p: 2, textAlign: 'right', display: 'flex', justifyContent: 'space-between' }}>
         <Condition condition={sessionData?.status !== "Closed"}>
-        <Button size="small" color="inherit" variant='contained' onClick={handleSave} >
-          Lưu
-        </Button></Condition>
+          <Button size="small" color="inherit" variant='contained' onClick={handleSave} >
+            Lưu
+          </Button></Condition>
       </Box>
     </Card>
   );

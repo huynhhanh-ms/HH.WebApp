@@ -13,20 +13,22 @@ interface CreateFuelImportModalProps {
   open: boolean;
   onClose: () => void;
   tanks: Tank[];
-  onSubmit?: (formValues: { tankId: string; importVolume: string; importPrice: string; weight: string }) => void;
+  // onSubmit?: (formValues: { tankId: string; importVolume: string; importPrice: string; weight: string; note: string}) => void;
 }
 
-const CreateFuelImportModal: React.FC<CreateFuelImportModalProps> = ({ open, onClose, tanks, onSubmit }) => {
+const CreateFuelImportModal: React.FC<CreateFuelImportModalProps> = ({ open, onClose, tanks }) => {
   // State to handle form values
   const [formValues, setFormValues] = useState({
     tankId: '',
     importVolume: '',
     importPrice: '',
-    weight: '1'
+    note: "",
+    weight: 0,
   });
 
   // Handle changes in the form fields
   const handleChange = (event: { target: { name: any; value: any; }; }) => {
+    // console.log(event.target.name);
     const { name, value } = event.target;
     setFormValues({
       ...formValues,
@@ -109,6 +111,21 @@ const CreateFuelImportModal: React.FC<CreateFuelImportModalProps> = ({ open, onC
           onFocus={event => { event.target.select(); }}
           required
           type="number"
+        />
+
+        {/* Note Input */}
+        <TextField
+          label="Ghi chú (Không bắt buộc)"
+          variant="outlined"
+          multiline
+          rows={3}
+          fullWidth
+          name='note'
+          value={formValues.note}
+          onFocus={event => { event.target.select(); }}
+          onChange={handleChange}
+          type='text'
+        // helperText="Thêm ghi chú (Không bắt buộc)"
         />
 
         {/* Weight (Optional) */}

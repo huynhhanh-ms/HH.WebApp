@@ -100,6 +100,7 @@ export function FuelImportTableRow({ row, selected, onSelectRow }: TableRowProps
         <TableCell align="right">{fCurrency(row?.totalCost)}</TableCell>
         <TableCell align="right">{fCurrency(row?.totalSalePrice)}</TableCell>
         <TableCell align="right">{fCurrency((row?.totalSalePrice ?? 0) - (row?.totalCost ?? 0))}</TableCell>
+        <TableCell align="left">{row?.note}</TableCell>
         <TableCell align="right">{fNumber(row?.weight)}</TableCell>
         <TableCell align="right">{row?.weight && row?.importVolume ? fNumber(row.weight / row.importVolume) : '-'}</TableCell>
 
