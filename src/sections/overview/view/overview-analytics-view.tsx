@@ -17,6 +17,7 @@ import { SessionApi } from 'src/services/api/session.api';
 import { AnalyticsTankVolume } from 'src/sections/tank/analytics-tank-volume';
 
 import { AnalyticsNews } from '../analytics-news';
+import { MinimalWidget } from '../minimal-widget';
 import { AnalyticsTasks } from '../analytics-tasks';
 import { AnalyticsCurrentVisits } from '../analytics-current-visits';
 import { AnalyticsOrderTimeline } from '../analytics-order-timeline';
@@ -48,14 +49,32 @@ export function OverviewAnalyticsView() {
     queryKey: [ApiQueryKey.session],
     queryFn: SessionApi.gets,
   });
+
+  // this month
   const [totalRevenueThisMonth, setTotalRevenueThisMonth] = useState<number>(0);
   useEffect(() => {
-    const totalRevenue = sessionData?.reduce((totalAccumulated, currentSession) => {
+    // session of this month
+    const sessionNow = sessionData?.filter(session => new Date(session.startDate).getMonth() === new Date().getMonth());
+    const totalRevenue = sessionNow?.reduce((totalAccumulated, currentSession) => {
       const sessionRevenue = currentSession?.petrolPumps?.reduce((pumpTotal, pump) => pumpTotal + (pump?.revenue ?? 0), 0) ?? 0;
       return totalAccumulated + sessionRevenue;
     }, 0);
 
     setTotalRevenueThisMonth(totalRevenue ?? 0);
+  }, [sessionData]);
+
+  // last month
+  const [totalRevenueLastMonth, setTotalRevenueLastMonth] = useState<number>(0);
+  useEffect(() => {
+    // session of last month
+    const sessionLast = sessionData?.filter(session => new Date(session.startDate).getMonth() === new Date().getMonth() - 1);
+
+    const totalRevenue = sessionLast?.reduce((totalAccumulated, currentSession) => {
+      const sessionRevenue = currentSession?.petrolPumps?.reduce((pumpTotal, pump) => pumpTotal + (pump?.revenue ?? 0), 0) ?? 0;
+      return totalAccumulated + sessionRevenue;
+    }, 0);
+
+    setTotalRevenueLastMonth(totalRevenue ?? 0);
   }, [sessionData]);
 
 
@@ -97,10 +116,22 @@ export function OverviewAnalyticsView() {
             />}
         </Grid>
         <Grid xs={12} sm={6} md={3}>
-          <AnalyticsWidgetSummary
-            title="Doanh số tháng này"
+          <MinimalWidget
+            title={`Doanh số ${fDate(new Date(), 'MM/YYYY')}`}
             percent={0}
             total={ totalRevenueThisMonth}
+            icon={<img alt="icon" src="/assets/icons/glass/ic-glass-money.svg" />}
+            chart={{
+              categories: sessionData?.sort((pre, nxt) => new Date(pre.startDate).getTime() - new Date(nxt.startDate).getTime()).map(session => fDateTime(session.startDate, formatStr.split.date) ?? '') ?? [],
+              // series: [22, 8, 35, 50, 82, 84, 77, 12],
+              series: sessionData?.map(session => session?.petrolPumps?.reduce((pre, cur) => pre + cur.revenue, 0) ?? 0) ?? [],
+            }}
+          />
+          <div className='p-1'/>
+          <MinimalWidget
+            title={`Doanh số ${fDate(new Date(new Date().setMonth(new Date().getMonth() - 1)), 'MM/YYYY')}`}
+            percent={0}
+            total={ totalRevenueLastMonth}
             icon={<img alt="icon" src="/assets/icons/glass/ic-glass-money.svg" />}
             chart={{
               categories: sessionData?.sort((pre, nxt) => new Date(pre.startDate).getTime() - new Date(nxt.startDate).getTime()).map(session => fDateTime(session.startDate, formatStr.split.date) ?? '') ?? [],
