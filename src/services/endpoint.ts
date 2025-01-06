@@ -3,6 +3,7 @@ export const apiEndpoint = {
 	Auth: "/auth",
 	Test: "/test",
   Tank: "/tank",
+  TankHistory: "/tank-history",
   FuelImport: "/fuel-import",
   Session: "/session",
   Expense: "/expense",

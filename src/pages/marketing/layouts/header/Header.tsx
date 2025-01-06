@@ -104,9 +104,9 @@ export default function Header({ transparent }: Props) {
               }}
             /> */}
 
-            <Button variant="text" href="https://www.github.com/jinergenkai" target="_blank" rel="noopener" sx={{ color: 'common.black' }} size='small'>
+            {/* <Button variant="text" href="https://www.github.com/jinergenkai" target="_blank" rel="noopener" sx={{ color: 'common.black' }} size='small'>
               Github
-            </Button>
+            </Button> */}
 
             {isDesktop && (
               <Stack direction="row" spacing={1}>

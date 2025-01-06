@@ -27,6 +27,8 @@ import { TableNoData } from '../table-no-data';
 import { TableEmptyRows } from '../table-empty-rows';
 import { GeneralTableHead } from '../user-table-head';
 import { UserTableToolbar } from '../user-table-toolbar';
+import CreateTankHistoryModal from '../create-tank-history-modal';
+import { TankHistoryDialog } from '../tank-history-dialog';
 import { FuelImportTableRow } from '../fuel-import-table-row';
 import { AnalyticsTankVolume } from '../analytics-tank-volume';
 import CreateFuelImportModal from '../create-fuel-import-modal';
@@ -77,12 +79,19 @@ export function TankView() {
   //* create fuel import
   const [isModalOpen, setModalOpen] = useState(false);
 
+  const [isCreateTankModel, setIsCreateTankModel] = useState(false);
+
+  const [isOpenTankHistory, setIsOpenTankHistory] = useState(false);
+
   return (
     <DashboardContent maxWidth='xl'>
       <Typography variant="h4" sx={{ mb: { xs: 2, md: 3 } }}>
         Quản lý tồn kho
-        <Button variant='outlined' sx={{ ml: 2 }} color='inherit'>
-          Đồng bộ giá bán
+        <Button variant='outlined' sx={{ ml: 2 }} color='inherit' onClick={() => setIsCreateTankModel(true)}>
+          Tạo mới bồn
+        </Button>
+        <Button variant='outlined' sx={{ ml: 2 }} color='inherit' onClick={() => setIsOpenTankHistory(true)}>
+          Lịch sử bồn
         </Button>
       </Typography>
 
@@ -133,12 +142,21 @@ export function TankView() {
         </Button>
       </Box>
 
+      {/* //*MODEL */}
       <CreateFuelImportModal
         open={isModalOpen}
         onClose={() => setModalOpen(false)}
         tanks={tank ?? []}
         // onSubmit={}
       />
+
+      <CreateTankHistoryModal open={isCreateTankModel} onClose={() => setIsCreateTankModel(false)}
+        tanks={tank ?? []}
+      />
+
+      <TankHistoryDialog open={isOpenTankHistory} onClose={() => setIsOpenTankHistory(false)} />
+
+
 
       <Card>
         <UserTableToolbar
@@ -169,7 +187,7 @@ export function TankView() {
                   { id: 'id', label: 'Mã' },
                   { id: 'tankName', label: 'Tên bồn' },
                   { id: 'importDate', label: 'Ngày nhập' },
-                  { id: 'status', label: 'Trạng thái'},
+                  { id: 'status', label: 'Trạng thái' },
                   { id: 'importVolume', label: 'Thể tích', align: 'right' },
                   { id: 'importPrice', label: 'Giá nhập', align: 'right' },
                   { id: 'totalCost', label: 'Đơn giá', align: 'right' },
@@ -177,8 +195,8 @@ export function TankView() {
                   { id: 'profit', label: 'lợi nhuận', align: 'right' },
                   { id: 'note', label: 'Ghi chú' },
                   { id: 'weight', label: 'Trọng lượng', align: 'right' },
-                  { id: 'density', label: 'Kl riêng', align: 'right'},
-                  { id: '', label: ''},
+                  { id: 'density', label: 'Kl riêng', align: 'right' },
+                  { id: '', label: '' },
                 ]}
               />
               <TableBody>

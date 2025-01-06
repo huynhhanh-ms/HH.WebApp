@@ -21,6 +21,7 @@ export const ApiQueryKey = {
     refreshToken: 'REFRESH_TOKEN',
   },
   tank : "TANK",
+  tank_history : "TANK_HISTORY",
   fuelImport : "FUEL_IMPORT",
   session : "SESSION",
   sessionDetail : "SESSION_DETAIL",
