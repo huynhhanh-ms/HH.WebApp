@@ -6,7 +6,7 @@ import type { AreaAdmin } from "../entity/area";
 type Props = {
   apikey?: string;
   area?: AreaAdmin;
-  onAreaChange?: (points: {lat:number, lng:number}[]) => void
+  onAreaChange?: (points: { lat: number, lng: number }[]) => void
   reset?: boolean
   afterReset?: () => void
 };
@@ -17,9 +17,9 @@ const HereMapDrawArea = (props: Props) => {
   const mapRef = useRef(null);
   const map = useRef<H.Map | null>(null);
   const platform = useRef<H.service.Platform | null>(null);
-  const { apikey = "7h1jyg35V5JfNIgPA8m1XEN39K9giRbtrfNj8nJ5kd4", onAreaChange, reset, afterReset} =
+  const { apikey = "7h1jyg35V5JfNIgPA8m1XEN39K9giRbtrfNj8nJ5kd4", onAreaChange, reset, afterReset } =
     props;
-  
+
 
   useEffect(() => {
     if (boundary.length > 1) {
@@ -41,35 +41,35 @@ const HereMapDrawArea = (props: Props) => {
       });
       const redDotIcon = new H.map.Icon('/assets/icons/land/point.svg');
       // Create markers at the coordinates of each point
-        const markers:any = [];
-        boundary.map((point) => {
-            const marker = new H.map.Marker(point);
-            marker.setIcon(redDotIcon);
-            marker.draggable = true;
+      const markers: any = [];
+      boundary.map((point) => {
+        const marker = new H.map.Marker(point);
+        marker.setIcon(redDotIcon);
+        marker.draggable = true;
         return marker;
       });
       boundary.forEach((point) => {
         const marker = new H.map.Marker(point);
-            marker.setIcon(redDotIcon);
-            marker.draggable = true;
+        marker.setIcon(redDotIcon);
+        marker.draggable = true;
         markers.push(marker);
       });
-  
+
       // Clear the previous markers
       if (map.current) {
         map.current.removeObjects(map.current.getObjects());
       }
-  
+
       // Add the polygon and markers to the map
       if (map.current) {
         map.current.addObjects([newPolygon, ...markers]);
       }
-  
+
       // Set the polygon and markers in state
       setPolygon(newPolygon);
     }
     onAreaChange?.(boundary);
-  }, [boundary,onAreaChange]);
+  }, [boundary, onAreaChange]);
 
   // reset point
   useEffect(() => {
@@ -80,11 +80,11 @@ const HereMapDrawArea = (props: Props) => {
     }
   }, [reset, afterReset]);
 
-  useEffect(()=>{
-    if(!!map.current && !!polygon){
-        map.current.addObject(polygon)
+  useEffect(() => {
+    if (!!map.current && !!polygon) {
+      map.current.addObject(polygon)
     }
-  },[polygon])
+  }, [polygon])
   const handleAddBoundary = (newPoint: { lat: number; lng: number }) => {
     setBoundary((prevBoundary) => [...prevBoundary, newPoint]);
   };
@@ -107,33 +107,39 @@ const HereMapDrawArea = (props: Props) => {
         );
 
         const rasterTileLayer = new H.map.layer.TileLayer(rasterTileProvider);
+
+        //* Create MAPHERE
         if (mapRef.current) {
           const newMap = new H.Map(mapRef.current, rasterTileLayer, {
             pixelRatio: window.devicePixelRatio,
             center: {
-              lat: 10.871592515732114,
-              lng: 106.79497720296311,
+              lat: 12.6704278,
+              lng: 108.4330835,
             },
             zoom: 14,
           });
-        // Add panning and zooming behavior to the map
-        // eslint-disable-next-line no-new
-        new H.mapevents.Behavior(
-          new H.mapevents.MapEvents(newMap)
-        );
-
-        newMap.addEventListener("tap", (evt: { currentPointer: { viewportX: number; viewportY: number; }; }) => {
-          const point = newMap.screenToGeo(
-            evt.currentPointer.viewportX,
-            evt.currentPointer.viewportY
+          // Add panning and zooming behavior to the map
+          // eslint-disable-next-line no-new
+          new H.mapevents.Behavior(
+            new H.mapevents.MapEvents(newMap)
           );
-          if (point) {
-            const { lat, lng } = point;
-            handleAddBoundary({ lat, lng });
-            console.log(`Clicked at: Latitude ${lat}, Longitude ${lng}`);
-          }
-        });
-        window.addEventListener("resize", () => newMap.getViewPort().resize());
+
+          const defaultLayers = platform.current.createDefaultLayers();
+          H.ui.UI.createDefault(newMap, defaultLayers);
+
+
+          newMap.addEventListener("tap", (evt: { currentPointer: { viewportX: number; viewportY: number; }; }) => {
+            const point = newMap.screenToGeo(
+              evt.currentPointer.viewportX,
+              evt.currentPointer.viewportY
+            );
+            if (point) {
+              const { lat, lng } = point;
+              handleAddBoundary({ lat, lng });
+              console.log(`Clicked at: Latitude ${lat}, Longitude ${lng}`);
+            }
+          });
+          window.addEventListener("resize", () => newMap.getViewPort().resize());
           // Set the map object to the reference
           map.current = newMap;
         }

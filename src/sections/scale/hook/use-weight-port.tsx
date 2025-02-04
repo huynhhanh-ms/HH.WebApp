@@ -47,7 +47,16 @@ export function UseWeightPort() {
 
   const connectSerialPort = async () => {
     try {
-      const port = await (navigator as any).serial.requestPort();
+      // used port
+      const ports = await (navigator as any).serial.getPorts();
+      let port;
+      if (ports.length > 0) {
+        port = ports[0];
+      }
+      else {
+        port = await (navigator as any).serial.requestPort();
+      }
+
       await port.open({ baudRate: 9600 });
       const textDecoder = new TextDecoderStream();
       const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
@@ -89,7 +98,7 @@ export function UseWeightPort() {
     addYDataFake(dataAfter + amplitude);
     setData(dataAfter);
 
-  },[rawData]);
+  }, [rawData]);
 
   return {
     data,
