@@ -1,0 +1,38 @@
+name: Deploy React App
+
+on:
+  push:
+    branches:
+      - main # Chạy workflow khi có thay đổi trên branch main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Bước 1: Checkout code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Bước 2: Đăng nhập vào Docker Hub
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      # Bước 3: Build Docker image và push lên Docker Hub
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/react-app:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/react-app:latest
+
+      # Bước 4: SSH vào server và deploy bằng Docker Compose
+      - name: Deploy to server
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /path/to/your/project  # Điều chỉnh đường dẫn phù hợp trên server của bạn
+            docker-compose down        # Dừng và xóa container cũ
+            docker pull ${{ secrets.DOCKER_USERNAME }}/react-app:latest  # Pull image mới
+            docker-compose up -d       # Khởi động lại bằng Docker Compose
