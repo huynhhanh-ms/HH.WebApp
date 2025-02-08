@@ -21,7 +21,8 @@ jobs:
       # Bước 3: Build Docker image và push lên Docker Hub
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/hh-webapp:latest .
+          # docker build -t ${{ secrets.DOCKER_USERNAME }}/hh-webapp:latest .
+          docker compose build
           docker push ${{ secrets.DOCKER_USERNAME }}/hh-webapp:latest
 
       # Bước 4: SSH vào server và deploy bằng Docker Compose
