@@ -60,6 +60,8 @@ export function UseWeightPort() {
       const reader = textDecoder.readable.getReader();
       enqueueSnackbar(`Đã kết nối cổng cân`, { variant: 'success' });
 
+      let buffer = '';
+
       setIsReady(true);
       while (true) {
         const { value, done } = await reader.read();
@@ -68,8 +70,25 @@ export function UseWeightPort() {
           setIsReady(false);
           break;
         }
-        setRawData(value);
-        console.log(value);
+
+        buffer += value;
+        const lines = buffer.split('\r\n');
+        buffer = lines.pop() ?? '';
+
+        lines.forEach((line, index) => {
+          console.log(index, line);
+          const weight = parseInt(line);
+          if (Number.isNaN(weight)) {
+            console.log('weight is NaN');
+          }
+          else {
+            console.log('weight: ', weight);
+            setRawData(weight.toString());
+          }
+        });
+
+        // setRawData(value);
+        // console.log(value);
       }
       reader.releaseLock();
     } catch (error) {
