@@ -22,7 +22,10 @@ const HereMapDrawArea = (props: Props) => {
 
 
   useEffect(() => {
-    if (boundary.length > 1) {
+    // if (boundary.length > 1) {
+    if (boundary.length <= 1) {
+      return;
+    }
       const linePoints = boundary?.reduce<number[]>(
         (prev, cur) => [...prev, cur?.lat, cur?.lng, 100],
         []
@@ -33,7 +36,7 @@ const HereMapDrawArea = (props: Props) => {
       const lineString = new H.geo.LineString(linePoints);
       const newPolygon = new H.map.Polygon(lineString, {
         style: {
-          fillColor: "rgba(150, 183, 222, 0.7)",
+          fillColor: "rgba(192, 209, 229, 0.4)",
           strokeColor: "#000000",
           lineWidth: 1,
         },
@@ -42,12 +45,12 @@ const HereMapDrawArea = (props: Props) => {
       const redDotIcon = new H.map.Icon('/assets/icons/land/point.svg');
       // Create markers at the coordinates of each point
       const markers: any = [];
-      boundary.map((point) => {
-        const marker = new H.map.Marker(point);
-        marker.setIcon(redDotIcon);
-        marker.draggable = true;
-        return marker;
-      });
+      // boundary.map((point) => {
+      //   const marker = new H.map.Marker(point);
+      //   marker.setIcon(redDotIcon);
+      //   marker.draggable = true;
+      //   return marker;
+      // });
       boundary.forEach((point) => {
         const marker = new H.map.Marker(point);
         marker.setIcon(redDotIcon);
@@ -67,7 +70,7 @@ const HereMapDrawArea = (props: Props) => {
 
       // Set the polygon and markers in state
       setPolygon(newPolygon);
-    }
+    // }
     onAreaChange?.(boundary);
   }, [boundary, onAreaChange]);
 
@@ -75,7 +78,12 @@ const HereMapDrawArea = (props: Props) => {
   useEffect(() => {
     if (reset) {
       console.log("reset")
+      // setBoundary([{ lat: 12.6704278, lng: 108.4330835 }]);
       setBoundary([]);
+      setPolygon(null);
+      if (map.current) {
+        map.current.removeObjects(map.current.getObjects());
+      }
       afterReset?.();
     }
   }, [reset, afterReset]);
@@ -85,9 +93,11 @@ const HereMapDrawArea = (props: Props) => {
       map.current.addObject(polygon)
     }
   }, [polygon])
+
   const handleAddBoundary = (newPoint: { lat: number; lng: number }) => {
     setBoundary((prevBoundary) => [...prevBoundary, newPoint]);
   };
+
   useEffect(
     () => {
       // Check if the map object has already been created
@@ -102,10 +112,7 @@ const HereMapDrawArea = (props: Props) => {
           },
         });
 
-        const rasterTileProvider = new H.service.rasterTile.Provider(
-          rasterTileService
-        );
-
+        const rasterTileProvider = new H.service.rasterTile.Provider(rasterTileService);
         const rasterTileLayer = new H.map.layer.TileLayer(rasterTileProvider);
 
         //* Create MAPHERE

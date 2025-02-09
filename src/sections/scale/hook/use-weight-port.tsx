@@ -9,17 +9,14 @@ import { useScaleSetting } from "src/stores/use-scale-setting";
 
 export function UseWeightPort() {
 
-  // set amplitude
-  // const [amplitude, setAmplitude] = useState<number>();
   const {
     settings
   } = useScaleSetting();
 
-  // isReady
   const [isReady, setIsReady] = useState<boolean>(false);
 
   // data for chart
-  const maxWeightQueue = 20;
+  const maxWeightQueue = 40;
   const xData = Array.from({ length: maxWeightQueue }, (_, i) => `${i}`);
   const [yData, setYData] = useState<number[]>([]);
   const [yDataAmplitude, setYDataFake] = useState<number[]>([]);
@@ -72,6 +69,7 @@ export function UseWeightPort() {
           break;
         }
         setRawData(value);
+        console.log(value);
       }
       reader.releaseLock();
     } catch (error) {
