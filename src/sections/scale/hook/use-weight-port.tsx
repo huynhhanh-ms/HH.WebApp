@@ -90,7 +90,7 @@ export function UseWeightPort() {
             console.log('weight is NaN');
           }
           else {
-            setRawData(weight.toString());
+            setRawData(Math.floor(weight / 100).toString());
           }
 
           buffer = buffer.slice(endIdx + 1);
