@@ -70,6 +70,7 @@ export function UseWeightPort() {
           setIsReady(false);
           break;
         }
+        console.log('value: ', value);
 
         buffer += value;
         const lines = buffer.split('\r\n');
