@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-constant-condition */
+import { randomInt } from "crypto";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from "react";
 import { enqueueSnackbar } from "notistack";
@@ -44,7 +45,6 @@ export function UseWeightPort() {
 
   const connectSerialPort = async () => {
     try {
-      // used port
       const ports = await (navigator as any).serial.getPorts();
       let port;
       if (ports.length > 0) {
@@ -65,6 +65,13 @@ export function UseWeightPort() {
       setIsReady(true);
       while (true) {
         const { value, done } = await reader.read();
+
+        // const min = 1;
+        // const max = 100;
+        // const rand = min + Math.random() * (max - min);
+        // const value = `${rand.toString()}B\x03\x02`;
+        // await new Promise((resolve) => setTimeout(resolve, 2000)); // Giả lập độ trễ của reader.read()
+
         if (done) {
           setRawData('-1');
           setIsReady(false);
@@ -73,25 +80,22 @@ export function UseWeightPort() {
         console.log('value: ', value);
 
         buffer += value;
-        const lines = buffer.split('\r\n');
-        buffer = lines.pop() ?? '';
+        let startIdx; let endIdx;
+        // eslint-disable-next-line no-cond-assign
+        while ((startIdx = buffer.indexOf('\x02')) !== -1 && (endIdx = buffer.indexOf('\x03', startIdx)) !== -1) {
+          const frame = buffer.substring(startIdx + 1, endIdx); // Lấy dữ liệu giữa STX và ETX
 
-        lines.forEach((line, index) => {
-          console.log(index, line);
-          const weight = parseInt(line);
+          const weight = parseInt(frame);
           if (Number.isNaN(weight)) {
             console.log('weight is NaN');
           }
           else {
-            console.log('weight: ', weight);
             setRawData(weight.toString());
           }
-        });
 
-        // setRawData(value);
-        // console.log(value);
+          buffer = buffer.slice(endIdx + 1);
+        }
       }
-      reader.releaseLock();
     } catch (error) {
       enqueueSnackbar(`Không kết nối được cổng cân`, { variant: 'warning' });
       console.error('Không kết nối được port', error);
