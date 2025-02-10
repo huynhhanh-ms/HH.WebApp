@@ -1,6 +1,9 @@
 /** **************************************
 * Fonts: app
 *************************************** */
+/* import times new roman font =)) */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif&display=swap');
+
 @import '@fontsource-variable/dm-sans';
 
 @import '@fontsource/barlow/400.css';

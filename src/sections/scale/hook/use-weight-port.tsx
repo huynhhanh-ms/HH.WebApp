@@ -41,7 +41,7 @@ export function UseWeightPort() {
     });
   };
 
-  const [rawData, setRawData] = useState<string>('-1');
+  const [rawData, setRawData] = useState<number>(-1);
 
   const connectSerialPort = async () => {
     try {
@@ -66,14 +66,8 @@ export function UseWeightPort() {
       while (true) {
         const { value, done } = await reader.read();
 
-        // const min = 1;
-        // const max = 100;
-        // const rand = min + Math.random() * (max - min);
-        // const value = `${rand.toString()}B\x03\x02`;
-        // await new Promise((resolve) => setTimeout(resolve, 2000)); // Giả lập độ trễ của reader.read()
-
         if (done) {
-          setRawData('-1');
+          setRawData(-1);
           setIsReady(false);
           break;
         }
@@ -85,12 +79,12 @@ export function UseWeightPort() {
         while ((startIdx = buffer.indexOf('\x02')) !== -1 && (endIdx = buffer.indexOf('\x03', startIdx)) !== -1) {
           const frame = buffer.substring(startIdx + 1, endIdx); // Lấy dữ liệu giữa STX và ETX
 
-          const weight = parseInt(frame);
+          const weight = parseInt(frame.slice(0, -3));
           if (Number.isNaN(weight)) {
             console.log('weight is NaN');
           }
           else {
-            setRawData(Math.floor(weight / 100).toString());
+            setRawData(weight);
           }
 
           buffer = buffer.slice(endIdx + 1);
@@ -99,7 +93,7 @@ export function UseWeightPort() {
     } catch (error) {
       enqueueSnackbar(`Không kết nối được cổng cân`, { variant: 'warning' });
       console.error('Không kết nối được port', error);
-      setRawData('-1');
+      setRawData(-1);
       setIsReady(false);
     }
   }
@@ -107,18 +101,13 @@ export function UseWeightPort() {
   // data processing
   const [data, setData] = useState<number>(0);
   useEffect(() => {
-    let dataAfter = -1;
-    dataAfter = parseInt(rawData);
-    if (Number.isNaN(dataAfter)) {
-      dataAfter = -100;
-    }
-
     // calc amplitude
     const amplitude = parseInt(settings.balanceValue.value as string);
 
-    addYData(dataAfter);
-    addYDataFake(dataAfter + amplitude);
-    setData(dataAfter);
+    addYData(rawData);
+    addYDataFake(rawData + amplitude);
+
+    setData(rawData + amplitude);
 
   }, [rawData]);
 
