@@ -2,6 +2,7 @@
 /* eslint-disable no-await-in-loop */
 /* eslint-disable no-constant-condition */
 import { randomInt } from "crypto";
+import { SerialPort } from "serialport";
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from "react";
 import { enqueueSnackbar } from "notistack";
@@ -42,11 +43,14 @@ export function UseWeightPort() {
   };
 
   const [rawData, setRawData] = useState<number>(-1);
+  let reader: ReadableStreamDefaultReader<string> | null = null;
+  let port;
+  let isRunning = false; 
 
   const connectSerialPort = async () => {
     try {
       const ports = await (navigator as any).serial.getPorts();
-      let port;
+      // let port;
       if (ports.length > 0) {
         port = ports[0];
       }
@@ -57,14 +61,26 @@ export function UseWeightPort() {
       await port.open({ baudRate: 9600 });
       const textDecoder = new TextDecoderStream();
       const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
-      const reader = textDecoder.readable.getReader();
+      reader = textDecoder.readable.getReader();
       enqueueSnackbar(`Đã kết nối cổng cân`, { variant: 'success' });
 
       let buffer = '';
 
       setIsReady(true);
-      while (true) {
+      isRunning = true;
+      setRawData(0);
+      while (isRunning) {
         const { value, done } = await reader.read();
+
+        // const value = `\x02${Math.random() * (1000)}\x03`;
+        // const done = false;
+    
+        // await new Promise((resolve) => {
+        //   setTimeout(() => {
+        //     console.log('Timeout after processing:', value);
+        //   }, 1000);
+        // });
+
 
         if (done) {
           setRawData(-1);
@@ -97,6 +113,26 @@ export function UseWeightPort() {
       setIsReady(false);
     }
   }
+  
+  const disconnectSerial = async () => {
+    // isRunning = false; 
+
+    try {
+      if (reader) {
+        await reader.cancel();
+        reader.releaseLock();
+      }
+
+      if (port) {
+        await port.close();
+      }
+
+      setIsReady(false);
+      enqueueSnackbar(`Đã ngắt kết nối`, { variant: "info" });
+    } catch (error) {
+      console.error("Lỗi ngắt kết nối:", error);
+    }
+  };
 
   // data processing
   const [data, setData] = useState<number>(0);
@@ -114,6 +150,7 @@ export function UseWeightPort() {
   return {
     data,
     connectSerialPort,
+    disconnectSerial,
     xData,
     yData,
     yDataAmplitude,

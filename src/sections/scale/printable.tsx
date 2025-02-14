@@ -122,7 +122,7 @@ class Printable extends Component<Props> {
 
             {/* Footer */}
             <Box sx={{ mt: 1, textAlign: 'right', paddingX: '80px' }}>
-              <Typography variant="body2">Vụ Bổn, Ngày {new Date().toLocaleDateString('vi-VN')}</Typography>
+              <Typography variant="body2">Vụ Bổn, {new Date().toLocaleDateString('vi-VN')}</Typography>
             </Box>
 
             <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 1 }}>

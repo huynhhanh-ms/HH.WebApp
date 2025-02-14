@@ -241,8 +241,8 @@ const ScaleCamera = forwardRef((props, ref) => {
         sx={{
           width: '100%',
           height: '160px',
-          border: '2px solid #272727',
-          borderRadius: '10px',
+          // border: '2px solid #272727',
+          // borderRadius: '10px',
         }}
       />
       <Grid container alignItems="stretch">

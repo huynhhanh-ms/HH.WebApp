@@ -11,7 +11,7 @@ import { LoadingButton } from '@mui/lab';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { DataGrid, GridToolbar, useGridApiRef, GridClearIcon, GridSearchIcon } from '@mui/x-data-grid';
-import { Grid, Tooltip, debounce, TextField, IconButton, CardContent, ThemeProvider } from '@mui/material';
+import { Grid , Tooltip, debounce, TextField, IconButton, CardActions, CardContent, ThemeProvider, CardActionArea } from '@mui/material';
 
 import { fNumber } from 'src/utils/format-number';
 import { viVN } from 'src/utils/viVN-localize-data-grid';
@@ -61,7 +61,7 @@ export function ScaleView() {
     return null;
   };
 
-  const { connectSerialPort, data: weightStreamData, xData, yData, yDataAmplitude, isReady} = UseWeightPort();
+  const { connectSerialPort, disconnectSerial, data: weightStreamData, xData, yData, yDataAmplitude, isReady} = UseWeightPort();
 
   // get data
   const { data } = useQuery({
@@ -357,6 +357,10 @@ export function ScaleView() {
                 }
 
               </CardContent>
+              <CardActions sx={{ justifyContent: "flex-end" }}>
+                {/* <IconButton size="small" onClick={() => setOpenSetting(true)}><Iconify icon="pepicons-print:list" /></IconButton> */}
+                <IconButton size="small" onClick={() => disconnectSerial()}><Iconify icon="pepicons-pop:reload" /></IconButton>
+              </CardActions>
             </Card>
           </Grid>
           {/* //*Button in Middle */}
