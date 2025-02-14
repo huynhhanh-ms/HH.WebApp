@@ -145,7 +145,7 @@ export function UseWeightPort() {
 
     setData(rawData + amplitude);
 
-  }, [rawData]);
+  }, [rawData, settings.balanceValue.value]);
 
   return {
     data,
