@@ -115,7 +115,7 @@ export function UseWeightPort() {
   }
   
   const disconnectSerial = async () => {
-    // isRunning = false; 
+    isRunning = false; 
 
     try {
       if (reader) {
