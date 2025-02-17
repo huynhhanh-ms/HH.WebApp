@@ -42,15 +42,13 @@ y_normalized = (y - y_min) / (y_max - y_min) * 5000
 delay = 1
 index = 0
 step = 50
-data = 0
 
 
 try:
     while True:
       try:
-        data = (data + step) % 2000
         # random_data = "+000001B"
-        random_data = "+\x020000" + str(int(data)) + "00B"
+        random_data = "+\x020000" + str(int(y_normalized[index])) + "000B"
 
         # Gửi dữ liệu qua cổng COM
         ser.write(random_data.encode())
