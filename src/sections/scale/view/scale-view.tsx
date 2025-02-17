@@ -387,10 +387,10 @@ export function ScaleView() {
         </Grid>
 
         {/* //*Camera  */}
-        <Grid item xs={2}>
+        {/* <Grid item xs={2}>
           <ScaleCamera ref={childRef} />
-          {/* <OCRComponent/> */}
-        </Grid>
+          <OCRComponent/>
+        </Grid> */}
       </Grid>
 
       <Typography variant="h4" padding={1} >

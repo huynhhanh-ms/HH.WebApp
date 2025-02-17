@@ -6,6 +6,7 @@ import { Component } from "react";
 
 import { Box, Divider, Typography, createTheme, ThemeProvider } from '@mui/material';
 
+import { fNumber, fCurrency } from 'src/utils/format-number';
 import { fDateTime, formatStr } from 'src/utils/format-time';
 
 import { Logo } from 'src/components/logo';
@@ -20,18 +21,18 @@ class Printable extends Component<Props> {
   render() {
     const { innerRef, data } = this.props;
     const contentLeft = [
-      { title: 'Số Phiếu', value: data.id },
       { title: 'Khách Hàng', value: data.customerName },
-      { title: 'Trọng Lượng Xe + Hàng', value: `${data.totalWeight || 0} Kg` },
-      { title: 'Trọng Lượng Xe', value: `${data.vehicleWeight || 0} Kg` },
+      { title: 'Trọng Lượng Xe + Hàng', value: `${data.totalWeight || 0}`, unit: 'kg' },
+      { title: 'Trọng Lượng Xe', value: `${data.vehicleWeight || 0}`, unit: 'kg' },
       { divider: true },
-      { title: 'Trọng Lượng Hàng', value: `${data.goodsWeight || 0} Kg` },
-      { title: 'Giá', value: `${data.price || 0}` },
+      { title: 'Trọng Lượng Hàng', value: `${data.goodsWeight || 0}`, unit: 'kg' },
+      { title: 'Giá', value: `${data.price || 0}`, unit: 'đ/kg' },
       { divider: true },
-      { title: 'Thành tiền', value: `${data.totalCost || 0}` },
+      { title: 'Thành tiền', value: `${data.totalCost || 0}`, unit: 'đ' },
     ];
 
     const contentRight = [
+      { title: 'Số Phiếu', value: data.id },
       { title: 'Loại Hàng', value: data.goodsType || '' },
       // { title: 'Kho', value: data.storage || '' },
       { title: 'Biển Số Xe', value: data.licensePlate },
@@ -45,7 +46,7 @@ class Printable extends Component<Props> {
 
     const theme = createTheme({
       typography: {
-        fontFamily: '"Noto Serif", serif',
+        fontFamily: '"times", serif',
       },
     });
 
@@ -53,13 +54,13 @@ class Printable extends Component<Props> {
       <ThemeProvider theme={theme}>
         <div ref={innerRef} style={{ padding: '20px', width: '100%', height: '50%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           {/* Content Wrapper */}
-          <Box sx={{ padding: '5px', textAlign: 'center', flex: '1' }}>
+          <Box sx={{ padding: '0px', textAlign: 'center', flex: '1' }}>
             {/* <Box> */}
             {/* Header */}
             <Box sx={{ mb: 2, display: 'flex', justifyContent: 'space-between', width: '100%' }}>
               <Logo isSingle={false} clickable={false} />
               <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'start', flex: '1' }}>
-                <Typography variant="h6" fontWeight="bold">
+                <Typography variant="body1" fontWeight="bold">
                   CÔNG TY TNHH TM DV HUYNH HẠNH
                 </Typography>
                 <Typography variant="body2">ĐC: 69 Thăng Quý - Vụ Bổn - Krông Pắk - Đắk Lắk</Typography>
@@ -68,12 +69,12 @@ class Printable extends Component<Props> {
             </Box>
 
             {/* Title */}
-            <Box sx={{ mt: 2, mb: 2 }}>
+            <Box sx={{ mt: 0, mb: 2 }}>
               <Typography variant="h5" fontWeight="bold">PHIẾU CÂN XE</Typography>
             </Box>
 
             {/* Content */}
-            <Box sx={{ display: 'flex', justifyContent: 'center', gap: '40px' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', gap: '60px' }}>
               {/* Left Content */}
               <Box sx={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {contentLeft.map((item, index) => {
@@ -84,8 +85,11 @@ class Printable extends Component<Props> {
                   }
                   return (
                     <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body1" paddingRight="40px">{item.title}:</Typography>
-                      <Typography variant="body1">{item.value}</Typography>
+                      <Typography variant="body1" paddingRight="100px">{item.title}:</Typography>
+                      <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                        <Typography variant="body1" paddingRight={2}>{item.unit != null ? fNumber(item.value) : item.value}</Typography>
+                        <Typography variant="body1" width={40} align='left'>{item.unit}</Typography>
+                      </Box>
                     </Box>);
                 }
                 )}

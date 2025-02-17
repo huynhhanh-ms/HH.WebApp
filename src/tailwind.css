@@ -7,6 +7,12 @@
     font-family: "Peristiwa";
     src: url("./assets/SVN-Peristiwa.otf") format("OpenType");
   } */
+  @font-face {
+    font-family: 'times';
+    src: url('./assets/fonts/times.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
 }
 
 /* add the code bellow */ 
