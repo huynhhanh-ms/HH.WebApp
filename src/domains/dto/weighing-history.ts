@@ -1,14 +1,15 @@
-// Define an enum for weighing_status if it has specific values
-export enum WeighingStatus {
-  PENDING = 'pending',
-  COMPLETED = 'completed',
-  CANCELLED = 'cancelled',
-  // Add other statuses as needed
-}
+// export enum WeighingStatus {
+//   PENDING = 'pending',
+//   COMPLETED = 'completed',
+//   CANCELLED = 'cancelled',
+//   // Add other statuses as needed
+// }
 
-export interface WeighingHistory {
-  serial?: number;
-  id: number;
+import type { BaseEntity } from "./base-entity";
+
+export interface WeighingHistory extends BaseEntity {
+  // serial?: number;
+  id?: number;
   customerName?: string;
   address?: string;
   goodsType?: string;
@@ -16,14 +17,13 @@ export interface WeighingHistory {
   totalWeight?: number;
   vehicleWeight?: number;
   goodsWeight?: number;
+  impurityRatio?: number;
+  impurityWeight?: number;
+  goodsWeightAfter?: number;
   price?: number;
   totalCost?: number;
   totalWeighingDate?: Date;
   vehicleWeighingDate?: Date;
   note?: string;
   vehicleImages?: string[];
-  createdAt?: Date;
-  updatedAt?: Date;
-  createdBy?: number;
-  updatedBy?: number;
 }

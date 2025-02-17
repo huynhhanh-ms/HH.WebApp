@@ -7,6 +7,8 @@ import { SerialPort } from "serialport";
 import { useState, useEffect } from "react";
 import { enqueueSnackbar } from "notistack";
 
+import { defaultNumber } from "src/utils/global-util";
+
 import { useScaleSetting } from "src/stores/use-scale-setting";
 
 export function UseWeightPort() {
@@ -87,7 +89,7 @@ export function UseWeightPort() {
           setIsReady(false);
           break;
         }
-        console.log('value: ', value);
+        // console.log('value: ', value);
 
         buffer += value;
         let startIdx; let endIdx;
@@ -138,7 +140,7 @@ export function UseWeightPort() {
   const [data, setData] = useState<number>(0);
   useEffect(() => {
     // calc amplitude
-    const amplitude = parseInt(settings.balanceValue.value as string);
+    const amplitude = defaultNumber(parseInt(settings.balanceValue.value as string));
 
     addYData(rawData);
     addYDataFake(rawData + amplitude);

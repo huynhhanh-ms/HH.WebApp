@@ -15,3 +15,10 @@ export function removeVietnameseTones(str) {
     .replace(/đ/g, 'd')
     .replace(/Đ/g, 'D');
 }
+
+export function isEmptyOrZero(value: any): boolean {
+  return value === 0 || value === undefined || value === null || Number.isNaN(value);
+}
+export function defaultNumber(value: any): number {
+  return isEmptyOrZero(value) ? 0 : value;
+}

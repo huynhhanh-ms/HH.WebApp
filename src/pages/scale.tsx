@@ -16,7 +16,6 @@ export default function Page() {
     console.log('clicked');
     const title = '123';
     window.electronApi.setTitle(title);
-
     window.electronApi.onSerialData((data) => {console.log(data)});
   }
 

@@ -5,6 +5,7 @@ import { enqueueSnackbar } from "notistack";
 
 import { Box, Tooltip } from "@mui/material";
 
+import { fCurrency } from "src/utils/format-number";
 import { fDateTime, formatStr } from "src/utils/format-time";
 
 import { Iconify } from "src/components/iconify";
@@ -13,8 +14,7 @@ import { Iconify } from "src/components/iconify";
 export type ScaleColumnField = keyof WeighingHistory;
 
 export const editableColumns: GridColDef<WeighingHistory>[] = [
-  // { field: 'id', headerName: 'ID', width: 30 },
-  { field: 'serial', headerName: 'STT', width: 30 },
+  { field: 'id', headerName: 'ID', width: 30 },
   {
     field: 'customerName',
     headerName: 'Khách hàng',
@@ -74,6 +74,30 @@ export const editableColumns: GridColDef<WeighingHistory>[] = [
     type: 'number',
   },
   {
+    field: 'impurityRatio',
+    headerName: '%tạp',
+    sortable: false,
+    editable: true,
+    type: 'number',
+    width: 100,
+    valueGetter: (value, row) => `${value ?? 0}%`
+  },
+  {
+    field: 'impurityWeight',
+    headerName: 'Kl tạp',
+    sortable: false,
+    editable: false,
+    type: 'number',
+    width: 75,
+  },
+  {
+    field: 'goodsWeightAfter',
+    headerName: 'Kl sạch',
+    sortable: false,
+    editable: false,
+    type: 'number',
+  },
+  {
     field: 'price',
     headerName: 'Đơn giá',
     sortable: false,
@@ -86,6 +110,7 @@ export const editableColumns: GridColDef<WeighingHistory>[] = [
     width: 140,
     sortable: false,
     type: 'number',
+    valueGetter: (value, row) => fCurrency(value ?? 0)
   },
   {
     field: 'time',
@@ -166,6 +191,14 @@ export const editableColumns: GridColDef<WeighingHistory>[] = [
     editable: true,
   },
   {
+    field: 'createdAt',
+    headerName: 'Ngày tạo',
+    align: 'center',
+    sortable: false,
+    // width: 160,
+    valueGetter: (value, row) => fDateTime((row as WeighingHistory).createdAt, formatStr.minialDate),
+  },
+  {
     field: 'address',
     headerName: 'Địa chỉ',
     width: 100,
@@ -181,6 +214,7 @@ export const editableColumns: GridColDef<WeighingHistory>[] = [
     sortable: false,
 
   },
+
 ];
 
 export const columns: GridColDef<WeighingHistory>[] = editableColumns.map((column) => {
@@ -194,7 +228,7 @@ export const columns: GridColDef<WeighingHistory>[] = editableColumns.map((colum
 });
 
 export const filterColumns: GridColDef<WeighingHistory>[] = editableColumns.map((column) => {
-  if (column.field ==='serial') {
+  if (column.field ==='id') {
     return ({
       ...column,
       filterable: false,
