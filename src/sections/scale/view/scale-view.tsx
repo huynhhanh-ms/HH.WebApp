@@ -282,7 +282,7 @@ export function ScaleView() {
           {/* //*Weight Number in Left */}
           <Grid item xs={12} md={4}>
             <Card>
-              <CardContent >
+              <CardContent sx={{ paddingBottom: 0 }}> 
                 {isReady !== false ?
                   <Typography variant="h1" align='right' sx={{ paddingLeft: '40px' }}>
                     {fNumber(weightStreamData)}{''}
@@ -295,8 +295,8 @@ export function ScaleView() {
                 }
 
               </CardContent>
-              <CardActions sx={{ justifyContent: "flex-end" }}>
-                <IconButton size="small" onClick={() => disconnectSerial()}><Iconify icon="pepicons-pop:reload" /></IconButton>
+              <CardActions sx={{ padding: 0, justifyContent: "flex-end" }}>
+                <IconButton size="small" onClick={() => disconnectSerial()}><Iconify icon="hugeicons:cancel-02" /></IconButton>
               </CardActions>
             </Card>
           </Grid>
