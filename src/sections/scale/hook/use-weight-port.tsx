@@ -3,9 +3,9 @@
 /* eslint-disable no-constant-condition */
 import { randomInt } from "crypto";
 import { SerialPort } from "serialport";
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import { useState, useEffect } from "react";
 import { enqueueSnackbar } from "notistack";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { useRef, useState, useEffect } from "react";
 
 import { defaultNumber } from "src/utils/global-util";
 
@@ -16,8 +16,6 @@ export function UseWeightPort() {
   const {
     settings
   } = useScaleSetting();
-
-  const [isReady, setIsReady] = useState<boolean>(false);
 
   // data for chart
   const maxWeightQueue = 40;
@@ -45,48 +43,36 @@ export function UseWeightPort() {
   };
 
   const [rawData, setRawData] = useState<number>(-1);
-  let reader: ReadableStreamDefaultReader<string> | null = null;
-  let port;
-  let isRunning = false; 
+  const reader = useRef<ReadableStreamDefaultReader<string> | null>(null);
+  const port = useRef<any>(null);
+  const isReady = useRef<boolean>(false);
 
   const connectSerialPort = async () => {
     try {
       const ports = await (navigator as any).serial.getPorts();
-      // let port;
       if (ports.length > 0) {
-        port = ports[0];
+        port.current = ports[0];
       }
       else {
-        port = await (navigator as any).serial.requestPort();
+        port.current = await (navigator as any).serial.requestPort();
       }
 
-      await port.open({ baudRate: 9600 });
+      await port.current.open({ baudRate: 9600 });
       const textDecoder = new TextDecoderStream();
-      const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
-      reader = textDecoder.readable.getReader();
+      reader.current = textDecoder.readable.getReader();
+      const readableStreamClosed = port.current.readable.pipeTo(textDecoder.writable);
       enqueueSnackbar(`Đã kết nối cổng cân`, { variant: 'success' });
 
       let buffer = '';
 
-      setIsReady(true);
-      isRunning = true;
+      isReady.current = true;
       setRawData(0);
-      while (isRunning) {
-        const { value, done } = await reader.read();
-
-        // const value = `\x02${Math.random() * (1000)}\x03`;
-        // const done = false;
-    
-        // await new Promise((resolve) => {
-        //   setTimeout(() => {
-        //     console.log('Timeout after processing:', value);
-        //   }, 1000);
-        // });
-
+      while (isReady) {
+        const { value, done } = await reader.current.read();
 
         if (done) {
           setRawData(-1);
-          setIsReady(false);
+          isReady.current = false;
           break;
         }
         // console.log('value: ', value);
@@ -112,24 +98,30 @@ export function UseWeightPort() {
       enqueueSnackbar(`Không kết nối được cổng cân`, { variant: 'warning' });
       console.error('Không kết nối được port', error);
       setRawData(-1);
-      setIsReady(false);
+      isReady.current = false;
     }
   }
-  
+
   const disconnectSerial = async () => {
-    isRunning = false; 
+    isReady.current = false;
 
     try {
-      if (reader) {
-        await reader.cancel();
-        reader.releaseLock();
-      }
 
-      if (port) {
-        await port.close();
-      }
+      const textEncoder = new TextEncoderStream();
+      const writer = textEncoder.writable.getWriter();
+      const writableStreamClosed = textEncoder.readable.pipeTo(port.current.writable);
 
-      setIsReady(false);
+      if (reader.current) {
+        reader.current.cancel();
+      }
+      // await readableStreamClosed.catch(() => { /* Ignore the error */ });
+
+      writer.close();
+      await writableStreamClosed;
+
+      if (port.current) {
+        await port.current.close();
+      }
       enqueueSnackbar(`Đã ngắt kết nối`, { variant: "info" });
     } catch (error) {
       console.error("Lỗi ngắt kết nối:", error);
@@ -156,6 +148,6 @@ export function UseWeightPort() {
     xData,
     yData,
     yDataAmplitude,
-    isReady,
+    isReady : isReady.current,
   }
 }

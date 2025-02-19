@@ -6,6 +6,7 @@ import { Component } from "react";
 
 import { Box, Divider, Typography, createTheme, ThemeProvider } from '@mui/material';
 
+import { defaultNumber } from 'src/utils/global-util';
 import { fNumber, fCurrency } from 'src/utils/format-number';
 import { fDateTime, formatStr } from 'src/utils/format-time';
 
@@ -26,6 +27,10 @@ class Printable extends Component<Props> {
       { title: 'Trọng Lượng Xe', value: `${data.vehicleWeight || 0}`, unit: 'kg' },
       { divider: true },
       { title: 'Trọng Lượng Hàng', value: `${data.goodsWeight || 0}`, unit: 'kg' },
+      // if data.impurityRatio > 0
+      (defaultNumber(data.impurityRatio) > 0) ? { title: `${data.impurityRatio}% tạp`, value: `${data.impurityWeight || 0}`, unit: 'kg' } : {},
+      (defaultNumber(data.impurityRatio) > 0) ? { divider: true } : {},
+      (defaultNumber(data.impurityRatio) > 0) ? { title: 'Trọng Lượng Sạch', value: `${data.goodsWeightAfter || 0}`, unit: 'kg' } : {},
       { title: 'Giá', value: `${data.price || 0}`, unit: 'đ/kg' },
       { divider: true },
       { title: 'Thành tiền', value: `${data.totalCost || 0}`, unit: 'đ' },
@@ -41,7 +46,7 @@ class Printable extends Component<Props> {
       { title: 'Giờ Cân 2', value: fDateTime(data.vehicleWeighingDate || '') },
       // { title: 'Nhập/Xuất', value: data.entryExit || '' },
       { title: 'Ghi Chú', value: data.note || '' },
-      { image: true, list: data.vehicleImages || [] }
+      { image: false, list: data.vehicleImages || [] }
     ];
 
     const theme = createTheme({
@@ -76,8 +81,11 @@ class Printable extends Component<Props> {
             {/* Content */}
             <Box sx={{ display: 'flex', justifyContent: 'center', gap: '60px' }}>
               {/* Left Content */}
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
                 {contentLeft.map((item, index) => {
+                  if (Object.keys(item).length === 0) {
+                    return null;
+                  }
                   if (item.divider) {
                     return (
                       <Divider key={index} />
@@ -85,7 +93,7 @@ class Printable extends Component<Props> {
                   }
                   return (
                     <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <Typography variant="body1" paddingRight="100px">{item.title}:</Typography>
+                      <Typography variant="body1" paddingRight="50px">{item.title}:</Typography>
                       <Box key={index} sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Typography variant="body1" paddingRight={2}>{item.unit != null ? fNumber(item.value) : item.value}</Typography>
                         <Typography variant="body1" width={40} align='left'>{item.unit}</Typography>
@@ -96,7 +104,7 @@ class Printable extends Component<Props> {
               </Box>
 
               {/* Right Content */}
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
                 {contentRight.map((item, index) => {
                   if (item.image) {
                     return (
@@ -131,13 +139,13 @@ class Printable extends Component<Props> {
 
             <Box sx={{ display: 'flex', justifyContent: 'space-around', mt: 1 }}>
               <Typography variant="body2">Khách Hàng</Typography>
-              <Typography variant="body2">NV Bảo Vệ</Typography>
+              <Typography variant="body2" />
               <Typography variant="body2">Người Cân</Typography>
             </Box>
 
             {/* <Divider sx={{ mt: 4, mb: 2 }} /> */}
             {/* Adventise */}
-            <Box sx={{ mt: 16 }}>
+            <Box sx={{ mt: 12 }}>
               <Typography variant="caption">
                 Phầm mềm quản lý doanh nghiệp - Mạnh Hùng - KrongPac - Đắk Lắk - 0947.339.718
               </Typography>

@@ -6,6 +6,7 @@ import { enqueueSnackbar } from "notistack";
 import { Box, Tooltip } from "@mui/material";
 
 import { fCurrency } from "src/utils/format-number";
+import { defaultNumber } from "src/utils/global-util";
 import { fDateTime, formatStr } from "src/utils/format-time";
 
 import { Iconify } from "src/components/iconify";
@@ -80,7 +81,7 @@ export const editableColumns: GridColDef<WeighingHistory>[] = [
     editable: true,
     type: 'number',
     width: 100,
-    valueGetter: (value, row) => `${value ?? 0}%`
+    renderCell: (params) => `${defaultNumber(params.value)}%`,
   },
   {
     field: 'impurityWeight',
@@ -228,7 +229,7 @@ export const columns: GridColDef<WeighingHistory>[] = editableColumns.map((colum
 });
 
 export const filterColumns: GridColDef<WeighingHistory>[] = editableColumns.map((column) => {
-  if (column.field ==='id') {
+  if (column.field === 'id') {
     return ({
       ...column,
       filterable: false,
