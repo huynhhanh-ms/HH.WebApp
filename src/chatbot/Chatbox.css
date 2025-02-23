@@ -1,0 +1,89 @@
+/** chat container */
+.react-chatbot-kit-chat-container {
+  border-radius: 16px;
+  overflow: hidden;
+  width: 400px !important;
+  /* transform: translateX(-50%); */
+  height: 550px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/** custom input */
+.react-chatbot-kit-chat-input-container {
+  display: flex;
+  padding: 16px;
+  background-color: #FFF;
+  border-top: 1px solid #EEE;
+}
+.react-chatbot-kit-chat-input {
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
+  font-size: 16px !important;
+  color: #333 !important;
+  padding: 10px 15px !important;
+  width: 100% !important;
+}
+.react-chatbot-kit-chat-input::placeholder {
+  color: #aaa !important;
+  font-style: italic !important;
+  font-size: 14px !important;
+  opacity: 0.7 !important;
+}
+.react-chatbot-kit-chat-input:focus {
+  border-bottom: 2px solid #3d3d3d !important;
+}
+
+
+/** send Button */
+.react-chatbot-kit-chat-btn-send {
+  background-color: #3d3d3d !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 50% !important;
+  width: 50px !important;
+  height: 50px !important;
+  padding: 8px 12px !important;
+  margin-left: 8px !important;
+  font-size: 16px !important;
+  cursor: pointer !important;
+  font-weight: bold !important;
+  transition: 0.3s !important;
+}
+.react-chatbot-kit-chat-btn-send:hover {
+  background-color: #808080 !important;
+}
+
+
+/** typing indicator */
+.typing-indicator {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: #555;
+  margin-right: 4px;
+  animation: blink 1.2s infinite ease-in-out;
+}
+.typing-indicator:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.typing-indicator:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes blink {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+
+/** animation */
+.chat-animation {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.5s ease-in-out;
+}
+
+.chat-animation.visible {
+  max-height: 1000px;
+}

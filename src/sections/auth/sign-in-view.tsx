@@ -34,7 +34,7 @@ export function SignInView() {
   }, [isLoggedIn, router]);
 
   const [showPassword, setShowPassword] = useState(false);
-  const [account, setAccount] = useState({ username: 'admin', password: '123456' });
+  const [account, setAccount] = useState({ username: 'admin', password: '' });
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -113,12 +113,12 @@ export function SignInView() {
     <>
       <Box gap={1.5} display="flex" flexDirection="column" alignItems="center" sx={{ mb: 5 }}>
         <Typography variant="h5">Đăng nhập</Typography>
-        <Typography variant="body2" color="text.secondary">
+        {/* <Typography variant="body2" color="text.secondary">
           Không có tài khoản?{' '}
           <Link variant="subtitle2" sx={{ ml: 0.5 }}>
             Đăng ký
           </Link>
-        </Typography>
+        </Typography> */}
       </Box>
 
       {renderForm}

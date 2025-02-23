@@ -14,6 +14,7 @@ import SerialComponent from 'src/components/scale/serial-port-test';
 
 import Layout from "./layouts";
 import Intro from './components/intro';
+import MapChart from './components/map-chart';
 import Statistic from "./components/statistic";
 import IntroComponent from "./components/swiper";
 import { Handshake } from './components/handshake';
@@ -79,6 +80,8 @@ export default function LandingPage() {
         <Box sx={{ paddingY: 6 }} />
 
         <AddressInfo />
+
+        {/* <MapChart /> */}
 
       </div>
       {/* <SerialComponent /> */}
