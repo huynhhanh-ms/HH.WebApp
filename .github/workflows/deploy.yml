@@ -22,7 +22,7 @@ jobs:
       - name: Build and push Docker image
         run: |
           # docker build -t ${{ secrets.DOCKER_USERNAME }}/hh-webapp:latest .
-          docker-compose build \
+          docker compose build \
             --build-arg VITE_OPENAI_KEY=${{ secrets.VITE_OPENAI_KEY }} 
           docker push ${{ secrets.DOCKER_USERNAME }}/hh-webapp:latest
 
