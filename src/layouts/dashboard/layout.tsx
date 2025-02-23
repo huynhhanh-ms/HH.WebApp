@@ -133,7 +133,7 @@ export function DashboardLayout({ sx, children, header }: DashboardLayoutProps) 
                 </Button>
 
                 {/* <LanguagePopover data={_langs} /> */}
-                <NotificationsPopover data={_notifications} />
+                {/* <NotificationsPopover data={_notifications} /> */}
                 <AccountPopover
                   data={[
                     {

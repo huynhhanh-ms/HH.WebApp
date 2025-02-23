@@ -26,7 +26,7 @@ const AddressInfo = () => (
             <strong>Địa chỉ:</strong> 69 Thăng Quý, Vụ Bổn, Krông Pắc, Đắk Lắk, Việt Nam
           </Typography>
           <Typography variant="h6" gutterBottom>
-            <strong>Số điện thoại:</strong> <Link href="tel:0947339718">0947339718</Link>
+            <strong>Số điện thoại:</strong> <Link href="tel:0903525647">0903525647</Link>
           </Typography>
           <Typography variant="h6" gutterBottom>
             <strong>Email:</strong> <Link href="mailto:huynhhanh718@gmail.com">huynhhanh718@gmail.com</Link>

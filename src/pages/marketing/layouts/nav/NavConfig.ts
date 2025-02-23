@@ -1,8 +1,8 @@
 
 export const navConfig = [
-  { title: 'Trang chủ', path: '/' },
-  { title: 'Liên hệ', path: '' },
-  { title: 'Về chúng tôi', path: '123' },
+  { title: 'Trang chủ', path: '#home' },
+  { title: 'Về chúng tôi', path: '#about' },
+  { title: 'Liên hệ', path: '#hotline' },
 ];
 export const PageLinks = [
   {

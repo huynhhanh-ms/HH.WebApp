@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 
 import Fab from '@mui/material/Fab';
+import { Box } from '@mui/material';
 
 import { Router } from 'src/routes/router';
 
@@ -26,23 +27,21 @@ export default function App() {
 
   const chatboxButton = (
     <>
-      <Fab
-        size="medium"
-        aria-label="Chatbot"
-        onClick={() => {
-          setIsChatbotOpen(!isChatbotOpen);
-        }}
+      <Fab aria-label="Chatbot" onClick={() => { setIsChatbotOpen(!isChatbotOpen); }}
         sx={{
           zIndex: 9,
           right: 20,
           bottom: 20,
-          width: 70,
-          height: 70,
+          width: {
+            xs: 50, 
+            md: 70,  
+          },
+          height: 'auto',
           position: 'fixed',
-          color: 'common.black',
         }}
       >
-        <img alt="" src="/assets/icons/chatbox.jpg" width={70} height={70} className='rounded-full object-cover' />
+        <Box component="img" alt="" src="/assets/icons/chatbox.jpg" className='rounded-full object-cover'
+        />
         {/* <Iconify width={40} height={40} icon="lucide:bot" /> */}
       </Fab>
       {isChatbotOpen && <ChatBox />}

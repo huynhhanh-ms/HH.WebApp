@@ -54,6 +54,7 @@ export default function LandingPage() {
   return (
     <Layout transparentHeader simpleHeader={underMedium} simpleFooter>
       <div className="relative custom-cursor" >
+        <div id='home'> </div>
 
         <video autoPlay loop muted
           className="object-cover w-full h-full rounded-lg shadow-lg"
@@ -69,7 +70,9 @@ export default function LandingPage() {
 
         <Box sx={{ paddingY: 6, backgroundColor: 'white' }} />
 
-        <CompanyHistory />
+        <div id='about'>
+          <CompanyHistory />
+        </div>
 
         <Handshake />
 
@@ -79,7 +82,9 @@ export default function LandingPage() {
 
         <Box sx={{ paddingY: 6 }} />
 
-        <AddressInfo />
+        <div id='hotline'>
+          <AddressInfo />
+        </div>
 
         {/* <MapChart /> */}
 

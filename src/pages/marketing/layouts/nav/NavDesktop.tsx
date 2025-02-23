@@ -85,7 +85,7 @@ export default function NavDesktop({ isScrolling, isTransparent, navConfig }: an
         }),
       }}
     >
-      {navConfig.map((link:any) => (
+      {navConfig.map((link: any) => (
         <NavItemDesktop
           key={link.title}
           item={link}
@@ -170,9 +170,11 @@ function NavItemDesktop({ item, isScrolling, isTransparent }: any) {
 
   return (
     // <NextLink key={title} href={path} passHref>
-      <RootLinkStyle active={isActiveRoot} scrolling={isScrolling} transparent={isTransparent}>
-        {title}
-      </RootLinkStyle>
+    <RootLinkStyle active={isActiveRoot} scrolling={isScrolling} transparent={isTransparent}>
+      <nav>
+        <a href={path}> {title} </a>
+      </nav>
+    </RootLinkStyle>
     // </NextLink>
   );
 }

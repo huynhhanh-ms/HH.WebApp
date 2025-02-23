@@ -6,6 +6,7 @@
   /* transform: translateX(-50%); */
   height: 550px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+ 
 }
 
 /** custom input */
@@ -86,4 +87,18 @@
 
 .chat-animation.visible {
   max-height: 1000px;
+  position: fixed;
+  bottom: 20px;
+  right: 100px;
+}
+
+@media (max-width: 600px) {
+  .chat-animation.visible {
+    right: 10px;
+    bottom: 80px;
+  }
+  .react-chatbot-kit-chat-container {
+    width: 300px !important;
+    height: 400px !important;
+  }
 }

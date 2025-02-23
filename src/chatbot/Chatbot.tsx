@@ -30,7 +30,7 @@ const ChatBox = () => {
   };
 
   return (
-    <div className={`chat-animation ${showBot ? "visible" : ""}`} style={{ position: 'fixed', bottom: '20px', right: '100px' }}>
+    <div className={`chat-animation ${showBot ? "visible" : ""}`}>
 
       {showBot && <Chatbot config={config}
         messageParser={MessageParser}

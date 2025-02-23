@@ -33,20 +33,20 @@ export const navData = [
   //   path: '/admin/debt',
   //   icon: icon('ic-debt'),
   // },
+  // {
+  //   title: 'Giá bán',
+  //   path: '/admin/price',
+  //   icon: icon('ic-price'),
+  // },
   {
-    title: 'Giá bán',
-    path: '/admin/price',
-    icon: icon('ic-price'),
+    title: 'Đất đai',
+    path: '/admin/land',
+    icon: icon('ic-land'),
   },
   {
     title: 'Nhân viên',
     path: '/admin/user',
     icon: icon('ic-user'),
-  },
-  {
-    title: 'Đất đai',
-    path: '/admin/land',
-    icon: icon('ic-land'),
   },
   // {
   //   title: 'Product',

@@ -12,11 +12,11 @@ import { ScaleView } from 'src/sections/scale/view';
 
 export default function Page() {
 
-  const handleSetTile = (input:any) => {
+  const handleSetTile = (input: any) => {
     console.log('clicked');
     const title = '123';
     window.electronApi.setTitle(title);
-    window.electronApi.onSerialData((data) => {console.log(data)});
+    window.electronApi.onSerialData((data) => { console.log(data) });
   }
 
   return (
@@ -24,10 +24,7 @@ export default function Page() {
       <Helmet>
         <title> {`Trạm cân - ${CONFIG.appName}`}</title>
       </Helmet>
-
-
-      
-      <ScaleView  />
+      <ScaleView />
     </>
   );
 }
