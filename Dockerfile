@@ -3,8 +3,10 @@ FROM node:20.18-alpine3.19 as build
 WORKDIR /app
 COPY . /app
 
+ARG VITE_OPENAI_KEY
 RUN yarn install
-RUN yarn build
+RUN VITE_OPENAI_KEY=$VITE_OPENAI_KEY yarn build
+
 
 FROM ubuntu
 RUN apt-get update
