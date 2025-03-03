@@ -29,4 +29,5 @@ export const ApiQueryKey = {
   expense : "EXPENSE",
   expenseType : "EXPENSE_TYPE",
   weighingHistory : "WEIGHING_HISTORY",
+  land : "LAND",
 };

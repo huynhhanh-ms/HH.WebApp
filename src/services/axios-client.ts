@@ -3,6 +3,7 @@ import axios from 'axios';
 // const BASE_URL = import.meta.env.VITE_DEV_SERVER_URI;
 // export const BASE_URL = "http://localhost:6789";
 export const BASE_URL = "https://api.huynhhanh.com";
+// export const BASE_URL = "http://localhost:9000";
 
 const headerObj = {
   'Content-Type': 'application/json',
