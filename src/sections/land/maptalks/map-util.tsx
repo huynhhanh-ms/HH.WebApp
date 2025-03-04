@@ -4,6 +4,11 @@ import * as maptalks from 'maptalks';
 
 import { LandType, LandObjectType } from 'src/domains/dto/land';
 
+export enum LayerType {
+  Bound = "bound-layer",
+  Land = "land-layer",
+}
+
 export const getOrCreateLayer = (map: maptalks.Map, layerId: string, isClear = false) => {
   let layer = map.getLayer(layerId) as maptalks.VectorLayer;
   if (!layer) {
@@ -12,10 +17,15 @@ export const getOrCreateLayer = (map: maptalks.Map, layerId: string, isClear = f
   return layer;
 };
 
+export const addLayers = (map: maptalks.Map, layers: string[]) => {
+  if (!map) return;
+  layers.forEach((layerId) => getOrCreateLayer(map, layerId));
+}
+
 const addPolygon = (map: maptalks.Map, layerId: string, coordinates: number[][][], type: MergedType) => {
   if (!map) return;
 
-  console.log('🛖 render polygon', layerId);
+  // console.log('🛖 render polygon', layerId);
   const layer = getOrCreateLayer(map, layerId);
   const symbol = getSymbolByType(type);
 
@@ -137,6 +147,7 @@ const googleSatelliteLayer = 'https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}
 
 export const MapUtil = {
   getOrCreateLayer,
+  addLayers,
   freeMapLayer,
   googleMapLayer,
   googleSatelliteLayer,

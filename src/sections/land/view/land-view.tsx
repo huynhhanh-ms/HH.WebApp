@@ -10,17 +10,15 @@ import { Box, Grid, Button, Switch, Typography, ToggleButton } from "@mui/materi
 
 import { fNumber } from 'src/utils/format-number';
 
+import { useLand } from 'src/stores/use-land';
 import { LandApi } from 'src/services/api/land.api';
 import { ApiQueryKey } from 'src/services/api-query-key';
 import { LandType, LandObjectType, type MergedType } from 'src/domains/dto/land';
 
 import ListLand from '../components/ListLand';
-import { MapUtil, HtmlAreaInfo, getOrCreateLayer } from '../maptalks/map-util';
+import { MapUtil, LayerType, HtmlAreaInfo, getOrCreateLayer } from '../maptalks/map-util';
 
 export function LandView() {
-
-
-
   const map = useRef<maptalks.Map | null>(null);
 
   const { data: landData, isSuccess: landSuccess } = useQuery({
@@ -35,11 +33,7 @@ export function LandView() {
 
   const [clickPoint, setClickPoint] = useState({ x: 0, y: 0 });
   const [isGetBound, setIsGetBound] = useState(false);
-  const [selectedIndex, setSelectedIndex] = useState(1);
-
-  const handleListItemClick = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, index: number) => {
-    setSelectedIndex(index);
-  };
+  const { selectedLand } = useLand();
 
   const handleClick = useCallback(async (x: number, y: number) => {
     if (isGetBound) {
@@ -67,6 +61,11 @@ export function LandView() {
     });
 
     map.current.on('click', (e) => { if (!e) return; const { x, y } = e.coordinate; handleClick(x, y); });
+
+    MapUtil.addLayers(map.current, [
+      LayerType.Bound,
+      LayerType.Land,
+    ]);
 
     const vectorLayer = new maptalks.VectorLayer('vector').addTo(map.current);
     const cayXangTitle = new maptalks.Marker([108.43315288424492, 12.67051153268791], {
@@ -129,6 +128,23 @@ export function LandView() {
     };
   }, [landData, landSuccess, map, handleClick]);
 
+  useEffect(() => {
+    if (map.current && landData && selectedLand !== null) {
+      map.current.animateTo(
+        {
+          center: landData[selectedLand].location.coordinates[0][0],
+          zoom: 19, pitch: 60,
+        },
+        {
+          duration: 2000,
+        }
+      );
+
+      // console.log(selectedLand);
+      MapUtil.addPolygon(map.current, "bound-layer", landData[selectedLand].location.coordinates, LandType.Farm);
+    }
+  }, [landData, selectedLand]);
+
   return (
     <div>
       <Grid container>
@@ -145,7 +161,7 @@ export function LandView() {
           </div>
           <Typography align='center' fontWeight="bold">Danh sách vùng đất</Typography>
           <div className='h-10'>
-            <ListLand data={landData ?? []} selectedId={landData?.[selectedIndex]?.id ?? ""} />
+            <ListLand data={landData ?? []} />
           </div>
 
         </Grid>
