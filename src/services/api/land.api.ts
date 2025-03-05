@@ -5,7 +5,7 @@ import { create } from 'domain';
 import axiosClient from '../axios-client';
 import { apiEndpoint } from '../endpoint';
 
-const SecondApi = 'http://localhost:9000/api';
+const SecondApi = 'https://blog.huynhhanh.com/land/api';
 
 export const LandApi = {
   gets: async (): Promise<Land[]> => {
