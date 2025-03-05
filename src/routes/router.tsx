@@ -22,6 +22,7 @@ export const ScalePage = lazy(() => import('src/pages/scale'));
 export const LandingPage = lazy(() => import('src/pages/marketing/landing-page'));
 export const BlogPage = lazy(() => import('src/pages/blog'));
 export const UserPage = lazy(() => import('src/pages/user'));
+export const ChatPage = lazy(() => import('src/pages/chat'));
 export const SignInPage = lazy(() => import('src/pages/sign-in'));
 export const ProductsPage = lazy(() => import('src/pages/products'));
 export const Page404 = lazy(() => import('src/pages/page-not-found'));
@@ -62,6 +63,7 @@ export function Router() {
       children: [
         { element: <HomePage />, index: true },
         { path: 'user', element: <UserPage /> },
+        { path: 'chat', element: <ChatPage /> },
         { path: 'tank', element: <TankPage /> },
         { path: 'session', element: <SessionPage /> },
         { path: 'session/:sessionId', element: <SessionDetailPage /> },

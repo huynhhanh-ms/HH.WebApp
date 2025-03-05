@@ -9,4 +9,5 @@ export const apiEndpoint = {
   Expense: "/expense",
   ExpenseType: "/expense-type",
   WeighingHistory: "/weighing-history",
+  Land: "/land",
 };

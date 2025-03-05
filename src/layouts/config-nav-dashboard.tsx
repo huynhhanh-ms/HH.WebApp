@@ -44,6 +44,11 @@ export const navData = [
     icon: icon('ic-land'),
   },
   {
+    title: 'Hội thoại',
+    path: '/admin/chat',
+    icon: icon('ic-chat'),
+  },
+  {
     title: 'Nhân viên',
     path: '/admin/user',
     icon: icon('ic-user'),
