@@ -2,11 +2,15 @@ import type { MergedType } from 'src/domains/dto/land';
 
 import * as maptalks from 'maptalks';
 
-import { LandType, LandObjectType } from 'src/domains/dto/land';
+import { LandType, isCoordinates, LandObjectType } from 'src/domains/dto/land';
 
 export enum LayerType {
   Bound = "bound-layer",
   Land = "land-layer",
+  Create = "create-layer",
+  Select = "select-layer",
+  Text = "text-layer",
+  Info = "info-layer",
 }
 
 export const getOrCreateLayer = (map: maptalks.Map, layerId: string, isClear = false) => {
@@ -17,19 +21,39 @@ export const getOrCreateLayer = (map: maptalks.Map, layerId: string, isClear = f
   return layer;
 };
 
+const clearLayer = (map: maptalks.Map, layerId: string) => {
+  const layer = map.getLayer(layerId) as maptalks.VectorLayer;
+  if (layer) layer.clear();
+}
+
 export const addLayers = (map: maptalks.Map, layers: string[]) => {
   if (!map) return;
   layers.forEach((layerId) => getOrCreateLayer(map, layerId));
 }
 
-const addPolygon = (map: maptalks.Map, layerId: string, coordinates: number[][][], type: MergedType) => {
-  if (!map) return;
+const addPolygon = (map: maptalks.Map, layerId: string, coordinates: number[][][], type: MergedType | string, isClearLayer = false) => {
+  if (!isCoordinates(coordinates)) return null;
 
-  // console.log('🛖 render polygon', layerId);
-  const layer = getOrCreateLayer(map, layerId);
-  const symbol = getSymbolByType(type);
+  const layer = getOrCreateLayer(map, layerId, isClearLayer);
 
-  new maptalks.Polygon(coordinates as any, { symbol }).addTo(layer);
+  // point
+  if (coordinates[0].length === 1) {
+    const point = new maptalks.Marker(coordinates[0][0], {
+      symbol: {
+        markerType: "ellipse",
+        markerWidth: 10,
+        markerHeight: 10,
+        markerFill: "#f00",
+        markerLineColor: "#fff",
+        markerLineWidth: 2,
+      },
+    }).addTo(layer);
+    return point;
+  }
+
+  const symbol = getSymbolByType(type as MergedType);
+
+  return new maptalks.Polygon(coordinates as any, { symbol }).addTo(layer);
 };
 const getSymbolByType = (type: MergedType) => {
   const symbols: Record<MergedType, any> = {
@@ -39,6 +63,12 @@ const getSymbolByType = (type: MergedType) => {
       lineWidth: 2,
       polygonFill: "#777777",
       polygonOpacity: 0.4,
+    },
+    [LandType.NewLand]: {
+      lineColor: "#ff0000",
+      lineWidth: 2,
+      polygonFill: "#ff8888",
+      polygonOpacity: 0.7,
     },
     [LandType.Farm]: {
       lineColor: "#00aa00",
@@ -74,7 +104,12 @@ const getSymbolByType = (type: MergedType) => {
     },
     [LandType.RiceField]: undefined,
     [LandType.CornField]: undefined,
-    [LandType.VegetableFarm]: undefined,
+    [LandType.VegetableFarm]: {
+      lineColor: "#00aa00",
+      lineWidth: 2,
+      polygonFill: "#88ff88",
+      polygonOpacity: 0.5,
+    },
     [LandType.FruitOrchard]: undefined,
     [LandType.TeaFarm]: undefined,
     [LandType.CoffeeFarm]: undefined,
@@ -139,6 +174,30 @@ const extractImportantHtml = (htmlString: string | undefined) => {
 
 export const HtmlAreaInfo = ({ html }: { html: any }) => <div>{extractImportantHtml(html)}</div>;
 
+const getPolygonCentroid = (coordinates: number[][][]): number[] | null => {
+  if (!coordinates.length || !coordinates[0].length || !coordinates[0][0].length) return null;
+
+  const polygon = coordinates[0]; // Lấy đa giác đầu tiên (vòng ngoài)
+  let area = 0; let cx = 0; let cy = 0;
+
+  for (let i = 0; i < polygon.length; i+=1) {
+    const j = (i + 1) % polygon.length;
+    const x0 = polygon[i][0]; const y0 = polygon[i][1];
+    const x1 = polygon[j][0]; const y1 = polygon[j][1];
+    const cross = x0 * y1 - x1 * y0;
+
+    area += cross;
+    cx += (x0 + x1) * cross;
+    cy += (y0 + y1) * cross;
+  }
+
+  area /= 2;
+  if (area === 0) return null; // Tránh chia cho 0
+
+  return [cx / (6 * area), cy / (6 * area) ];
+};
+
+
 
 const freeMapLayer = 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png';
 const googleMapLayer = 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}';
@@ -154,4 +213,6 @@ export const MapUtil = {
   extractImportantHtml,
   HtmlAreaInfo,
   addPolygon,
+  clearLayer,
+  getPolygonCentroid,
 }

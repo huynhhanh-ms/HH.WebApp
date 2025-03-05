@@ -30,7 +30,7 @@ export function LandViewExample() {
     // Lắng nghe sự kiện click
     map.current.on('click', (e) => {
       if (e && e.coordinate) {
-        const { x, y } = e.coordinate; // Lấy tọa độ (longitude, latitude)
+        const { x, y } = e.coordinate;
         setClickPoint({ x, y });
       }
     });
