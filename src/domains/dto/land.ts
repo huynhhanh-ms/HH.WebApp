@@ -40,6 +40,7 @@ export enum LandType {
   Default = 'Đất',
 
   NewLand = 'Đất mới',
+  SelectedLand = 'Đất được chọn',
   // 🏡 Đất Nông Nghiệp (Agricultural Land)
   Farm = 'Đất nông nghiệp',
   RiceField = 'Ruộng lúa',

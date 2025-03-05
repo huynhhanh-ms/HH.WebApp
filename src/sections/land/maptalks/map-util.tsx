@@ -1,6 +1,9 @@
-import type { MergedType } from 'src/domains/dto/land';
+import type { Land, MergedType } from 'src/domains/dto/land';
 
+import * as turf from "@turf/turf";
 import * as maptalks from 'maptalks';
+
+import { fNumber, fShortenNumber } from 'src/utils/format-number';
 
 import { LandType, isCoordinates, LandObjectType } from 'src/domains/dto/land';
 
@@ -31,6 +34,7 @@ export const addLayers = (map: maptalks.Map, layers: string[]) => {
   layers.forEach((layerId) => getOrCreateLayer(map, layerId));
 }
 
+//* Add polygon to map
 const addPolygon = (map: maptalks.Map, layerId: string, coordinates: number[][][], type: MergedType | string, isClearLayer = false) => {
   if (!isCoordinates(coordinates)) return null;
 
@@ -55,6 +59,71 @@ const addPolygon = (map: maptalks.Map, layerId: string, coordinates: number[][][
 
   return new maptalks.Polygon(coordinates as any, { symbol }).addTo(layer);
 };
+
+//* Add a marker to the map
+export const addMarker = (map: maptalks.Map, layerId: string, position: number[]) => {
+  const layer = getOrCreateLayer(map, layerId);
+
+  const marker = new maptalks.Marker(position, {
+    symbol: {
+      markerType: "ellipse",
+      markerWidth: 10,
+      markerHeight: 10,
+      markerFill: "#f00",
+      markerLineColor: "#fff",
+      markerLineWidth: 2,
+    },
+  });
+
+  marker.addTo(layer);
+  return marker;
+};
+
+//* Add a label to the map
+export const addLabel = (map: maptalks.Map, layerId: string, position: number[], text: string) => {
+  const layer = getOrCreateLayer(map, layerId);
+
+  const label = new maptalks.Label(text, position, {
+    draggable: true,
+    textSymbol: {
+      textFaceName: "monospace",
+      textFill: "#34495e",
+      textHaloFill: "#fff",
+      textHaloRadius: 4,
+      textSize: 10,
+      textWeight: "bold",
+      textVerticalAlignment: "top",
+      textDx: 10, 
+      textDy: -5, 
+    },
+  });
+
+  label.addTo(layer);
+  return label;
+};
+
+
+export const addLand = (map: maptalks.Map, layerId: string, land: Land, isClearLayer = false) => {
+  if (!isCoordinates(land.location.coordinates)) return null;
+
+  // Thêm polygon
+  const polygon = addPolygon(map, layerId, land.location.coordinates, land.type, false);
+
+  // Tính diện tích của polygon
+  const polygonGeoJSON = turf.polygon(land.location.coordinates);
+  const area = turf.area(polygonGeoJSON);
+
+  // Tính trọng tâm của polygon
+  const centroid = MapUtil.getPolygonCentroid(land.location.coordinates);
+  if (!centroid) return polygon;
+
+  // Thêm label ở trọng tâm
+  const labelText = `${land.name}\n${fNumber(area,{maximumFractionDigits:0})}m²`;
+  addLabel(map, layerId, centroid, labelText);
+
+  return polygon;
+};
+
 const getSymbolByType = (type: MergedType) => {
   const symbols: Record<MergedType, any> = {
     // LandType
@@ -63,6 +132,12 @@ const getSymbolByType = (type: MergedType) => {
       lineWidth: 2,
       polygonFill: "#777777",
       polygonOpacity: 0.4,
+    },
+    [LandType.SelectedLand]: {
+      lineColor: "#ff0000",
+      lineWidth: 2,
+      polygonFill: "#ff8888",
+      polygonOpacity: 0.7,
     },
     [LandType.NewLand]: {
       lineColor: "#ff0000",
@@ -180,7 +255,7 @@ const getPolygonCentroid = (coordinates: number[][][]): number[] | null => {
   const polygon = coordinates[0]; // Lấy đa giác đầu tiên (vòng ngoài)
   let area = 0; let cx = 0; let cy = 0;
 
-  for (let i = 0; i < polygon.length; i+=1) {
+  for (let i = 0; i < polygon.length; i += 1) {
     const j = (i + 1) % polygon.length;
     const x0 = polygon[i][0]; const y0 = polygon[i][1];
     const x1 = polygon[j][0]; const y1 = polygon[j][1];
@@ -194,7 +269,7 @@ const getPolygonCentroid = (coordinates: number[][][]): number[] | null => {
   area /= 2;
   if (area === 0) return null; // Tránh chia cho 0
 
-  return [cx / (6 * area), cy / (6 * area) ];
+  return [cx / (6 * area), cy / (6 * area)];
 };
 
 
@@ -215,4 +290,5 @@ export const MapUtil = {
   addPolygon,
   clearLayer,
   getPolygonCentroid,
+  addLand,
 }

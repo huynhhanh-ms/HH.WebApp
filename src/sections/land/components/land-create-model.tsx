@@ -71,7 +71,8 @@ const LandCreateModel: React.FC = () => {
   // Submit form
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    formData.location.coordinates = [points.map(point => [point.x, point.y])];
+    const pointsWithLast = [...points, points[0]];
+    formData.location.coordinates = [pointsWithLast];
     createLandApi(formData);
   };
 

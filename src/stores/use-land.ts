@@ -4,8 +4,9 @@ interface LandStore {
   selectedLand: string | null | number;
   setSelectedLand: (land: string | null | number) => void;
 
-  points: { x: number; y: number }[];
-  addPoints: (points: { x: number; y: number }[]) => void;
+  points: number[][];
+  addPoints: (points: number[][]) => void;
+  addPoint: (point: number[]) => void;
   resetPoints: () => void;
 
   isEditing: boolean;
@@ -20,8 +21,11 @@ export const useLand = create<LandStore>((set, get) => ({
   setSelectedLand: (land) => set({ selectedLand: land }),
 
   points: [],
+  addPoint: (points) => {
+    set((state) => ({ points: [...state.points, points] }));
+  },
   addPoints: (points) => {
-    set({ points: [...get().points, ...points] });
+    set((state) => ({ points: [...state.points, ...points] }));
   },
   resetPoints: () => set({ points: [] }),
 

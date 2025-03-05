@@ -21,7 +21,6 @@ export const LandApi = {
       const response = await axiosClient.get<Land>(`${SecondApi}/get-bound`, {
         params: bound,
       });
-      console.log(response.data);
       return response.data;
     } catch (error) {
       throw new Error(error);

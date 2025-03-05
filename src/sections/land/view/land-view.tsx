@@ -32,18 +32,17 @@ export function LandView() {
     queryFn: LandApi.gets,
   });
 
-  const { mutateAsync: getBound, data: boundData, isSuccess: boundSuccess } = useMutation({
+  const { mutateAsync: getBound, data: boundData } = useMutation({
     mutationFn: LandApi.getBound,
     mutationKey: [],
   });
-
 
 
   //* Create UseState
   const [clickPoint, setClickPoint] = useState({ x: 0, y: 0 });
   const [isGetBound, setIsGetBound] = useState(false);
   const {
-    selectedLand, points, addPoints, resetPoints,
+    selectedLand, points, addPoint, addPoints, resetPoints,
     isEditing, setIsEditing,
     isCreateLand, setIsCreateLand,
   } = useLand();
@@ -68,9 +67,10 @@ export function LandView() {
   //* Use Effect MapStalk
   useEffect(() => {
     if (map.current && boundData && boundData.location) {
-      MapUtil.addPolygon(map.current!, "bound-layer", boundData.location.coordinates, LandType.Default);
+      resetPoints();
+      addPoints(boundData.location.coordinates[0]);
     }
-  }, [boundData]);
+  }, [addPoints, boundData, resetPoints]);
 
 
 
@@ -92,14 +92,6 @@ export function LandView() {
       LayerType.Bound,
       LayerType.Land,
     ]);
-
-    const vectorLayer = MapUtil.getOrCreateLayer(map.current, LayerType.Text);
-    const cayXangTitle = new maptalks.Marker([108.43315288424492, 12.67051153268791], {
-      symbol: { textName: 'Cây xăng ⛽', textFill: '#004497', textSize: 10, }
-    }).addTo(vectorLayer);
-    const houseTitle = new maptalks.Marker([108.43293961917387, 12.670161455074362], {
-      symbol: { textName: 'Nhà🛖', textFill: '#181818', textSize: 10, }
-    }).addTo(vectorLayer);
 
     const material = new THREE.MeshLambertMaterial({ color: '#fff', transparent: true });
     const material1 = new THREE.MeshLambertMaterial({ color: '#fff', transparent: true, opacity: 0.01 });
@@ -143,26 +135,13 @@ export function LandView() {
 
   useEffect(() => {
     if (landData && map.current && map) {
-      console.log('update landData to map', landData);
       MapUtil.clearLayer(map.current, LayerType.Land);
       landData.forEach((land) => {
         if (!isCoordinates(land.location.coordinates)) return;
-        MapUtil.addPolygon(map.current!, LayerType.Land, land.location.coordinates, land.type);
+        MapUtil.addLand(map.current!, LayerType.Land, land);
       });
     };
   }, [landData, map]);
-
-  // useEffect(() => {
-  //   if (map.current && landData && selectedLand !== null) {
-  //     const land: Land = landData[selectedLand];
-  //     const centroid = MapUtil.getPolygonCentroid(land.location.coordinates);
-  //     if (!centroid) return;
-
-  //     map.current.animateTo( { center: centroid, zoom: 19, pitch: 60, }, { duration: 2000, });
-
-  //     MapUtil.addPolygon(map.current, LayerType.Create, landData[selectedLand].location.coordinates, land.type, true);
-  //   }
-  // }, [landData, selectedLand]);
 
   const onMoveToLand = (id) => {
     console.log('selected land');
@@ -173,12 +152,9 @@ export function LandView() {
 
       map.current.animateTo({ center: centroid, zoom: 19, pitch: 60, }, { duration: 2000, });
 
-      // MapUtil.addPolygon(map.current, LayerType.Create, landData[id].location.coordinates, land.type, true);
-
-      // show information land here
-
       // Lấy vị trí label (dời lên trên 1 chút so với trọng tâm)
-      const labelPosition = [centroid[0] + 0.0001, centroid[1] + 0.0002];
+      const paddingOffset = 0.00005; // Điều chỉnh độ xa của text
+      const labelPosition = [centroid[0] + paddingOffset, centroid[1] + paddingOffset];
 
       // Tạo Marker để đánh dấu vị trí thông tin
       const marker = new maptalks.Marker(centroid, {
@@ -198,43 +174,46 @@ export function LandView() {
         },
       });
 
-      // Hiển thị thông tin bằng Label
-      const label = new maptalks.Label(land.name, labelPosition, {
-          'draggable' : true,
-          'textSymbol': {
-            'textFaceName' : 'monospace',
-            'textFill' : '#34495e',
-            'textHaloFill' : '#fff',
-            'textHaloRadius' : 4,
-            'textSize' : 18,
-            'textWeight' : 'bold',
-            'textVerticalAlignment' : 'top'
-          }
-        });
+      const label = new maptalks.Label(`${land.name}\n${land.area}m²`, labelPosition, {
+        'draggable': true,
+        'textSymbol': {
+          'textFaceName': 'monospace',
+          'textFill': '#34495e',
+          'textHaloFill': '#fff',
+          'textHaloRadius': 4,
+          'textSize': 14,
+          'textWeight': 'bold',
+          'textVerticalAlignment': 'top',
+          textDx: 10, // Dịch ngang sang phải
+          textDy: -5, // Dịch lên trên để tránh che đường nối
+        }
+      });
 
       // Thêm vào layer riêng
       const infoLayer = MapUtil.getOrCreateLayer(map.current, LayerType.Info);
-      infoLayer.clear();
-      infoLayer.addGeometry([marker, line, label]);
+      // infoLayer.clear();
+      // infoLayer.addGeometry([marker, line, label]);
     }
   };
 
 
   const onClickCreateLand = useCallback((e) => {
     const { x, y } = e.coordinate;
-    addPoints([{ x, y }]);
-  }, [addPoints]);
+    addPoint([x, y]);
+  }, [addPoint]);
 
   //* Draw New Land
   useEffect(() => {
     if (!map.current) return;
+    console.log('points', points);
     if (points.length < 2) {
       MapUtil.clearLayer(map.current, LayerType.Create);
 
     }
 
     MapUtil.clearLayer(map.current, LayerType.Create);
-    selectedObject.current = MapUtil.addPolygon(map.current, LayerType.Create, [points.map((p) => [p.x, p.y])], LandType.NewLand);
+    selectedObject.current = MapUtil.addPolygon(map.current, LayerType.Create, [points], LandType.NewLand);
+    
   }, [points]);
 
   // Bật chỉnh sửa
@@ -287,8 +266,10 @@ export function LandView() {
         </Grid>
         {/* right bar */}
         <Grid item xs={12} md={3} sx={{ borderRight: "2px solid rgba(146, 146, 146, 0.12)", padding: 4 }} >
-          <Switch onChange={(e) => { setIsGetBound(e.target.checked) }} />
-          <Typography fontWeight="bold" display="inline">Get Bound</Typography>
+
+          <Button onClick={() => setIsGetBound(!isGetBound)} variant='contained' color={isGetBound ? 'error' : 'primary'} disabled={isCreateLand}>
+            {isGetBound ? 'Hủy xem' : 'thông tin vùng đất'}
+          </Button>
           <Button>[{fNumber(clickPoint.x, { maximumFractionDigits: 4 } as any)}, {fNumber(clickPoint.y, { maximumFractionDigits: 4 } as any)}]</Button>
 
           <div className='p-4'>
@@ -296,7 +277,7 @@ export function LandView() {
           </div>
 
           {/* function button */}
-          <Button onClick={() => setIsCreateLand(!isCreateLand)} variant='contained' color={isCreateLand ? 'error' : 'primary'}>
+          <Button onClick={() => setIsCreateLand(!isCreateLand)} variant='contained' color={isCreateLand ? 'error' : 'primary'} disabled={isGetBound}>
             {isCreateLand ? 'Hủy tạo vùng đất' : 'Tạo vùng đất'}
           </Button>
           <Button onClick={() => setIsEditing()} variant='contained' color={isEditing ? 'error' : 'primary'}>
